@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/sdk",
-  "version": "2.0.3",
+  "version": "2.1.0-dev.0",
   "description": "",
   "exports": {
     "./swap": {
@@ -66,10 +66,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@chainflip/bitcoin": "^1.2.7",
-    "@chainflip/rpc": "~2.0.1",
-    "@chainflip/solana": "^2.2.0",
-    "@chainflip/utils": "^0.11.1",
+    "@chainflip/bitcoin": "2.1.0-beta.1",
+    "@chainflip/rpc": "2.1.0-beta.1",
+    "@chainflip/solana": "2.2.1-beta.0",
+    "@chainflip/utils": "2.1.0-beta.1",
     "@ts-rest/core": "^3.52.1",
     "axios": "^1.10.0",
     "bignumber.js": "^9.3.0",

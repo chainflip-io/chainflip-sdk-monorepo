@@ -2,17 +2,15 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import prisma from '../../../client.js';
 import { noop } from '../../../utils/function.js';
 import {
+  check,
   createDepositChannel,
   DOT_ADDRESS,
   ETH_ADDRESS,
   swapRequestCompletedMock,
-  swapRequestCompletedMock200,
 } from '../../__tests__/utils.js';
-import swapRequestCompleted from '../swapRequestCompleted.js';
+import swapRequestCompleted, { SwapRequestCompletedArgs } from '../swapRequestCompleted.js';
 
 const { event, block } = swapRequestCompletedMock;
-
-const { event: event200, block: block200 } = swapRequestCompletedMock200;
 
 describe(swapRequestCompleted, () => {
   beforeEach(async () => {
@@ -320,17 +318,17 @@ describe(swapRequestCompleted, () => {
   it('updates swap request with liquidation info - Executed', async () => {
     await prisma.swapRequest.create({
       data: {
-        nativeId: BigInt(event200.args.swapRequestId),
+        nativeId: BigInt(event.args.swapRequestId),
         depositAmount: '10000000000',
         swapInputAmount: '10000000000',
-        depositFinalisedAt: new Date(block200.timestamp - 12000),
-        depositFinalisedBlockIndex: `${block200.height - 100}-${event200.indexInBlock}`,
+        depositFinalisedAt: new Date(block.timestamp - 12000),
+        depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
         destAsset: 'Dot',
         destAddress: DOT_ADDRESS,
         requestType: 'REGULAR',
         originType: 'VAULT',
-        swapRequestedAt: new Date(block200.timestamp - 12000),
+        swapRequestedAt: new Date(block.timestamp - 12000),
         swapRequestedBlockIndex: '92-398',
         liquidationSwapInfo: {
           create: {
@@ -358,7 +356,7 @@ describe(swapRequestCompleted, () => {
       },
     });
 
-    await swapRequestCompleted({ block: block200, event: event200, prisma });
+    await swapRequestCompleted({ block, event, prisma });
 
     const swapRequest = await prisma.swapRequest.findFirstOrThrow({
       include: {
@@ -382,17 +380,17 @@ describe(swapRequestCompleted, () => {
   it('updates swap request with liquidation info - Aborted', async () => {
     await prisma.swapRequest.create({
       data: {
-        nativeId: BigInt(event200.args.swapRequestId),
+        nativeId: BigInt(event.args.swapRequestId),
         depositAmount: '10000000000',
         swapInputAmount: '10000000000',
-        depositFinalisedAt: new Date(block200.timestamp - 12000),
-        depositFinalisedBlockIndex: `${block200.height - 100}-${event200.indexInBlock}`,
+        depositFinalisedAt: new Date(block.timestamp - 12000),
+        depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
         destAsset: 'Dot',
         destAddress: DOT_ADDRESS,
         requestType: 'REGULAR',
         originType: 'VAULT',
-        swapRequestedAt: new Date(block200.timestamp - 12000),
+        swapRequestedAt: new Date(block.timestamp - 12000),
         swapRequestedBlockIndex: '92-398',
         liquidationSwapInfo: {
           create: {
@@ -421,15 +419,15 @@ describe(swapRequestCompleted, () => {
     });
 
     await swapRequestCompleted({
-      block: block200,
+      block,
       event: {
-        ...event200,
-        args: {
-          ...event200.args,
+        ...event,
+        args: check<SwapRequestCompletedArgs>({
+          ...event.args,
           reason: {
             __kind: 'Aborted',
           },
-        },
+        }),
       },
       prisma,
     });

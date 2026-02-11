@@ -17,9 +17,12 @@ import { TransactionBroadcastRequestArgsMap } from '../broadcaster/transactionBr
 import { events as eventNames } from '../index.js';
 import { BatchBroadcastRequestedArgsMap } from '../ingress-egress/batchBroadcastRequested.js';
 import { DepositFailedArgs } from '../ingress-egress/depositFailed.js';
+import { NewPoolCreatedArgs } from '../liquidity-pools/newPoolCreated.js';
+import { PoolFeeSetArgs } from '../liquidity-pools/poolFeeSet.js';
 import { RefundEgressScheduledArgs } from '../swapping/refundEgressScheduled.js';
 import { SwapDepositAddressReadyArgs } from '../swapping/swapDepositAddressReady.js';
 import { SwapEgressScheduledArgs } from '../swapping/swapEgressScheduled.js';
+import { SwapRequestCompletedArgs } from '../swapping/swapRequestCompleted.js';
 
 export const ETH_ADDRESS = '0x6Aa69332B63bB5b1d7Ca5355387EDd5624e181F2';
 export const DOT_ADDRESS = '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo'; // 0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972
@@ -35,7 +38,7 @@ export const createDepositChannel = (
   prisma.swapDepositChannel.create({
     data: {
       channelId: 1n,
-      srcChain: 'Ethereum',
+      srcChain: assetConstants[data.srcAsset ?? 'Eth'].chain,
       srcAsset: 'Eth',
       destAsset: 'Dot',
       depositAddress: ETH_ADDRESS,
@@ -166,58 +169,18 @@ export const swapDepositAddressReadyCcmParamsMocked = {
 
 export const swapRequestCompletedMock = {
   block: {
-    specId: 'test@11000',
+    specId: 'test@200',
     height: 120,
     timestamp: 1670337105000,
     hash: '0x123',
   },
   event: {
-    args: {
-      swapRequestId: '9876545',
-    },
-    id: '0000012799-000000-c1ea7',
-    indexInBlock: 0,
-    nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
-    name: eventNames.Swapping.SwapRequestCompleted,
-    phase: 'ApplyExtrinsic',
-    pos: 2,
-    extrinsic: {
-      error: null,
-      hash: '0xf72d579e0e659b6e287873698da1ffee2f5cbbc1a5165717f0218fca85ba66f4',
-      id: '0000012799-000000-c1ea7',
-      indexInBlock: 0,
-      nodeId: 'WyJleHRyaW5zaWNzIiwiMDAwMDAxMjc5OS0wMDAwMDAtYzFlYTciXQ==',
-      pos: 1,
-      success: true,
-      version: 4,
-      call: {
-        args: [null],
-        error: null,
-        id: '0000012799-000000-c1ea7',
-        name: 'Timestamp.set',
-        nodeId: 'WyJjYWxscyIsIjAwMDAwMTI3OTktMDAwMDAwLWMxZWE3Il0=',
-        origin: [null],
-        pos: 0,
-        success: true,
-      },
-    },
-  },
-} as const;
-
-export const swapRequestCompletedMock200 = {
-  block: {
-    specId: 'test@11000',
-    height: 120,
-    timestamp: 1670337105000,
-    hash: '0x123',
-  },
-  event: {
-    args: {
+    args: check<SwapRequestCompletedArgs>({
       swapRequestId: '9876545',
       reason: {
         __kind: 'Executed',
       },
-    },
+    }),
     id: '0000012799-000000-c1ea7',
     indexInBlock: 0,
     nodeId: 'WyJldmVudHMiLCIwMDAwMDEyNzk5LTAwMDAwMC1jMWVhNyJd',
@@ -521,12 +484,12 @@ export const newPoolCreatedMock = {
     timestamp: 1670337105000,
   },
   event: {
-    args: {
+    args: check<NewPoolCreatedArgs>({
       baseAsset: { __kind: 'Btc' },
       quoteAsset: { __kind: 'Usdc' },
       initialPrice: '170141183460469231731687303715884105728000',
       feeHundredthPips: 1000,
-    },
+    }),
     name: 'LiquidityPools.NewPoolCreated',
     indexInBlock: 7,
   },
@@ -539,12 +502,11 @@ export const poolFeeSetMock = {
     timestamp: 1680337105000,
   },
   event: {
-    args: {
+    args: check<PoolFeeSetArgs>({
       baseAsset: { __kind: 'Btc' },
       quoteAsset: { __kind: 'Usdc' },
-      initialPrice: '170141183460469231731687303715884105728000',
       feeHundredthPips: 2000,
-    },
+    }),
     name: 'LiquidityPools.PoolFeeSet',
     indexInBlock: 7,
   },

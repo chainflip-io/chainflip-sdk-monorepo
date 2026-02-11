@@ -44,6 +44,7 @@ describe('getSwappingEnvironment', () => {
           "Arbitrum": {
             "ETH": null,
             "USDC": null,
+            "USDT": null,
           },
           "Assethub": {
             "DOT": null,
@@ -58,16 +59,19 @@ describe('getSwappingEnvironment', () => {
             "FLIP": null,
             "USDC": 5000000000000000000n,
             "USDT": null,
+            "WBTC": null,
           },
           "Solana": {
             "SOL": null,
             "USDC": null,
+            "USDT": null,
           },
         },
         "minimumChunkSize": {
           "Arbitrum": {
             "ETH": 0n,
             "USDC": 0n,
+            "USDT": 0n,
           },
           "Assethub": {
             "DOT": 0n,
@@ -82,10 +86,12 @@ describe('getSwappingEnvironment', () => {
             "FLIP": 0n,
             "USDC": 0n,
             "USDT": 0n,
+            "WBTC": 0n,
           },
           "Solana": {
             "SOL": 0n,
             "USDC": 0n,
+            "USDT": 0n,
           },
         },
         "networkFeeHundredthPips": 1000,
@@ -95,6 +101,7 @@ describe('getSwappingEnvironment', () => {
               "Arbitrum": {
                 "ETH": 100n,
                 "USDC": 100n,
+                "USDT": 100n,
               },
               "Assethub": {
                 "DOT": 100n,
@@ -109,10 +116,12 @@ describe('getSwappingEnvironment', () => {
                 "FLIP": 100n,
                 "USDC": 100n,
                 "USDT": 100n,
+                "WBTC": 100n,
               },
               "Solana": {
                 "SOL": 100n,
                 "USDC": 100n,
+                "USDT": 100n,
               },
             },
             "standardRateAndMinimum": {
@@ -125,6 +134,7 @@ describe('getSwappingEnvironment', () => {
               "Arbitrum": {
                 "ETH": 1000n,
                 "USDC": 1000n,
+                "USDT": 1000n,
               },
               "Assethub": {
                 "DOT": 1000n,
@@ -139,10 +149,12 @@ describe('getSwappingEnvironment', () => {
                 "FLIP": 1000n,
                 "USDC": 1000n,
                 "USDT": 1000n,
+                "WBTC": 1000n,
               },
               "Solana": {
                 "SOL": 1000n,
                 "USDC": 1000n,
+                "USDT": 1000n,
               },
             },
             "standardRateAndMinimum": {
@@ -188,6 +200,7 @@ describe('getIngressEgressEnvironment', () => {
           "Arbitrum": {
             "ETH": 0n,
             "USDC": 0n,
+            "USDT": 0n,
           },
           "Assethub": {
             "DOT": 0n,
@@ -202,10 +215,12 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 0n,
             "USDC": 0n,
             "USDT": 0n,
+            "WBTC": 0n,
           },
           "Solana": {
             "SOL": 0n,
             "USDC": 0n,
+            "USDT": 0n,
           },
         },
         "ingressDelays": {
@@ -219,6 +234,7 @@ describe('getIngressEgressEnvironment', () => {
           "Arbitrum": {
             "ETH": 5000000000000000000n,
             "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
           },
           "Assethub": {
             "DOT": 5000000000000000000n,
@@ -233,16 +249,19 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 5000000000000000000n,
             "USDC": 5000000000000000000n,
             "USDT": 5000000000000000000n,
+            "WBTC": 5000000000000000000n,
           },
           "Solana": {
             "SOL": 5000000000000000000n,
             "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
           },
         },
         "minimumDepositAmounts": {
           "Arbitrum": {
             "ETH": 5000000000000000000n,
             "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
           },
           "Assethub": {
             "DOT": 5000000000000000000n,
@@ -257,16 +276,19 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 5000000000000000000n,
             "USDC": 5000000000000000000n,
             "USDT": 5000000000000000000n,
+            "WBTC": 5000000000000000000n,
           },
           "Solana": {
             "SOL": 5000000000000000000n,
             "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
           },
         },
         "minimumEgressAmounts": {
           "Arbitrum": {
             "ETH": 1n,
             "USDC": 1n,
+            "USDT": 1n,
           },
           "Assethub": {
             "DOT": 1n,
@@ -281,10 +303,12 @@ describe('getIngressEgressEnvironment', () => {
             "FLIP": 1n,
             "USDC": 1n,
             "USDT": 1n,
+            "WBTC": 1n,
           },
           "Solana": {
             "SOL": 1n,
             "USDC": 1n,
+            "USDT": 1n,
           },
         },
         "witnessSafetyMargins": {

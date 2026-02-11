@@ -225,7 +225,8 @@ export async function requestSwapDepositAddress(
       // these addresses come properly formatted
       break;
     default:
-      return unreachable(params.srcAsset, 'unexpected chain');
+      // TODO remove casting to never when polkadot chain is fully removed
+      return unreachable(params.srcAsset as never, 'unexpected chain');
   }
 
   return transformKeysToCamelCase(response);

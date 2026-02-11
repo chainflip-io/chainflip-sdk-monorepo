@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/cli",
-  "version": "1.12.1",
+  "version": "1.12.1-wbtc-dev.7",
   "description": "",
   "main": "./dist/lib.mjs",
   "types": "./dist/lib.d.ts",
@@ -45,10 +45,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@chainflip/bitcoin": "^1.2.7",
-    "@chainflip/rpc": "~2.0.1",
-    "@chainflip/solana": "^2.2.0",
-    "@chainflip/utils": "^0.11.1",
+    "@chainflip/bitcoin": "2.1.0-beta.1",
+    "@chainflip/rpc": "2.1.0-beta.1",
+    "@chainflip/solana": "2.2.1-beta.0",
+    "@chainflip/utils": "2.1.0-beta.1",
     "ioredis": "^5.6.1",
     "ws": "^8.18.2",
     "yargs": "^17.7.2"

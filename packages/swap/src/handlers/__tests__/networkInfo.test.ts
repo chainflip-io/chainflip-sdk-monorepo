@@ -90,124 +90,12 @@ describe('networkStatus', () => {
       .default as unknown as typeof import('../../config/env.js').default;
   });
 
-  it.each([defaultSafeModeStatuses])(
-    'returns everything when possible',
-    async (safeModeStatuses) => {
+  it.each([['default', defaultSafeModeStatuses]])(
+    'returns everything when possible (%s)',
+    async (type, safeModeStatuses) => {
       mockRpc({ safeModeStatuses });
 
-      expect(await networkStatusV2()).toStrictEqual({
-        assets: [
-          {
-            asset: 'Usdc',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: true,
-          },
-          {
-            asset: 'Usdt',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: true,
-          },
-          {
-            asset: 'Flip',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: false,
-          },
-          {
-            asset: 'Eth',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: true,
-          },
-          {
-            asset: 'Btc',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: true,
-          },
-          {
-            asset: 'ArbUsdc',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: true,
-          },
-          {
-            asset: 'ArbEth',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: true,
-          },
-          {
-            asset: 'Sol',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: true,
-          },
-          {
-            asset: 'SolUsdc',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: true,
-          },
-          {
-            asset: 'HubDot',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: false,
-          },
-          {
-            asset: 'HubUsdt',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: false,
-          },
-          {
-            asset: 'HubUsdc',
-            boostDepositsEnabled: true,
-            depositChannelCreationEnabled: true,
-            depositChannelDepositsEnabled: true,
-            egressEnabled: true,
-            vaultSwapDepositsEnabled: true,
-            livePriceProtectionEnabled: false,
-          },
-        ],
-        cfBrokerCommissionBps: 0,
-      });
+      expect(await networkStatusV2()).toMatchSnapshot();
     },
   );
 
@@ -230,6 +118,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "Usdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "Wbtc",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -274,6 +171,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "ArbUsdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "ArbEth",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -293,6 +199,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "SolUsdc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "SolUsdt",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -360,6 +275,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "Wbtc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "Flip",
             "boostDepositsEnabled": true,
             "depositChannelCreationEnabled": true,
@@ -396,6 +320,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "ArbUsdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "ArbEth",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -415,6 +348,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "SolUsdc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "SolUsdt",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -483,6 +425,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "Wbtc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "Flip",
             "boostDepositsEnabled": true,
             "depositChannelCreationEnabled": true,
@@ -519,6 +470,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "ArbUsdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "ArbEth",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -538,6 +498,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "SolUsdc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "SolUsdt",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -606,6 +575,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "Wbtc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "Flip",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -642,6 +620,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "ArbUsdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "ArbEth",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -661,6 +648,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "SolUsdc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "SolUsdt",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -705,7 +701,7 @@ describe('networkStatus', () => {
     'deposit_channel_creation_enabled',
     'deposit_channel_witnessing_enabled',
     'vault_deposit_witnessing_enabled',
-  ] as const)("checks the chain's safe mode", async (key) => {
+  ] as const)("checks the chain's safe mode (%s off)", async (key) => {
     env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(chainflipAssets);
     env.FULLY_DISABLED_INTERNAL_ASSETS.delete('Flip');
     mockRpc({
@@ -714,119 +710,7 @@ describe('networkStatus', () => {
       }),
     });
 
-    expect(await networkStatusV2()).toStrictEqual({
-      assets: [
-        {
-          asset: 'Usdc',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: true,
-        },
-        {
-          asset: 'Usdt',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: true,
-        },
-        {
-          asset: 'Flip',
-          boostDepositsEnabled: true,
-          depositChannelCreationEnabled: key !== 'deposit_channel_creation_enabled',
-          depositChannelDepositsEnabled: key !== 'deposit_channel_witnessing_enabled',
-          egressEnabled: true,
-          vaultSwapDepositsEnabled: key !== 'vault_deposit_witnessing_enabled',
-          livePriceProtectionEnabled: false,
-        },
-        {
-          asset: 'Eth',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: true,
-        },
-        {
-          asset: 'Btc',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: true,
-        },
-        {
-          asset: 'ArbUsdc',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: true,
-        },
-        {
-          asset: 'ArbEth',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: true,
-        },
-        {
-          asset: 'Sol',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: true,
-        },
-        {
-          asset: 'SolUsdc',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: true,
-        },
-        {
-          asset: 'HubDot',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: false,
-        },
-        {
-          asset: 'HubUsdt',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: false,
-        },
-        {
-          asset: 'HubUsdc',
-          boostDepositsEnabled: false,
-          depositChannelCreationEnabled: false,
-          depositChannelDepositsEnabled: false,
-          egressEnabled: false,
-          vaultSwapDepositsEnabled: false,
-          livePriceProtectionEnabled: false,
-        },
-      ],
-      cfBrokerCommissionBps: 0,
-    });
+    expect(await networkStatusV2()).toMatchSnapshot();
   });
 
   it('checks if withdrawals are enabled', async () => {
@@ -852,6 +736,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "Usdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "Wbtc",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -896,6 +789,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "ArbUsdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "ArbEth",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -915,6 +817,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "SolUsdc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "SolUsdt",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -985,6 +896,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "Wbtc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "Flip",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -1021,6 +941,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "ArbUsdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "ArbEth",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -1040,6 +969,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "SolUsdc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "SolUsdt",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
@@ -1110,6 +1048,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "Wbtc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "Flip",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -1146,6 +1093,15 @@ describe('networkStatus', () => {
             "vaultSwapDepositsEnabled": false,
           },
           {
+            "asset": "ArbUsdt",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
             "asset": "ArbEth",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
@@ -1165,6 +1121,15 @@ describe('networkStatus', () => {
           },
           {
             "asset": "SolUsdc",
+            "boostDepositsEnabled": false,
+            "depositChannelCreationEnabled": false,
+            "depositChannelDepositsEnabled": false,
+            "egressEnabled": false,
+            "livePriceProtectionEnabled": true,
+            "vaultSwapDepositsEnabled": false,
+          },
+          {
+            "asset": "SolUsdt",
             "boostDepositsEnabled": false,
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,

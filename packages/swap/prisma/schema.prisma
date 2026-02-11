@@ -60,11 +60,14 @@ enum InternalAsset {
   Usdt
   ArbEth
   ArbUsdc
+  ArbUsdt
   Sol
   SolUsdc
+  SolUsdt
   HubDot
   HubUsdt
   HubUsdc
+  Wbtc
 
   @@schema("public")
 }

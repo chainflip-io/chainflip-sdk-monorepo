@@ -264,10 +264,10 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       internalSwapNetworkFee: {
         standardRateAndMinimum: { rate: 1000n, minimum: 500000n },
         rates: {
-          Ethereum: { ETH: 1000n, FLIP: 1000n, USDC: 100n, USDT: 100n },
+          Ethereum: { ETH: 1000n, FLIP: 1000n, USDC: 100n, USDT: 100n, WBTC: 1000n },
           Bitcoin: { BTC: 1000n },
-          Arbitrum: { ETH: 1000n, USDC: 100n },
-          Solana: { SOL: 1000n, USDC: 100n },
+          Arbitrum: { ETH: 1000n, USDC: 100n, USDT: 100n },
+          Solana: { SOL: 1000n, USDC: 100n, USDT: 100n },
           Assethub: { DOT: 1000n, USDT: 100n, USDC: 100n },
         },
       },
