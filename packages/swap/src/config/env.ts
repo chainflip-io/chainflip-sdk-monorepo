@@ -155,6 +155,8 @@ export default z
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
     DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE: optionalBoolean,
+    RATE_LIMIT_WINDOW_MS: optionalNumber(60_000),
+    RATE_LIMIT_MAX_REQUESTS: optionalNumber(200),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
