@@ -91,8 +91,8 @@ importers:
         specifier: 2.2.1
         version: 2.2.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.1.0
-        version: 2.1.0
+        specifier: 2.1.1
+        version: 2.1.1
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -164,8 +164,8 @@ importers:
         specifier: 2.2.1
         version: 2.2.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.1.0
-        version: 2.1.0
+        specifier: 2.1.1
+        version: 2.1.1
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -201,8 +201,8 @@ importers:
         specifier: 2.2.1
         version: 2.2.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.1.0
-        version: 2.1.0
+        specifier: 2.1.1
+        version: 2.1.1
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -253,8 +253,8 @@ importers:
         specifier: 2.1.0
         version: 2.1.0(typescript@5.8.3)
       '@chainflip/processor':
-        specifier: 2.1.1
-        version: 2.1.1
+        specifier: 2.1.2
+        version: 2.1.2
       '@chainflip/redis':
         specifier: 2.1.0
         version: 2.1.0
@@ -265,8 +265,8 @@ importers:
         specifier: 2.2.1
         version: 2.2.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.1.0
-        version: 2.1.0
+        specifier: 2.1.1
+        version: 2.1.1
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -489,8 +489,8 @@ packages:
   '@chainflip/bitcoin@2.1.0':
     resolution: {integrity: sha512-5njiZ2WVS/Gn+Vx1zhnxu4PLeoadBTzAE57IuS6+wvakQaq6yIIx/q/mvV6UAfZ26mixA3xQHFLhynanA7sPxQ==}
 
-  '@chainflip/processor@2.1.1':
-    resolution: {integrity: sha512-wOjdNJgdtvuJlMXB16pTI24vjuI0urDy5mQf/8bcu2g1LNSbnnEUp6qOwcT1Q05wVOmd1c5OApnNgGFpQDfMbA==}
+  '@chainflip/processor@2.1.2':
+    resolution: {integrity: sha512-VmLtHl1wgAywb7e4IPmHEZNo+EcRMH17/AValvr5zhfi1KfZxfP4o+ayb9nJ7aLdh9xjt8sdqWXwXSA0EXVMKQ==}
 
   '@chainflip/redis@2.1.0':
     resolution: {integrity: sha512-4YT5r1/7ooBX0oIds97mocVRlzi9MhHtsFLTvCtp5EjeBcMjwqKnDQSx3ZG1AWJykiup/UJS57EZ+9du9xxE6w==}
@@ -510,8 +510,8 @@ packages:
   '@chainflip/utils@2.1.0':
     resolution: {integrity: sha512-40bNhTaSzQHDAMv2m/QAckwEzsVXmXrdkhDcd+CRil9JFUSeWUlRxRKcwlbtp7FyrA3ql+0G7Guw8+LsX2Jlhw==}
 
-  '@chainflip/utils@2.1.0-beta.1':
-    resolution: {integrity: sha512-FqauoQppwmSxBoL0egs69CqmYa49lQ9xLgchMYfc8ON3rf389mQWyhH7o1XGqbI1Jo50+NzUMFKP3fCh79u/yw==}
+  '@chainflip/utils@2.1.1':
+    resolution: {integrity: sha512-OpsLT6IyMU7x/dZcgTuVSzvwk/J3B8tZosqS92MtI+7dqgbylPUHOLXq6zghcgLuqJzh4RlcFxIqH/z4HnQ7zw==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -5760,9 +5760,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@2.1.1':
+  '@chainflip/processor@2.1.2':
     dependencies:
-      '@chainflip/utils': 2.1.0-beta.1
+      '@chainflip/utils': 2.1.0
       zod: 3.25.76
 
   '@chainflip/redis@2.1.0':
@@ -5812,7 +5812,7 @@ snapshots:
       bignumber.js: 9.3.1
       date-fns: 4.1.0
 
-  '@chainflip/utils@2.1.0-beta.1':
+  '@chainflip/utils@2.1.1':
     dependencies:
       '@date-fns/utc': 2.1.1
       '@noble/hashes': 2.0.1
