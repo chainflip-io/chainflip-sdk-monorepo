@@ -1,12 +1,10 @@
 import {
   ChainflipAsset,
   chainflipAssets,
-  ChainflipNetwork,
   chainflipNetworks,
   InternalAssetMap,
 } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { envSafeAssetBlacklist } from '@/shared/consts.js';
 import { isNotNullish } from '@/shared/guards.js';
 
 const logWarning = (message: string, meta: Record<string, unknown>) =>
@@ -129,14 +127,7 @@ export default z
         'The upper limit in USD value for DCA v2 eligibility. If undefined, DCA v2 is disabled.',
       ),
     DCA_CHUNK_INTERVAL_BLOCKS: optionalNumber(2),
-    FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS').transform(
-      (set) =>
-        new Set([
-          ...set,
-          // eslint-disable-next-line n/no-process-env
-          ...envSafeAssetBlacklist(process.env.CHAINFLIP_NETWORK as ChainflipNetwork),
-        ]),
-    ),
+    FULLY_DISABLED_INTERNAL_ASSETS: internalAssetCsv('FULLY_DISABLED_INTERNAL_ASSETS'),
     DCA_DISABLED_INTERNAL_ASSETS: internalAssetCsv('DCA_DISABLED_INTERNAL_ASSETS'),
     DISABLED_DEPOSIT_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DEPOSIT_INTERNAL_ASSETS'),
     DISABLED_DESTINATION_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DESTINATION_INTERNAL_ASSETS'),

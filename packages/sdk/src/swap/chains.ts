@@ -5,7 +5,7 @@ import { isNotNullish } from '@/shared/guards.js';
 import { Environment } from '@/shared/rpc/index.js';
 
 export const getChainData = (
-  chain: Exclude<ChainflipChain, 'Polkadot'>,
+  chain: ChainflipChain,
   network: ChainflipNetwork,
   env: Pick<Environment, 'ingressEgress' | 'swapping'>,
 ) => ({
@@ -13,11 +13,8 @@ export const getChainData = (
   name: chain,
   evmChainId: getEvmChainId(chain, network),
   isMainnet: !isTestnet(network),
-  requiredBlockConfirmations: isNotNullish(
-    env.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>],
-  )
-    ? Number(env.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>]) +
-      1
+  requiredBlockConfirmations: isNotNullish(env.ingressEgress.witnessSafetyMargins[chain])
+    ? Number(env.ingressEgress.witnessSafetyMargins[chain]) + 1
     : undefined,
   maxRetryDurationBlocks: env.swapping.maxSwapRetryDurationBlocks,
 });

@@ -2,7 +2,6 @@ import { arbitrumIngressEgressCcmBroadcastRequested } from '@chainflip/processor
 import { assethubIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/assethubIngressEgress/ccmBroadcastRequested';
 import { bitcoinIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/bitcoinIngressEgress/ccmBroadcastRequested';
 import { ethereumIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/ethereumIngressEgress/ccmBroadcastRequested';
-import { polkadotIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/polkadotIngressEgress/ccmBroadcastRequested';
 import { solanaIngressEgressCcmBroadcastRequested } from '@chainflip/processor/190/solanaIngressEgress/ccmBroadcastRequested';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
@@ -14,7 +13,6 @@ const schemas = {
   Assethub: assethubIngressEgressCcmBroadcastRequested,
   Bitcoin: bitcoinIngressEgressCcmBroadcastRequested,
   Ethereum: ethereumIngressEgressCcmBroadcastRequested,
-  Polkadot: polkadotIngressEgressCcmBroadcastRequested,
   Solana: solanaIngressEgressCcmBroadcastRequested,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 

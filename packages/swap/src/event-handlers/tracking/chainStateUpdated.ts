@@ -1,5 +1,4 @@
 import { ethereumChainTrackingChainStateUpdated } from '@chainflip/processor/100/ethereumChainTracking/chainStateUpdated';
-import { polkadotChainTrackingChainStateUpdated } from '@chainflip/processor/100/polkadotChainTracking/chainStateUpdated';
 import { bitcoinChainTrackingChainStateUpdated } from '@chainflip/processor/120/bitcoinChainTracking/chainStateUpdated';
 import { solanaChainTrackingChainStateUpdated } from '@chainflip/processor/160/solanaChainTracking/chainStateUpdated';
 import { arbitrumChainTrackingChainStateUpdated } from '@chainflip/processor/180/arbitrumChainTracking/chainStateUpdated';
@@ -12,7 +11,6 @@ const schemas = {
   Arbitrum: arbitrumChainTrackingChainStateUpdated,
   Bitcoin: bitcoinChainTrackingChainStateUpdated,
   Ethereum: ethereumChainTrackingChainStateUpdated,
-  Polkadot: polkadotChainTrackingChainStateUpdated,
   Solana: solanaChainTrackingChainStateUpdated,
   Assethub: assethubChainTrackingChainStateUpdated,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;

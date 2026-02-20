@@ -2,7 +2,6 @@ import { solanaIngressEgressTransactionRejectedByBroker } from '@chainflip/proce
 import { arbitrumIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/arbitrumIngressEgress/transactionRejectedByBroker';
 import { bitcoinIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/bitcoinIngressEgress/transactionRejectedByBroker';
 import { ethereumIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/ethereumIngressEgress/transactionRejectedByBroker';
-import { polkadotIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/polkadotIngressEgress/transactionRejectedByBroker';
 import { assethubIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/190/assethubIngressEgress/transactionRejectedByBroker';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
@@ -27,10 +26,6 @@ const schemaMap = {
   Ethereum: ethereumIngressEgressTransactionRejectedByBroker.transform((args) => ({
     ...args,
     txId: { chain: 'Ethereum' as const, data: args.txId },
-  })),
-  Polkadot: polkadotIngressEgressTransactionRejectedByBroker.transform((args) => ({
-    ...args,
-    txId: { chain: 'Polkadot' as const, data: args.txId },
   })),
   Solana: solanaIngressEgressTransactionRejectedByBroker.transform((args) => ({
     ...args,

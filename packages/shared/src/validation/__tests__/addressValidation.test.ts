@@ -74,8 +74,8 @@ describe(validateBitcoinRegtestAddress, () => {
 
 describe(validateAddress, () => {
   it.each([
-    ['Polkadot', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
-    ['Polkadot', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    ['Assethub', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
+    ['Assethub', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
     ['Ethereum', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
   ] as const)('returns true for valid supportedAssets %s', (chain, address) => {
     expect(validateAddress(chain, address, 'mainnet')).toBeTruthy();
@@ -109,7 +109,7 @@ describe(validateAddress, () => {
   });
 
   it.each([
-    ['Polkadot', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
+    ['Assethub', '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1'],
     ['Ethereum', '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki'],
   ] as const)('returns false for invalid address %s', (chain, address) => {
     expect(validateAddress(chain, address, 'mainnet')).toBeFalsy();

@@ -1,8 +1,7 @@
 import { WsClient } from '@chainflip/rpc';
-import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import { ChainflipAsset, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { describe, it, expect, vi } from 'vitest';
-import { InternalAsset } from '../../client.js';
 import { isAtLeastSpecVersion } from '../function.js';
 import { getSwapRateV3 } from '../statechain.js';
 
@@ -14,7 +13,7 @@ vi.mock('../function', async (importOriginal) => {
   };
 });
 
-const buildFee = (asset: InternalAsset, amount: bigint | number) => ({
+const buildFee = (asset: ChainflipAsset, amount: bigint | number) => ({
   bigint: {
     amount: BigInt(amount),
     ...internalAssetToRpcAsset[asset],
@@ -55,8 +54,8 @@ describe(getSwapRateV3, () => {
     });
 
     const getSwapRateV3Params = {
-      srcAsset: 'Usdc' as InternalAsset,
-      destAsset: 'Eth' as InternalAsset,
+      srcAsset: 'Usdc' as const,
+      destAsset: 'Eth' as const,
       depositAmount: 1000n,
       limitOrders: undefined,
       dcaParams: undefined,
@@ -105,8 +104,8 @@ describe(getSwapRateV3, () => {
     });
 
     const getSwapRateV3Params = {
-      srcAsset: 'Usdc' as InternalAsset,
-      destAsset: 'Eth' as InternalAsset,
+      srcAsset: 'Usdc' as const,
+      destAsset: 'Eth' as const,
       depositAmount: 1000n,
       limitOrders: undefined,
       dcaParams: undefined,
@@ -159,8 +158,8 @@ describe(getSwapRateV3, () => {
     });
 
     const getSwapRateV3Params = {
-      srcAsset: 'Usdc' as InternalAsset,
-      destAsset: 'Eth' as InternalAsset,
+      srcAsset: 'Usdc' as const,
+      destAsset: 'Eth' as const,
       depositAmount: 1000n,
       limitOrders: undefined,
       dcaParams: undefined,

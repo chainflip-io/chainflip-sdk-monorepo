@@ -3,22 +3,20 @@ import { arbitrumIngressEgressDepositFailed as arbitrumSchema11200 } from '@chai
 import { assethubIngressEgressDepositFailed as assetHubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositFailed';
 import { bitcoinIngressEgressDepositFailed as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFailed';
 import { ethereumIngressEgressDepositFailed as ethereumSchema11200 } from '@chainflip/processor/11200/ethereumIngressEgress/depositFailed';
-import { polkadotIngressEgressDepositFailed as polkadotSchema11200 } from '@chainflip/processor/11200/polkadotIngressEgress/depositFailed';
 import { solanaIngressEgressDepositFailed as solanaSchema11200 } from '@chainflip/processor/11200/solanaIngressEgress/depositFailed';
 import { arbitrumIngressEgressDepositFailed as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/depositFailed';
 import { assethubIngressEgressDepositFailed as assetHubSchema210 } from '@chainflip/processor/210/assethubIngressEgress/depositFailed';
 import { bitcoinIngressEgressDepositFailed as bitcoinSchema210 } from '@chainflip/processor/210/bitcoinIngressEgress/depositFailed';
 import { ethereumIngressEgressDepositFailed as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositFailed';
-import { polkadotIngressEgressDepositFailed as polkadotSchema210 } from '@chainflip/processor/210/polkadotIngressEgress/depositFailed';
 import { solanaIngressEgressDepositFailed as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/depositFailed';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
-import { assetConstants, ChainflipChain } from '@chainflip/utils/chainflip';
+import { assetConstants, ChainflipChain, isLegacyChainflipAsset } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
 import { z } from 'zod';
 import { assertUnreachable } from '@/shared/functions.js';
-import { FailedSwapReason, type Chain } from '../../client.js';
+import { FailedSwapReason } from '../../client.js';
 import env from '../../config/env.js';
 import logger from '../../utils/logger.js';
 import { DepositDetailsData, getDepositTxRef } from '../common.js';
@@ -28,23 +26,22 @@ const argsMap = {
   Arbitrum: z.union([arbitrumSchema210.strict(), arbitrumSchema11200.strict()]),
   Bitcoin: z.union([bitcoinSchema210.strict(), bitcoinSchema11200.strict()]),
   Ethereum: z.union([ethereumSchema210.strict(), ethereumSchema11200.strict()]),
-  Polkadot: z.union([polkadotSchema210.strict(), polkadotSchema11200.strict()]),
   Solana: z.union([solanaSchema210.strict(), solanaSchema11200.strict()]),
   Assethub: z.union([assetHubSchema210.strict(), assetHubSchema11200.strict()]),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type DepositFailedArgsMap = {
-  [C in Chain]: z.input<(typeof argsMap)[C]>;
+  [C in ChainflipChain]: z.input<(typeof argsMap)[C]>;
 };
-export type DepositFailedArgs = z.input<(typeof argsMap)[Chain]>;
+export type DepositFailedArgs = z.input<(typeof argsMap)[ChainflipChain]>;
 export type BitcoinDepositFailedArgs = z.input<typeof bitcoinSchema11200>;
 
 type DepositWitness = Extract<
-  z.output<(typeof argsMap)[Chain]>['details'],
+  z.output<(typeof argsMap)[ChainflipChain]>['details'],
   { __kind: `DepositFailedDepositChannelVariant${ChainflipChain}` }
 >['depositWitness'];
 
-type FailureReason = z.output<(typeof argsMap)[Chain]>['reason']['__kind'];
+type FailureReason = z.output<(typeof argsMap)[ChainflipChain]>['reason']['__kind'];
 
 const extractDepositAddress = (depositWitness: DepositWitness) => {
   switch (depositWitness.asset) {
@@ -70,7 +67,6 @@ const extractDepositAddress = (depositWitness: DepositWitness) => {
     case 'HubDot':
     case 'HubUsdc':
     case 'HubUsdt':
-    case 'Dot':
       return ss58.encode({ data: depositWitness.depositAddress, ss58Format: 0 });
     case 'Sol':
     case 'SolUsdc':
@@ -90,7 +86,7 @@ const reasonMap: Record<FailureReason, FailedSwapReason> = {
 };
 
 const depositFailed =
-  (chain: Chain) =>
+  (chain: ChainflipChain) =>
   async ({ prisma, event, block }: EventHandlerArgs) => {
     const { details, blockHeight, ...rest } = argsMap[chain].parse(event.args);
     const reason = reasonMap[rest.reason.__kind];
@@ -108,7 +104,6 @@ const depositFailed =
       case 'DepositFailedDepositChannelVariantArbitrum':
       case 'DepositFailedDepositChannelVariantBitcoin':
       case 'DepositFailedDepositChannelVariantEthereum':
-      case 'DepositFailedDepositChannelVariantPolkadot':
       case 'DepositFailedDepositChannelVariantSolana':
       case 'DepositFailedDepositChannelVariantAssethub': {
         const depositAddress = extractDepositAddress(details.depositWitness);
@@ -141,6 +136,8 @@ const depositFailed =
           return assertUnreachable(channel.type, 'unexpected deposit channel type');
         }
 
+        assert(!isLegacyChainflipAsset(asset), 'unexpected legacy asset');
+
         if ('depositDetails' in details.depositWitness) {
           txRef = getDepositTxRef(
             { chain, data: details.depositWitness.depositDetails } as DepositDetailsData,
@@ -157,7 +154,6 @@ const depositFailed =
       case 'DepositFailedVaultVariantArbitrum':
       case 'DepositFailedVaultVariantBitcoin':
       case 'DepositFailedVaultVariantEthereum':
-      case 'DepositFailedVaultVariantPolkadot':
       case 'DepositFailedVaultVariantSolana':
       case 'DepositFailedVaultVariantAssethub':
         if (details.__kind !== 'DepositFailedVaultVariantSolana') {

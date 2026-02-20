@@ -3,10 +3,13 @@ import {
   assetConstants,
   ChainflipAsset,
   chainflipAssets,
-  ChainflipChain,
   internalAssetToRpcAsset,
   readAssetValue,
   InternalAssetMap,
+  AnyChainflipAsset,
+  isLegacyChainflipAsset,
+  isLegacyChainflipChain,
+  AnyChainflipChain,
 } from '@chainflip/utils/chainflip';
 import { isNotNullish } from '@/shared/guards.js';
 import {
@@ -42,25 +45,28 @@ export const getMinimumEgressAmount = async (asset: ChainflipAsset): Promise<big
   return readAssetValue(environment.ingressEgress.minimumEgressAmounts, asset);
 };
 
-export const getWitnessSafetyMargin = async (chain: ChainflipChain): Promise<bigint | null> => {
+export const getWitnessSafetyMargin = async (chain: AnyChainflipChain): Promise<bigint | null> => {
+  if (isLegacyChainflipChain(chain)) return null;
+
   const environment = await cachedGetEnvironment(rpcConfig);
 
-  const result =
-    environment.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>];
+  const result = environment.ingressEgress.witnessSafetyMargins[chain];
 
   return result !== null ? BigInt(result) : null;
 };
 
-export const getBoostDelay = async (chain: ChainflipChain): Promise<number> => {
+export const getBoostDelay = async (chain: AnyChainflipChain): Promise<number> => {
+  if (isLegacyChainflipChain(chain)) return 0;
   const environment = await cachedGetEnvironment(rpcConfig);
-  return environment.ingressEgress.boostDelays?.[chain as Exclude<ChainflipChain, 'Polkadot'>] ?? 0;
+  return environment.ingressEgress.boostDelays?.[chain] ?? 0;
 };
 
-export const getIngressDelay = async (chain: ChainflipChain): Promise<number> => {
+export const getIngressDelay = async (chain: AnyChainflipChain): Promise<number> => {
+  if (isLegacyChainflipChain(chain)) return 0;
+
   const environment = await cachedGetEnvironment(rpcConfig);
 
-  const result =
-    environment.ingressEgress.ingressDelays?.[chain as Exclude<ChainflipChain, 'Polkadot'>];
+  const result = environment.ingressEgress.ingressDelays?.[chain];
 
   return isNotNullish(result) ? Number(result) : 0;
 };
@@ -78,12 +84,12 @@ export const getEgressFee = async (asset: ChainflipAsset): Promise<bigint | null
 };
 
 export const getRequiredBlockConfirmations = async (
-  asset: ChainflipAsset,
+  asset: AnyChainflipAsset,
 ): Promise<number | null> => {
+  if (isLegacyChainflipAsset(asset)) return null;
   const environment = await cachedGetEnvironment(rpcConfig);
   const { chain } = assetConstants[asset];
-  const safetyMargin =
-    environment.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>];
+  const safetyMargin = environment.ingressEgress.witnessSafetyMargins[chain];
 
   return safetyMargin ? Number(safetyMargin) + 1 : null;
 };
@@ -158,9 +164,7 @@ export const getLpBalances = async <T extends string>(
       const totalBalances = await client.sendRequest('lp_total_balances', id);
 
       const internalAssetMapBalances = Object.fromEntries(
-        chainflipAssets
-          .filter((a) => a !== 'Dot')
-          .map((asset) => [asset, readAssetValue(totalBalances, asset)]),
+        chainflipAssets.map((asset) => [asset, readAssetValue(totalBalances, asset)]),
       ) as InternalAssetMap<bigint>;
 
       return [id, internalAssetMapBalances] as const;

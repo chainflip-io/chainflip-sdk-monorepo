@@ -127,7 +127,7 @@ exports[`swapRequested > creates a new swap request (ON_CHAIN 11000) 1`] = `
   "depositFinalisedBlockIndex": null,
   "depositTransactionRef": null,
   "destAddress": "cFNzKSS48cZ1xQmdub2ykc2LUc5UZS2YjLaZBUvmxoXHjMMVh",
-  "destAsset": "Dot",
+  "destAsset": "HubDot",
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,

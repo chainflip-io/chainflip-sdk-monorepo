@@ -25,9 +25,7 @@ function assert(condition: unknown, message: string): asserts condition {
   }
 }
 
-const mapAssets = (
-  quotedAssets: Exclude<ChainflipAsset, 'Dot'>[] | null,
-): InternalAssetMap<boolean> => {
+const mapAssets = (quotedAssets: ChainflipAsset[] | null): InternalAssetMap<boolean> => {
   assert(quotedAssets === null || quotedAssets.length !== 0, 'no assets quoted');
 
   const map = createInternalAssetMap(false);
@@ -46,7 +44,7 @@ const authSchema = z.object({
   signature: z.string(),
   quoted_assets: z
     .array(assetAndChain.transform(getInternalAsset))
-    .transform((assets) => mapAssets(assets.filter(isNotNullish).filter((a) => a !== 'Dot'))),
+    .transform((assets) => mapAssets(assets.filter(isNotNullish))),
 });
 
 const parseKey = (key: string) => {

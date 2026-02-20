@@ -66,10 +66,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@chainflip/bitcoin": "2.1.0-beta.1",
-    "@chainflip/rpc": "2.1.0-beta.1",
-    "@chainflip/solana": "2.2.1-beta.0",
-    "@chainflip/utils": "2.1.0-beta.1",
+    "@chainflip/bitcoin": "2.1.1-beta.0",
+    "@chainflip/rpc": "2.1.1-beta.0",
+    "@chainflip/solana": "2.2.2-beta.0",
+    "@chainflip/utils": "2.1.2-beta.6",
     "@ts-rest/core": "^3.52.1",
     "axios": "^1.10.0",
     "bignumber.js": "^9.3.0",
