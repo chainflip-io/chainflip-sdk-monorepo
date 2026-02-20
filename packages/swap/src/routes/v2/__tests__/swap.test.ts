@@ -549,10 +549,10 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Assethub',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 132,
+        estimatedDurationSeconds: 127.5,
         estimatedDurationsSeconds: {
           deposit: 24,
-          egress: 96,
+          egress: 91.5,
           swap: 12,
         },
         depositChannel: {
@@ -583,10 +583,10 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Assethub',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 132,
+        estimatedDurationSeconds: 127.5,
         estimatedDurationsSeconds: {
           deposit: 24,
-          egress: 96,
+          egress: 91.5,
           swap: 12,
         },
         depositChannel: {
@@ -699,10 +699,10 @@ describe('server', () => {
         destAsset: 'DOT',
         destChain: 'Assethub',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 132,
+        estimatedDurationSeconds: 127.5,
         estimatedDurationsSeconds: {
           deposit: 24,
-          egress: 96,
+          egress: 91.5,
           swap: 12,
         },
         depositChannel: {
@@ -885,10 +885,10 @@ describe('server', () => {
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
           "destChain": "Assethub",
-          "estimatedDurationSeconds": 132,
+          "estimatedDurationSeconds": 127.5,
           "estimatedDurationsSeconds": {
             "deposit": 24,
-            "egress": 96,
+            "egress": 91.5,
             "swap": 12,
           },
           "fees": [],
