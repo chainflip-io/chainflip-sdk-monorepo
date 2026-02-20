@@ -15,12 +15,12 @@ const arrayToMap = <T extends string>(array: readonly T[]): { [K in T]: K } =>
   Object.fromEntries(array.map((item) => [item, item])) as { [K in T]: K };
 
 export const ChainflipNetworks = arrayToMap(chainflipNetworks);
-export const InternalAssets = arrayToMap(chainflipAssets.filter((asset) => asset !== 'Dot'));
-export const Chains = arrayToMap(chainflipChains.filter((chain) => chain !== 'Polkadot'));
+export const InternalAssets = arrayToMap(chainflipAssets);
+export const Chains = arrayToMap(chainflipChains);
 export const Assets = arrayToMap(assetSymbols);
 
-type Chain = Exclude<ChainflipChain, 'Polkadot'>;
-type InternalAsset = Exclude<ChainflipAsset, 'Dot'>;
+type Chain = ChainflipChain;
+type InternalAsset = ChainflipAsset;
 
 export type { Chain, InternalAsset };
 

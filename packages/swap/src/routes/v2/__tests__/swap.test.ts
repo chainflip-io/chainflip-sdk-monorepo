@@ -111,11 +111,11 @@ const swapEventMap = {
       sourceAsset: { __kind: 'Eth' },
       affiliateFees: [],
       depositAddress: { value: '0x6aa69332b63bb5b1d7ca5355387edd5624e181f2', __kind: 'Eth' },
-      destinationAsset: { __kind: 'Dot' },
+      destinationAsset: { __kind: 'HubDot' },
       channelOpeningFee: '0',
       destinationAddress: {
         value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-        __kind: 'Dot',
+        __kind: 'Hub',
       },
       brokerCommissionRate: 0,
       sourceChainExpiryBlock: '265',
@@ -146,14 +146,14 @@ const swapEventMap = {
       brokerFees: [],
       inputAsset: { __kind: 'Eth' },
       inputAmount: '4999949999999650000',
-      outputAsset: { __kind: 'Dot' },
+      outputAsset: { __kind: 'HubDot' },
       requestType: {
         __kind: 'Regular',
         outputAction: {
           __kind: 'Egress',
           outputAddress: {
             value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-            __kind: 'Dot',
+            __kind: 'Hub',
           },
         },
       },
@@ -239,7 +239,7 @@ const swapEventMap = {
       inputAsset: { __kind: 'Eth' },
       networkFee: '4556242',
       inputAmount: '4999949999999650000',
-      outputAsset: { __kind: 'Dot' },
+      outputAsset: { __kind: 'HubDot' },
       outputAmount: '4192904666034',
       swapRequestId: '368',
       intermediateAmount: '4506169140',
@@ -252,10 +252,10 @@ const swapEventMap = {
     indexInBlock: 595,
     name: 'Swapping.SwapEgressScheduled',
     args: check<SwapEgressScheduledArgs>({
-      asset: { __kind: 'Dot' },
+      asset: { __kind: 'HubDot' },
       amount: '4192707216034',
-      egressId: [{ __kind: 'Polkadot' }, '19'],
-      egressFee: ['197450000', { __kind: 'Dot' }],
+      egressId: [{ __kind: 'Assethub' }, '19'],
+      egressFee: ['197450000', { __kind: 'HubDot' }],
       swapRequestId: '368',
     }),
   },
@@ -266,13 +266,13 @@ const swapEventMap = {
     name: 'Swapping.SwapRequestCompleted',
     args: check<SwapRequestCompletedArgs>({ swapRequestId: '368', reason: { __kind: 'Executed' } }),
   },
-  'PolkadotIngressEgress.BatchBroadcastRequested': {
+  'AssethubIngressEgress.BatchBroadcastRequested': {
     id: '0000000094-000843-75b12',
     blockId: '0000000094-75b12',
     indexInBlock: 843,
-    name: 'PolkadotIngressEgress.BatchBroadcastRequested',
-    args: check<BatchBroadcastRequestedArgsMap['Polkadot']>({
-      egressIds: [[{ __kind: 'Polkadot' }, '19']],
+    name: 'AssethubIngressEgress.BatchBroadcastRequested',
+    args: check<BatchBroadcastRequestedArgsMap['Assethub']>({
+      egressIds: [[{ __kind: 'Assethub' }, '19']],
       broadcastId: 7,
     }),
   },
@@ -300,12 +300,12 @@ const swapEventMap = {
       refundFee: '2658298',
     }),
   },
-  'PolkadotBroadcaster.BroadcastSuccess': {
+  'AssethubBroadcaster.BroadcastSuccess': {
     id: '0000000104-000007-5dbb8',
     blockId: '0000000104-5dbb8',
     indexInBlock: 7,
-    name: 'PolkadotBroadcaster.BroadcastSuccess',
-    args: check<BroadcastSuccessArgsMap['Polkadot']>({
+    name: 'AssethubBroadcaster.BroadcastSuccess',
+    args: check<BroadcastSuccessArgsMap['Assethub']>({
       broadcastId: 7,
       transactionRef: { blockNumber: 104, extrinsicIndex: 2 },
       transactionOutId:
@@ -326,12 +326,12 @@ const swapEventMap = {
       },
     }),
   },
-  'PolkadotBroadcaster.BroadcastAborted': {
+  'AssethubBroadcaster.BroadcastAborted': {
     id: '0000000104-000007-5dbb8',
     blockId: '0000000104-5dbb8',
     indexInBlock: 7,
-    name: 'PolkadotBroadcaster.BroadcastAborted',
-    args: check<BroadcastAbortedArgsMap['Polkadot']>({
+    name: 'AssethubBroadcaster.BroadcastAborted',
+    args: check<BroadcastAbortedArgsMap['Assethub']>({
       broadcastId: 7,
     }),
   },
@@ -386,13 +386,13 @@ const swapEventMap = {
         vaultWitness: {
           txId: '0xcafebabe',
           inputAsset: { __kind: 'Eth' },
-          outputAsset: { __kind: 'Dot' },
+          outputAsset: { __kind: 'HubDot' },
           depositAmount: '100000000000000',
           depositDetails: {
             txHashes: ['0xfae1ed'],
           },
           destinationAddress: {
-            __kind: 'Dot',
+            __kind: 'Hub',
             value: '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
           },
           boostFee: 0,
@@ -425,9 +425,9 @@ const swapEvents = [
   // 6
   swapEventMap['Swapping.SwapRequestCompleted'],
   // 7
-  swapEventMap['PolkadotIngressEgress.BatchBroadcastRequested'],
+  swapEventMap['AssethubIngressEgress.BatchBroadcastRequested'],
   // 8
-  swapEventMap['PolkadotBroadcaster.BroadcastSuccess'],
+  swapEventMap['AssethubBroadcaster.BroadcastSuccess'],
   // 9
 ] as const;
 
@@ -547,12 +547,12 @@ describe('server', () => {
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
-        destChain: 'Polkadot',
+        destChain: 'Assethub',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 129,
+        estimatedDurationSeconds: 132,
         estimatedDurationsSeconds: {
           deposit: 24,
-          egress: 93,
+          egress: 96,
           swap: 12,
         },
         depositChannel: {
@@ -581,12 +581,12 @@ describe('server', () => {
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
-        destChain: 'Polkadot',
+        destChain: 'Assethub',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 129,
+        estimatedDurationSeconds: 132,
         estimatedDurationsSeconds: {
           deposit: 24,
-          egress: 93,
+          egress: 96,
           swap: 12,
         },
         depositChannel: {
@@ -697,12 +697,12 @@ describe('server', () => {
         srcAsset: 'ETH',
         srcChain: 'Ethereum',
         destAsset: 'DOT',
-        destChain: 'Polkadot',
+        destChain: 'Assethub',
         destAddress: '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-        estimatedDurationSeconds: 129,
+        estimatedDurationSeconds: 132,
         estimatedDurationsSeconds: {
           deposit: 24,
-          egress: 93,
+          egress: 96,
           swap: 12,
         },
         depositChannel: {
@@ -787,7 +787,7 @@ describe('server', () => {
       const { swapId, ...rest } = body;
 
       expect(rest).toMatchSnapshot();
-      expect(getPendingBroadcast).toBeCalledWith(expect.objectContaining({ chain: 'Polkadot' }));
+      expect(getPendingBroadcast).toBeCalledWith(expect.objectContaining({ chain: 'Assethub' }));
     });
 
     it(`retrieves a swap in ${StateV2.Completed} status`, async () => {
@@ -820,7 +820,7 @@ describe('server', () => {
     it(`retrieves a swap in ${StateV2.Failed} status`, async () => {
       await processEvents([
         ...swapEvents.slice(0, 8),
-        swapEventMap['PolkadotBroadcaster.BroadcastAborted'],
+        swapEventMap['AssethubBroadcaster.BroadcastAborted'],
       ]);
 
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
@@ -884,11 +884,11 @@ describe('server', () => {
           },
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
           "destAsset": "DOT",
-          "destChain": "Polkadot",
-          "estimatedDurationSeconds": 129,
+          "destChain": "Assethub",
+          "estimatedDurationSeconds": 132,
           "estimatedDurationsSeconds": {
             "deposit": 24,
-            "egress": 93,
+            "egress": 96,
             "swap": 12,
           },
           "fees": [],
@@ -1187,7 +1187,7 @@ describe('server', () => {
           depositAmount: '100000',
           destAddress: '0x1234',
           reason: 'BelowMinimumDeposit',
-          destChain: 'Polkadot',
+          destChain: 'Assethub',
           srcChain: 'Ethereum',
           srcAsset: 'Eth',
           failedAt: new Date(),
@@ -1922,7 +1922,7 @@ describe('server', () => {
         incrementId(scheduledEvent),
         incrementId(executedEvent),
         ...swapEvents.slice(5, 8),
-        swapEventMap['PolkadotBroadcaster.BroadcastAborted'],
+        swapEventMap['AssethubBroadcaster.BroadcastAborted'],
       ]);
 
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
@@ -1978,9 +1978,9 @@ describe('server', () => {
         incrementId(executedEvent),
         swapEventMap['Swapping.SwapEgressScheduled'],
         swapEventMap['Swapping.RefundEgressScheduled'],
-        swapEventMap['PolkadotIngressEgress.BatchBroadcastRequested'],
+        swapEventMap['AssethubIngressEgress.BatchBroadcastRequested'],
         swapEventMap['Swapping.RefundEgressIgnored'],
-        swapEventMap['PolkadotBroadcaster.BroadcastSuccess'],
+        swapEventMap['AssethubBroadcaster.BroadcastSuccess'],
       ]);
 
       const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
@@ -2018,9 +2018,9 @@ describe('server', () => {
         incrementId(executedEvent),
         swapEventMap['Swapping.SwapEgressScheduled'],
         swapEventMap['Swapping.RefundEgressScheduled'],
-        swapEventMap['PolkadotIngressEgress.BatchBroadcastRequested'],
+        swapEventMap['AssethubIngressEgress.BatchBroadcastRequested'],
         swapEventMap['Swapping.RefundEgressIgnored'],
-        swapEventMap['PolkadotBroadcaster.BroadcastSuccess'],
+        swapEventMap['AssethubBroadcaster.BroadcastSuccess'],
       ]);
 
       const { body } = await request(server).get(`/v2/swaps/${channelId}`);

@@ -12,15 +12,14 @@ export default class Leg {
   static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint | null): Leg | null;
   static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint | null) {
     if (amount === null) return null;
-    assert(srcAsset !== 'Dot' && destAsset !== 'Dot', 'Dot is not supported anymore');
     assert(srcAsset !== destAsset, 'srcAsset and destAsset must be different');
     assert(srcAsset === 'Usdc' || destAsset === 'Usdc', 'one of the assets must be Usdc');
     return new Leg(srcAsset, destAsset, amount);
   }
 
   private constructor(
-    private readonly srcAsset: Exclude<ChainflipAsset, 'Dot'>,
-    private readonly destAsset: Exclude<ChainflipAsset, 'Dot'>,
+    private readonly srcAsset: ChainflipAsset,
+    private readonly destAsset: ChainflipAsset,
     public amount: bigint,
   ) {}
 
@@ -28,7 +27,7 @@ export default class Leg {
     return this.destAsset !== 'Usdc' ? 'BUY' : 'SELL';
   }
 
-  getBaseAsset(): Exclude<BaseChainflipAsset, 'Dot'> {
+  getBaseAsset(): BaseChainflipAsset {
     if (this.destAsset !== 'Usdc') return this.destAsset;
 
     if (this.srcAsset !== 'Usdc') return this.srcAsset;
@@ -38,7 +37,7 @@ export default class Leg {
 
   toJSON(): LegJson {
     const side = this.getSide();
-    let baseAsset: Exclude<BaseChainflipAsset, 'Dot'>;
+    let baseAsset: BaseChainflipAsset;
 
     if (this.destAsset !== 'Usdc') {
       baseAsset = this.destAsset;

@@ -4,7 +4,6 @@ import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/1120
 import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
 import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/11200/common';
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/11200/ethereumIngressEgress/depositFinalised';
-import { polkadotIngressEgressDepositFinalised } from '@chainflip/processor/11200/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/11200/solanaIngressEgress/depositFinalised';
 import * as base58 from '@chainflip/utils/base58';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
@@ -88,7 +87,6 @@ export type DepositDetailsData = {
     data: {
       Bitcoin: z.output<typeof bitcoinIngressEgressDepositFinalised>;
       Ethereum: z.output<typeof ethereumIngressEgressDepositFinalised>;
-      Polkadot: z.output<typeof polkadotIngressEgressDepositFinalised>;
       Arbitrum: z.output<typeof arbitrumIngressEgressDepositFinalised>;
       Solana: z.output<typeof solanaIngressEgressDepositFinalised> | { depositDetails: undefined };
       Assethub: z.output<typeof assethubIngressEgressDepositFinalised>;
@@ -114,7 +112,6 @@ export const getDepositTxRef = (
     case 'Bitcoin':
       return formatTxRef({ chain: depositDetails.chain, data: depositDetails.data.id.txId });
     case 'Assethub':
-    case 'Polkadot':
       if (blockHeight === undefined) return undefined;
       return formatTxRef({
         chain: depositDetails.chain,

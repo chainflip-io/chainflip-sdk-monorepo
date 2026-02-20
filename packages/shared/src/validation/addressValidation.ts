@@ -39,7 +39,6 @@ const validators: Record<
   mainnet: {
     Bitcoin: validateBitcoinMainnetAddress,
     Ethereum: validateEvmAddress,
-    Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
@@ -47,7 +46,6 @@ const validators: Record<
   perseverance: {
     Bitcoin: validateBitcoinTestnetAddress,
     Ethereum: validateEvmAddress,
-    Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
@@ -55,7 +53,6 @@ const validators: Record<
   sisyphos: {
     Bitcoin: validateBitcoinTestnetAddress,
     Ethereum: validateEvmAddress,
-    Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
@@ -63,7 +60,6 @@ const validators: Record<
   backspin: {
     Bitcoin: validateBitcoinRegtestAddress,
     Ethereum: validateEvmAddress,
-    Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
@@ -71,7 +67,6 @@ const validators: Record<
   localnet: {
     Bitcoin: validateBitcoinRegtestAddress,
     Ethereum: validateEvmAddress,
-    Polkadot: validatePolkadotAddress,
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,

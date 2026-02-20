@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
-import { assetConstants, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import {
+  assetConstants,
+  ChainflipAsset,
+  internalAssetToRpcAsset,
+} from '@chainflip/utils/chainflip';
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
@@ -19,7 +23,7 @@ import {
   RegularBoostQuote,
 } from '@/shared/schemas.js';
 import type Quoter from './Quoter.js';
-import { InternalAsset, Pool } from '../client.js';
+import { Pool } from '../client.js';
 import { RpcLimitOrder } from './Quoter.js';
 import env from '../config/env.js';
 import { getBoostSafeMode } from '../polkadot/api.js';
@@ -103,8 +107,8 @@ export default class QuoteRequest {
     return new QuoteRequest(quoter, { pools, ...queryResult.data });
   }
 
-  private readonly srcAsset: Exclude<InternalAsset, 'Dot'>;
-  private readonly destAsset: Exclude<InternalAsset, 'Dot'>;
+  private readonly srcAsset: ChainflipAsset;
+  private readonly destAsset: ChainflipAsset;
   private readonly depositAmount: bigint;
   private readonly dcaEnabled: boolean;
   private readonly dcaV2Available: boolean;
@@ -335,8 +339,8 @@ export default class QuoteRequest {
     includedFees.push({ ...egressFee, type: 'EGRESS' });
 
     const poolInfo = getPoolFees(this.srcAsset, this.destAsset).map(({ type, ...fee }, i) => ({
-      baseAsset: internalAssetToRpcAsset[this.pools[i].baseAsset],
-      quoteAsset: internalAssetToRpcAsset[this.pools[i].quoteAsset],
+      baseAsset: internalAssetToRpcAsset[this.pools[i].baseAsset as ChainflipAsset],
+      quoteAsset: internalAssetToRpcAsset[this.pools[i].quoteAsset as ChainflipAsset],
       fee,
     }));
 
@@ -402,8 +406,8 @@ export default class QuoteRequest {
   }
 
   private async getTotalLiquidity(
-    from: Exclude<InternalAsset, 'Dot'>,
-    to: Exclude<InternalAsset, 'Dot'>,
+    from: ChainflipAsset,
+    to: ChainflipAsset,
     type: Quote['type'],
   ): Promise<bigint> {
     assert(from === 'Usdc' || to === 'Usdc', 'one asset must be USDC');

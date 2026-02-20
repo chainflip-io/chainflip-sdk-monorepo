@@ -30,7 +30,7 @@ describe(refundEgressIgnored, () => {
         depositFinalisedAt: new Date(block.timestamp - 12000),
         depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
-        destAsset: 'Dot',
+        destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
         requestType: 'LEGACY_SWAP',
         originType: 'DEPOSIT_CHANNEL',

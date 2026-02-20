@@ -1,5 +1,5 @@
 import { HttpClient, RpcMethod, RpcParams, RpcResult, constants } from '@chainflip/rpc';
-import { ChainflipAsset, ChainflipNetwork, getInternalAsset } from '@chainflip/utils/chainflip';
+import { ChainflipNetwork, getInternalAsset } from '@chainflip/utils/chainflip';
 
 type CamelCase<T> = T extends string
   ? T extends `${infer F}_${infer R}`
@@ -83,12 +83,10 @@ export const getAccounts = createRequest('cf_accounts');
 export const getAccountInfo = createRequest('cf_account_info');
 
 export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_depth'), (result) =>
-  result
-    .filter(({ chain }) => chain !== 'Polkadot')
-    .map(({ chain, asset, ...rest }) => ({
-      asset: getInternalAsset({ chain, asset }) as Exclude<ChainflipAsset, 'Dot'>,
-      ...rest,
-    })),
+  result.map(({ chain, asset, ...rest }) => ({
+    asset: getInternalAsset({ chain, asset }),
+    ...rest,
+  })),
 );
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;

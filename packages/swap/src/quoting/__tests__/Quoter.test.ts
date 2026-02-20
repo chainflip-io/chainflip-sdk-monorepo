@@ -4,6 +4,7 @@ import {
   internalAssetToRpcAsset,
   InternalAssetMap,
   chainflipAssets,
+  ChainflipAsset,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import * as crypto from 'crypto';
@@ -33,9 +34,9 @@ vi.mock('../../utils/statechain', () => ({
   ),
 }));
 
-function toAtomicUnits(amount: number, asset: InternalAsset, output?: 'string'): string;
-function toAtomicUnits(amount: number, asset: InternalAsset, output: 'bigint'): bigint;
-function toAtomicUnits(amount: number, asset: InternalAsset, output: string | bigint = 'string') {
+function toAtomicUnits(amount: number, asset: ChainflipAsset, output?: 'string'): string;
+function toAtomicUnits(amount: number, asset: ChainflipAsset, output: 'bigint'): bigint;
+function toAtomicUnits(amount: number, asset: ChainflipAsset, output: string | bigint = 'string') {
   const amt = new BigNumber(amount).shiftedBy(assetConstants[asset].decimals).toFixed(0);
 
   return output === 'string' ? amt : BigInt(amt);
@@ -46,7 +47,7 @@ describe(Quoter, () => {
   let quoter: Quoter;
   let connectClient: (opts: {
     name: string;
-    quotedAssets: InternalAsset[];
+    quotedAssets: ChainflipAsset[];
     beta?: boolean;
     mevFactors?: {
       buy?: Partial<InternalAssetMap<number>>;
@@ -56,8 +57,8 @@ describe(Quoter, () => {
   }) => Promise<{
     sendQuote: (
       quote: MarketMakerRawQuote,
-      srcAsset?: InternalAsset,
-      destAsset?: InternalAsset,
+      srcAsset?: ChainflipAsset,
+      destAsset?: ChainflipAsset,
     ) => RpcLimitOrder[];
     socket: Socket;
     requestCount: number;
@@ -99,7 +100,7 @@ describe(Quoter, () => {
                   ),
                   ...Object.keys(replenishmentFactors ?? {}).map((asset) => ({
                     asset: asset as InternalAsset,
-                    factor: replenishmentFactors![asset as Exclude<InternalAsset, 'Dot'>] as number,
+                    factor: replenishmentFactors![asset as ChainflipAsset] as number,
                     type: 'REPLENISHMENT' as const,
                   })),
                 ],
@@ -577,13 +578,11 @@ describe(Quoter, () => {
       });
       expect(quoter.getReplenishmentFactor('Btc')).toStrictEqual([3n, 2n]);
       // ignores non-quoted assets
-      chainflipAssets
-        .filter((a) => a !== 'Dot')
-        .forEach((asset) => {
-          if (asset !== 'Btc') {
-            expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
-          }
-        });
+      chainflipAssets.forEach((asset) => {
+        if (asset !== 'Btc') {
+          expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
+        }
+      });
       await connectClient({
         name: 'marketMaker1',
         quotedAssets: ['Btc', 'Flip'],
@@ -592,13 +591,11 @@ describe(Quoter, () => {
       // 1.5 + 2.82
       expect(quoter.getReplenishmentFactor('Btc')).toStrictEqual([108n, 25n]);
       expect(quoter.getReplenishmentFactor('Flip')).toStrictEqual([10n, 1n]);
-      chainflipAssets
-        .filter((a) => a !== 'Dot')
-        .forEach((asset) => {
-          if (asset !== 'Btc' && asset !== 'Flip') {
-            expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
-          }
-        });
+      chainflipAssets.forEach((asset) => {
+        if (asset !== 'Btc' && asset !== 'Flip') {
+          expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
+        }
+      });
     });
 
     it('ignores replenishment factors < 0', async () => {
@@ -627,21 +624,18 @@ describe(Quoter, () => {
 
 describe('approximateIntermediateOutput', () => {
   it.each([
-    ['Dot', 6.5],
+    ['HubDot', 6.5],
     ['Usdt', 1],
     ['Btc', 65_000],
     ['Flip', 4],
     ['Eth', 2_000],
-  ] as [InternalAsset, number][])(
-    'correctly approximates the USD value of %s',
-    async (asset, price) => {
-      const oneInAtomicUnits = toAtomicUnits(1, asset);
+  ] as const)('correctly approximates the USD value of %s', async (asset, price) => {
+    const oneInAtomicUnits = toAtomicUnits(1, asset);
 
-      const actual = await approximateIntermediateOutput(asset, oneInAtomicUnits);
+    const actual = await approximateIntermediateOutput(asset, oneInAtomicUnits);
 
-      const expected = toAtomicUnits(price, 'Usdc', 'bigint');
+    const expected = toAtomicUnits(price, 'Usdc', 'bigint');
 
-      expect(actual).toEqual(expected);
-    },
-  );
+    expect(actual).toEqual(expected);
+  });
 });

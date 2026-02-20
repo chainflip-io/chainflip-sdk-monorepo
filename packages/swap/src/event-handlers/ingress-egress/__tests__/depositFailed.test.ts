@@ -30,9 +30,9 @@ const ethDepositFailedMock = buildDepositFailedEvent({
 const dotDepositFailedMock = buildDepositFailedEvent({
   reason: { __kind: 'BelowMinimumDeposit' },
   details: {
-    __kind: 'DepositFailedDepositChannelVariantPolkadot',
+    __kind: 'DepositFailedDepositChannelVariantAssethub',
     depositWitness: {
-      asset: { __kind: 'Dot' },
+      asset: { __kind: 'HubDot' },
       amount: '190000000000',
       depositAddress: bytesToHex(ss58.decode(DOT_ADDRESS).data),
       depositDetails: 2,
@@ -144,7 +144,7 @@ describe(networkDepositFailed, () => {
         srcChain: 'Ethereum',
         depositAddress: ETH_ADDRESS,
         channelId: 99n,
-        destAsset: 'Dot',
+        destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
       });
 
@@ -167,7 +167,7 @@ describe(networkDepositFailed, () => {
           "depositAmount": "100000000000000",
           "depositTransactionRef": "0x1234",
           "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-          "destAsset": "Dot",
+          "destAsset": "HubDot",
           "destChain": "Ethereum",
           "failedAt": 2022-12-06T14:31:33.000Z,
           "failedBlockIndex": "100-0",
@@ -183,7 +183,7 @@ describe(networkDepositFailed, () => {
     it('handles failed dot deposits', async () => {
       const channel = await createDepositChannel({
         id: 100n,
-        srcChain: 'Polkadot',
+        srcChain: 'Assethub',
         depositAddress: DOT_ADDRESS,
         channelId: 99n,
         destAsset: 'Eth',
@@ -192,7 +192,7 @@ describe(networkDepositFailed, () => {
 
       await createGenericChannel(channel);
 
-      await networkDepositFailed('Polkadot')({
+      await networkDepositFailed('Assethub')({
         prisma,
         ...dotDepositFailedMock,
       });
@@ -217,7 +217,7 @@ describe(networkDepositFailed, () => {
           "refundBroadcastId": null,
           "refundEgressId": null,
           "srcAsset": "Eth",
-          "srcChain": "Polkadot",
+          "srcChain": "Assethub",
         }
       `);
     });

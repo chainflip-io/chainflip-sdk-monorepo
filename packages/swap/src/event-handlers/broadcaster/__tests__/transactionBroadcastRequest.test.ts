@@ -1,12 +1,13 @@
 /* eslint-disable @vitest/expect-expect */
+import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { describe, it, expect, beforeEach } from 'vitest';
-import prisma, { Chain } from '../../../client.js';
+import prisma from '../../../client.js';
 import { transactionBroadcastRequestBtcMockV2 } from '../../__tests__/utils.js';
 import transactionBroadcastRequest, {
   type TransactionBroadcastRequestArgsMap,
 } from '../transactionBroadcastRequest.js';
 
-const genericTest = async <const C extends Chain>(
+const genericTest = async <const C extends ChainflipChain>(
   chain: C,
   args: TransactionBroadcastRequestArgsMap[C],
 ) => {
@@ -79,8 +80,8 @@ describe(transactionBroadcastRequest, () => {
     });
   });
 
-  it('handles Polkadot event', async () => {
-    await genericTest('Polkadot', {
+  it('handles Assethub event', async () => {
+    await genericTest('Assethub', {
       nominee: '0x78ce2b0a2754e8b13b0785bb73675406648a53e1e442b72f7f105f4e28b7697c',
       transactionOutId: '0x6d40ae184678785c43304a28267b85e0bbd8cec9d66f4832607e92bb660d954c',
       broadcastId: 1,

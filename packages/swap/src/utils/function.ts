@@ -1,4 +1,4 @@
-import { chainConstants, ChainflipChain } from '@chainflip/utils/chainflip';
+import { anyChainConstants, AnyChainflipChain } from '@chainflip/utils/chainflip';
 import * as rpc from '@/shared/rpc/index.js';
 import logger from './logger.js';
 import env from '../config/env.js';
@@ -44,7 +44,7 @@ export const handleExit = (cb: AnyFunction) => {
 
 export function calculateExpiryTime(args: {
   chainInfo?: {
-    chain: ChainflipChain;
+    chain: AnyChainflipChain;
     height: bigint;
     blockTrackedAt: Date;
   } | null;
@@ -57,7 +57,7 @@ export function calculateExpiryTime(args: {
   }
 
   const remainingBlocks = Number(expiryBlock - chainInfo.height); // If it is negative, it means the channel has already expired and will return the time from the past
-  const { blockTimeSeconds } = chainConstants[chainInfo.chain];
+  const { blockTimeSeconds } = anyChainConstants[chainInfo.chain];
 
   return new Date(chainInfo.blockTrackedAt.getTime() + remainingBlocks * blockTimeSeconds * 1000);
 }

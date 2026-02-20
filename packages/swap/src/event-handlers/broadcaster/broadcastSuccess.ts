@@ -1,6 +1,5 @@
 import { bitcoinBroadcasterBroadcastSuccess } from '@chainflip/processor/131/bitcoinBroadcaster/broadcastSuccess';
 import { ethereumBroadcasterBroadcastSuccess } from '@chainflip/processor/131/ethereumBroadcaster/broadcastSuccess';
-import { polkadotBroadcasterBroadcastSuccess } from '@chainflip/processor/131/polkadotBroadcaster/broadcastSuccess';
 import { arbitrumBroadcasterBroadcastSuccess } from '@chainflip/processor/141/arbitrumBroadcaster/broadcastSuccess';
 import { solanaBroadcasterBroadcastSuccess } from '@chainflip/processor/160/solanaBroadcaster/broadcastSuccess';
 import { assethubBroadcasterBroadcastSuccess } from '@chainflip/processor/190/assethubBroadcaster/broadcastSuccess';
@@ -21,10 +20,6 @@ const schemas = {
   Ethereum: ethereumBroadcasterBroadcastSuccess.transform((args) => ({
     ...args,
     transactionRef: formatTxRef({ chain: 'Ethereum' as const, data: args.transactionRef }),
-  })),
-  Polkadot: polkadotBroadcasterBroadcastSuccess.transform((args) => ({
-    ...args,
-    transactionRef: formatTxRef({ chain: 'Polkadot' as const, data: args.transactionRef }),
   })),
   Solana: solanaBroadcasterBroadcastSuccess.transform((args) => ({
     ...args,

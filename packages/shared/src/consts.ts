@@ -1,10 +1,9 @@
 import {
-  ChainflipAsset,
   ChainflipChain,
   ChainflipNetwork,
+  InternalAssetMap,
   type PriceAsset,
 } from '@chainflip/utils/chainflip';
-import { isTestnet } from '@/shared/functions.js';
 
 const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   backspin: 10997, // backspin ethereum
@@ -100,7 +99,7 @@ export const MAX_TICK = -MIN_TICK;
 
 export const FULL_TICK_RANGE = { start: MIN_TICK, end: MAX_TICK };
 
-export const chainflipAssetToPriceAssetMap: Record<ChainflipAsset, PriceAsset | null> = {
+export const chainflipAssetToPriceAssetMap: InternalAssetMap<PriceAsset | null> = {
   Btc: 'Btc',
   Eth: 'Eth',
   Sol: 'Sol',
@@ -113,13 +112,7 @@ export const chainflipAssetToPriceAssetMap: Record<ChainflipAsset, PriceAsset | 
   SolUsdc: 'Usdc',
   SolUsdt: 'Usdt',
   Flip: null,
-  Dot: null,
   HubDot: null,
   HubUsdc: null,
   HubUsdt: null,
 };
-
-// we probably dont need this anymore, but leaving it here for now just to be safe. yeet later
-export const ASSET_BLACKLIST: readonly ChainflipAsset[] = ['Dot'];
-export const envSafeAssetBlacklist = (network: ChainflipNetwork) =>
-  isTestnet(network) ? ASSET_BLACKLIST : ASSET_BLACKLIST;

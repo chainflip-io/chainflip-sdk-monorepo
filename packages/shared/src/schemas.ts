@@ -69,15 +69,6 @@ export const quoteQuerySchema = z
       hadError = true;
     }
 
-    if (srcAsset === 'Dot' || destAsset === 'Dot') {
-      ctx.addIssue({
-        message: 'Dot is not supported',
-        code: z.ZodIssueCode.custom,
-      });
-
-      hadError = true;
-    }
-
     if (args.ccmGasBudget !== undefined && args.ccmMessageLengthBytes === undefined) {
       ctx.addIssue({
         message: `ccmMessageLengthBytes must be set if ccmGasBudget is set`,
@@ -105,6 +96,15 @@ export const quoteQuerySchema = z
       hadError = true;
     }
 
+    if (args.isVaultSwap && args.srcChain === 'Assethub') {
+      ctx.addIssue({
+        message: 'Vault swaps are not supported on Assethub',
+        code: z.ZodIssueCode.custom,
+      });
+
+      hadError = true;
+    }
+
     if (args.isOnChain && args.brokerCommissionBps !== undefined && args.brokerCommissionBps > 0) {
       ctx.addIssue({
         message: 'isOnChain cannot be set with a non-zero broker commission',
@@ -122,8 +122,8 @@ export const quoteQuerySchema = z
         : undefined;
 
     return {
-      srcAsset: srcAsset as Exclude<ChainflipAsset, 'Dot'>,
-      destAsset: destAsset as Exclude<ChainflipAsset, 'Dot'>,
+      srcAsset: srcAsset as ChainflipAsset,
+      destAsset: destAsset as ChainflipAsset,
       amount: args.amount,
       brokerCommissionBps: args.brokerCommissionBps,
       ccmParams,
@@ -201,8 +201,8 @@ export type PaidFee = SwapFee | PoolFee;
 export type QuoteType = 'REGULAR' | 'DCA';
 
 export type PoolInfo = {
-  baseAsset: Exclude<AssetAndChain, { chain: 'Polkadot' }>;
-  quoteAsset: Exclude<AssetAndChain, { chain: 'Polkadot' }>;
+  baseAsset: AssetAndChain;
+  quoteAsset: AssetAndChain;
   fee: Omit<PoolFee, 'type'>;
 };
 
@@ -212,8 +212,8 @@ export type BoostedQuoteDetails = {
 };
 
 interface BaseQuoteDetails {
-  srcAsset: Exclude<AssetAndChain, { chain: 'Polkadot' }>;
-  destAsset: Exclude<AssetAndChain, { chain: 'Polkadot' }>;
+  srcAsset: AssetAndChain;
+  destAsset: AssetAndChain;
   isVaultSwap: boolean;
   isOnChain: boolean;
   ccmParams?: {

@@ -2,7 +2,6 @@ import { arbitrumIngressEgressDepositFinalised as arbitrumSchema11200 } from '@c
 import { assethubIngressEgressDepositFinalised as assethubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised as ethereumSchema11200 } from '@chainflip/processor/11200/ethereumIngressEgress/depositFinalised';
-import { polkadotIngressEgressDepositFinalised as polkadotSchema11200 } from '@chainflip/processor/11200/polkadotIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised as solanaSchema11200 } from '@chainflip/processor/11200/solanaIngressEgress/depositFinalised';
 import { arbitrumIngressEgressDepositFinalised as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositFinalised';
@@ -39,12 +38,6 @@ const ethereumSchema = z
       args.depositAddress &&
       formatForeignChainAddress({ __kind: 'Eth', value: args.depositAddress }),
   }));
-const polkadotSchema = polkadotSchema11200.transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Polkadot' as const, data: args.depositDetails },
-  depositAddress:
-    args.depositAddress && formatForeignChainAddress({ __kind: 'Dot', value: args.depositAddress }),
-}));
 const solanaSchema = z
   .union([solanaSchema210.strict(), solanaSchema11200.strict()])
   .transform((args) => ({
@@ -66,7 +59,6 @@ const depositFinalisedSchema = {
   Arbitrum: arbitrumSchema,
   Bitcoin: bitcoinSchema,
   Ethereum: ethereumSchema,
-  Polkadot: polkadotSchema,
   Assethub: assethubSchema,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 

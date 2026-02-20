@@ -1,8 +1,9 @@
 import {
   assetConstants,
-  ChainflipAsset,
   getInternalAsset,
   ChainflipNetwork,
+  AnyChainflipAsset,
+  anyAssetConstants,
 } from '@chainflip/utils/chainflip';
 import { CHAINFLIP_BLOCK_TIME_SECONDS } from '@chainflip/utils/consts';
 import BigNumber from 'bignumber.js';
@@ -43,22 +44,22 @@ export const getHundredthPipAmountFromAmount = (amount: bigint, hundredthPips: n
 
 export const getPriceX128FromPrice = (
   price: number | string,
-  srcAsset: ChainflipAsset,
-  destAsset: ChainflipAsset,
+  srcAsset: AnyChainflipAsset,
+  destAsset: AnyChainflipAsset,
 ) =>
   BigNumber(price)
     .multipliedBy(new BigNumber(2).pow(128))
-    .shiftedBy(assetConstants[destAsset].decimals - assetConstants[srcAsset].decimals)
+    .shiftedBy(anyAssetConstants[destAsset].decimals - anyAssetConstants[srcAsset].decimals)
     .toFixed(0);
 
 export const getPriceFromPriceX128 = (
   priceX128: bigint | string,
-  srcAsset: ChainflipAsset,
-  destAsset: ChainflipAsset,
+  srcAsset: AnyChainflipAsset,
+  destAsset: AnyChainflipAsset,
 ) =>
   BigNumber(priceX128.toString())
     .dividedBy(new BigNumber(2).pow(128))
-    .shiftedBy(assetConstants[srcAsset].decimals - assetConstants[destAsset].decimals)
+    .shiftedBy(anyAssetConstants[srcAsset].decimals - anyAssetConstants[destAsset].decimals)
     .toFixed();
 
 export const assertUnreachable = (_: never, message = 'unreachable'): never => {

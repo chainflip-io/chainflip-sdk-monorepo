@@ -444,7 +444,7 @@ describe(broker.requestSwapDepositAddress, () => {
       broker.requestSwapDepositAddress(
         {
           srcAsset: { asset: 'ETH', chain: 'Ethereum' },
-          destAsset: { asset: 'DOT', chain: 'Polkadot' },
+          destAsset: { asset: 'DOT', chain: 'Assethub' },
           destAddress,
           fillOrKillParams: {
             retryDurationBlocks: 500,
@@ -466,7 +466,7 @@ describe(broker.requestSwapDepositAddress, () => {
     await expect(
       broker.requestSwapDepositAddress(
         {
-          srcAsset: { asset: 'DOT', chain: 'Polkadot' },
+          srcAsset: { asset: 'DOT', chain: 'Assethub' },
           destAsset: { asset: 'ETH', chain: 'Ethereum' },
           destAddress: '0xb853Fd0303aAc70196E36758dB4754147BC73b32',
           fillOrKillParams: {
