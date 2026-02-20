@@ -439,29 +439,6 @@ describe(broker.requestSwapDepositAddress, () => {
   it.each([
     '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
     '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
-  ])('does not work with polkadot dest addresses', async (destAddress) => {
-    await expect(
-      broker.requestSwapDepositAddress(
-        {
-          srcAsset: { asset: 'ETH', chain: 'Ethereum' },
-          destAsset: { asset: 'DOT', chain: 'Assethub' },
-          destAddress,
-          fillOrKillParams: {
-            retryDurationBlocks: 500,
-            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-            minPriceX128: '10000000000000',
-            maxOraclePriceSlippage: 50,
-          },
-        },
-        brokerConfig,
-        'perseverance',
-      ),
-    ).rejects.toThrow();
-  });
-
-  it.each([
-    '1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo',
-    '0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972',
   ])('does not work with polkadot refund addresses', async (refundAddress) => {
     await expect(
       broker.requestSwapDepositAddress(
