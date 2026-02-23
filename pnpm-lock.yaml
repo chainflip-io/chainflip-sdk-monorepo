@@ -82,17 +82,17 @@ importers:
   packages/cli:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0(typescript@5.8.3)
+        specifier: 2.1.1
+        version: 2.1.1(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0
+        specifier: 2.1.1
+        version: 2.1.1
       '@chainflip/solana':
-        specifier: 2.2.2-beta.0
-        version: 2.2.2-beta.0(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: 2.2.2
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.1.2-beta.6
-        version: 2.1.2-beta.6
+        specifier: 2.1.2
+        version: 2.1.2
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -155,17 +155,17 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0(typescript@5.8.3)
+        specifier: 2.1.1
+        version: 2.1.1(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0
+        specifier: 2.1.1
+        version: 2.1.1
       '@chainflip/solana':
-        specifier: 2.2.2-beta.0
-        version: 2.2.2-beta.0(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: 2.2.2
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.1.2-beta.6
-        version: 2.1.2-beta.6
+        specifier: 2.1.2
+        version: 2.1.2
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -192,17 +192,17 @@ importers:
   packages/shared:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0(typescript@5.8.3)
+        specifier: 2.1.1
+        version: 2.1.1(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0
+        specifier: 2.1.1
+        version: 2.1.1
       '@chainflip/solana':
-        specifier: 2.2.2-beta.0
-        version: 2.2.2-beta.0(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: 2.2.2
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.1.2-beta.6
-        version: 2.1.2-beta.6
+        specifier: 2.1.2
+        version: 2.1.2
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -250,23 +250,23 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0(typescript@5.8.3)
+        specifier: 2.1.1
+        version: 2.1.1(typescript@5.8.3)
       '@chainflip/processor':
         specifier: 2.1.2
         version: 2.1.2
       '@chainflip/redis':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0
+        specifier: 2.1.1
+        version: 2.1.1
       '@chainflip/rpc':
-        specifier: 2.1.1-beta.0
-        version: 2.1.1-beta.0
+        specifier: 2.1.1
+        version: 2.1.1
       '@chainflip/solana':
-        specifier: 2.2.2-beta.0
-        version: 2.2.2-beta.0(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: 2.2.2
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.1.2-beta.6
-        version: 2.1.2-beta.6
+        specifier: 2.1.2
+        version: 2.1.2
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -486,23 +486,23 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-  '@chainflip/bitcoin@2.1.1-beta.0':
-    resolution: {integrity: sha512-EUjd2ks7AgNV5rZuXO5ARMRJyNCC1TAXB3EouRB5evdeJ9vRCffuKya6/Y8VR36fb4deSxyk1qrorTjWCGv4zQ==}
+  '@chainflip/bitcoin@2.1.1':
+    resolution: {integrity: sha512-rJRM8es8eiLQhFhferPYmAh+HhF4bALqUgADpEx4BmFuq5mrBVHZjNJijQokeZmOBqp59Q2xJ2hrWQAf2/X6ug==}
 
   '@chainflip/processor@2.1.2':
     resolution: {integrity: sha512-VmLtHl1wgAywb7e4IPmHEZNo+EcRMH17/AValvr5zhfi1KfZxfP4o+ayb9nJ7aLdh9xjt8sdqWXwXSA0EXVMKQ==}
 
-  '@chainflip/redis@2.1.1-beta.0':
-    resolution: {integrity: sha512-QUwYpKCv+EupmJik8CKcDrJayzU4NVWk86AgNZ4rtXOmiEKKoqutehFha/iPahTON3Jkm6EPRmyw5pgG0Q3tDg==}
+  '@chainflip/redis@2.1.1':
+    resolution: {integrity: sha512-fRa4wLfSTw66U4SmmECX38Dqm4I2Fn5Z7Dk5H6Inv//6LiC7J7TYAoGjDM3FRoOPaPhVmltY+65cX3jPgzPIzA==}
 
-  '@chainflip/rpc@2.1.1-beta.0':
-    resolution: {integrity: sha512-wWr9CaBwkRT+PT7Wl+3+Zy3cQq5P4Rsv2IlhJ+lxW9rNAqvd3FvA/g21RnnAUL32ICjLqb1Yfuuhu+AUW2qMvQ==}
+  '@chainflip/rpc@2.1.1':
+    resolution: {integrity: sha512-YS5i+hrZHbIDFEqpn5Yl/msdChihUjXcdsNj51hzGqVAfoQ+uWBCsblp0uLBKdBT3iOVMAmvfz/cPtg/ozuMVw==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
 
-  '@chainflip/solana@2.2.2-beta.0':
-    resolution: {integrity: sha512-hu5jM+tSFGufdhx/z+Ta9xEEH20Q1gXxfGxE5lwSr0lvHrzT+DtO6VqJ2phemae1od0z1HuKC4QbN2baKEYtgA==}
+  '@chainflip/solana@2.2.2':
+    resolution: {integrity: sha512-aoR7Zg5EtpwSukzu3VNhhmkcpTg4km29HMtf00ciez+Srk/9rbTNsGjfotj1qQYp5a/5jCO1y3BT2XeLcZ9QiA==}
 
   '@chainflip/utils@0.8.22':
     resolution: {integrity: sha512-VVerCmYtxW6rk3HCKnJzYAC60kf8Xv66Sp7ittMzpuJ9kzu+IeycY6lHv/I7GJnagy3zeuL6PNGWqdAMpuF+TQ==}
@@ -510,11 +510,8 @@ packages:
   '@chainflip/utils@2.1.0':
     resolution: {integrity: sha512-40bNhTaSzQHDAMv2m/QAckwEzsVXmXrdkhDcd+CRil9JFUSeWUlRxRKcwlbtp7FyrA3ql+0G7Guw8+LsX2Jlhw==}
 
-  '@chainflip/utils@2.1.2-beta.5':
-    resolution: {integrity: sha512-x4iaCJ3rGuGCFqC6iz0Xiz0m8VbvtpO/ELALeTHDG2pT3wJV7maN8aeoaecH8AwUckpSM+P3Ek/908NVEPkk5Q==}
-
-  '@chainflip/utils@2.1.2-beta.6':
-    resolution: {integrity: sha512-QTIUpPgIcrLq/3iMz+OC9qS9LMKEWjjd1dpBdoCqu/qSXlu30f4q9tx2wnVa+6C9pR3H4LIOJjEgVXKszoY8gg==}
+  '@chainflip/utils@2.1.2':
+    resolution: {integrity: sha512-ujHjiVRdm5AbN5XotoIlVtN7RMmkR7PnrMW/pGhWg+2Yr6vtKyKas/GSRHrX4VGnm7H1j7xKcSuj9GNag60n5A==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -1529,8 +1526,8 @@ packages:
   '@swc/helpers@0.5.17':
     resolution: {integrity: sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A==}
 
-  '@swc/helpers@0.5.18':
-    resolution: {integrity: sha512-TXTnIcNJQEKwThMMqBXsZ4VGAza6bvN4pa41Rkqoio6QBKMvo+5lexeTMScGCIxtzgQJzElcvIltani+adC5PQ==}
+  '@swc/helpers@0.5.19':
+    resolution: {integrity: sha512-QamiFeIK3txNjgUTNppE6MiG3p7TdninpZu0E0PbqVh1a9FNLT2FRhisaa4NcaX52XVhA5l7Pk58Ft7Sqi/2sA==}
 
   '@trpc/server@10.45.2':
     resolution: {integrity: sha512-wOrSThNNE4HUnuhJG6PfDRp4L2009KDVxsd+2VYH8ro6o/7/jwYZ8Uu5j+VaW+mOmc8EHerHzGcdbGNQSAUPgg==}
@@ -5756,9 +5753,9 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@chainflip/bitcoin@2.1.1-beta.0(typescript@5.8.3)':
+  '@chainflip/bitcoin@2.1.1(typescript@5.8.3)':
     dependencies:
-      '@chainflip/utils': 2.1.2-beta.5
+      '@chainflip/utils': 2.1.2
       bignumber.js: 9.3.1
       bitcoinjs-lib: 7.0.1(typescript@5.8.3)
       scale-ts: 1.6.1
@@ -5771,18 +5768,18 @@ snapshots:
       '@chainflip/utils': 2.1.0
       zod: 3.25.76
 
-  '@chainflip/redis@2.1.1-beta.0':
+  '@chainflip/redis@2.1.1':
     dependencies:
-      '@chainflip/utils': 2.1.2-beta.5
+      '@chainflip/utils': 2.1.2
       bignumber.js: 9.3.1
       ioredis: 5.9.3
       zod: 3.25.76
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.1.1-beta.0':
+  '@chainflip/rpc@2.1.1':
     dependencies:
-      '@chainflip/utils': 2.1.2-beta.5
+      '@chainflip/utils': 2.1.2
       zod: 3.25.76
 
   '@chainflip/scale@1.11.0':
@@ -5790,10 +5787,10 @@ snapshots:
       '@chainflip/utils': 0.8.22
       scale-ts: 1.6.1
 
-  '@chainflip/solana@2.2.2-beta.0(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/scale': 1.11.0
-      '@chainflip/utils': 2.1.2-beta.5
+      '@chainflip/utils': 2.1.2
       '@coral-xyz/anchor': 0.32.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
       bn.js: 5.2.3
@@ -5818,14 +5815,7 @@ snapshots:
       bignumber.js: 9.3.1
       date-fns: 4.1.0
 
-  '@chainflip/utils@2.1.2-beta.5':
-    dependencies:
-      '@date-fns/utc': 2.1.1
-      '@noble/hashes': 2.0.1
-      bignumber.js: 9.3.1
-      date-fns: 4.1.0
-
-  '@chainflip/utils@2.1.2-beta.6':
+  '@chainflip/utils@2.1.2':
     dependencies:
       '@date-fns/utc': 2.1.1
       '@noble/hashes': 2.0.1
@@ -7241,7 +7231,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@swc/helpers@0.5.18':
+  '@swc/helpers@0.5.19':
     dependencies:
       tslib: 2.8.1
 
@@ -10777,7 +10767,7 @@ snapshots:
 
   rpc-websockets@9.3.3:
     dependencies:
-      '@swc/helpers': 0.5.18
+      '@swc/helpers': 0.5.19
       '@types/uuid': 8.3.4
       '@types/ws': 8.18.1
       buffer: 6.0.3
