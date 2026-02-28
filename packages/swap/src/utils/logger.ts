@@ -13,7 +13,7 @@ const customMessageFormat = format.printf(
 
 export const logStorage = new AsyncLocalStorage<UUID>();
 
-const addReqId = format((info) => ({ ...info, reqId: logStorage.getStore() }));
+const addReqId = format((info) => ({ ...info, reqId: info.reqId ?? logStorage.getStore() }));
 
 const logger = createLogger({
   format: format.combine(

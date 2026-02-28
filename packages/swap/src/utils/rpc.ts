@@ -48,7 +48,7 @@ export const getWitnessSafetyMargin = async (chain: ChainflipChain): Promise<big
   const result =
     environment.ingressEgress.witnessSafetyMargins[chain as Exclude<ChainflipChain, 'Polkadot'>];
 
-  return result !== null ? BigInt(result) : null;
+  return isNotNullish(result) ? BigInt(result) : null;
 };
 
 export const getBoostDelay = async (chain: ChainflipChain): Promise<number> => {
