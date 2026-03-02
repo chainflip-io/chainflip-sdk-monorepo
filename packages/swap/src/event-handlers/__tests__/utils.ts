@@ -1,5 +1,6 @@
 import { bytesToHex } from '@chainflip/utils/bytes';
 import {
+  anyAssetConstants,
   assetConstants,
   chainflipAssets,
   ChainflipChain,
@@ -38,9 +39,9 @@ export const createDepositChannel = (
   prisma.swapDepositChannel.create({
     data: {
       channelId: 1n,
-      srcChain: assetConstants[data.srcAsset ?? 'Eth'].chain,
+      srcChain: anyAssetConstants[data.srcAsset ?? 'Eth'].chain,
       srcAsset: 'Eth',
-      destAsset: 'Dot',
+      destAsset: 'HubDot',
       depositAddress: ETH_ADDRESS,
       destAddress: DOT_ADDRESS,
       totalBrokerCommissionBps: 0,

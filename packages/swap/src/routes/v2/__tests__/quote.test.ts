@@ -2,6 +2,7 @@ import { CfSwapRateV3Response, CfSwapRateV3, WsClient } from '@chainflip/rpc';
 import {
   assetConstants,
   baseChainflipAssets,
+  ChainflipAsset,
   internalAssetToRpcAsset,
 } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
@@ -17,7 +18,7 @@ import {
   environment,
   mockRpcResponse,
 } from '@/shared/tests/fixtures.js';
-import prisma, { InternalAsset } from '../../../client.js';
+import prisma from '../../../client.js';
 import env from '../../../config/env.js';
 import { getUsdValue } from '../../../pricing/checkPriceWarning.js';
 import Quoter from '../../../quoting/Quoter.js';
@@ -63,7 +64,7 @@ vi.mock('../../../polkadot/api', () => ({
 
 const originalEnv = structuredClone(env);
 
-const buildFee = (asset: InternalAsset, amount: bigint | number) => ({
+const buildFee = (asset: ChainflipAsset, amount: bigint | number) => ({
   amount: BigInt(amount),
   ...internalAssetToRpcAsset[asset],
 });
@@ -273,9 +274,9 @@ describe('server', () => {
       });
     });
 
-    it('rejects if it is a vault swap quote on Polkadot source chain', async () => {
+    it('rejects if it is a vault swap quote on Assethub source chain', async () => {
       const params = new URLSearchParams({
-        srcChain: 'Polkadot',
+        srcChain: 'Assethub',
         srcAsset: 'DOT',
         destChain: 'Ethereum',
         destAsset: 'ETH',

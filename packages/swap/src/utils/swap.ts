@@ -1,9 +1,9 @@
 import {
-  assetConstants,
-  chainConstants,
-  ChainflipAsset,
+  anyAssetConstants,
+  anyChainConstants,
+  AnyChainflipAsset,
+  anyInternalAssetToRpcAsset,
   chainflipChains,
-  internalAssetToRpcAsset,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
@@ -21,23 +21,23 @@ export const estimateSwapDuration = async ({
   isExternal = true,
   boosted = false,
 }: {
-  srcAsset: ChainflipAsset;
-  destAsset: ChainflipAsset;
+  srcAsset: AnyChainflipAsset;
+  destAsset: AnyChainflipAsset;
   isExternal?: boolean;
   boosted?: boolean;
 }) => {
-  const { chain: srcChain } = internalAssetToRpcAsset[srcAsset];
-  const { chain: destChain } = internalAssetToRpcAsset[destAsset];
+  const { chain: srcChain } = anyInternalAssetToRpcAsset[srcAsset];
+  const { chain: destChain } = anyInternalAssetToRpcAsset[destAsset];
 
   // user transaction must be included before witnessing starts
   // on average, the user will submit the transaction in the middle of two blocks
-  const depositInclusionDuration = chainConstants[srcChain].blockTimeSeconds / 2;
+  const depositInclusionDuration = anyChainConstants[srcChain].blockTimeSeconds / 2;
 
   // once transaction is included, state chain validator witness transaction after safety margin is met
   // in case of a boosted swap, the swap occurs at the moment a deposit is prewitnessed (deposit transaction included in a block) and after the boost delay (if set)
   const depositWitnessDuration = boosted
     ? stateChainBlocksToSeconds(await getBoostDelay(srcChain))
-    : chainConstants[srcChain].blockTimeSeconds *
+    : anyChainConstants[srcChain].blockTimeSeconds *
       Number((await getWitnessSafetyMargin(srcChain)) ?? 1n);
 
   // ingress delay is the number of state chain blocks that need to pass before the state chain can witness the deposit
@@ -54,7 +54,7 @@ export const estimateSwapDuration = async ({
 
   // assets are spendable by the user once the egress is included in a block
   // on average, the validator will submit the  transaction in the middle of two blocks
-  const egressInclusionDuration = chainConstants[destChain].blockTimeSeconds / 2;
+  const egressInclusionDuration = anyChainConstants[destChain].blockTimeSeconds / 2;
 
   const depositDuration =
     depositInclusionDuration +
@@ -123,13 +123,13 @@ export enum FailureMode {
 }
 
 export const getSwapPrice = (
-  inputAsset: ChainflipAsset,
+  inputAsset: AnyChainflipAsset,
   inputAmount: BigNumber.Value,
-  outputAsset: ChainflipAsset,
+  outputAsset: AnyChainflipAsset,
   outputAmount: BigNumber.Value,
 ) => {
-  const input = BigNumber(inputAmount).shiftedBy(-assetConstants[inputAsset].decimals);
-  const output = BigNumber(outputAmount).shiftedBy(-assetConstants[outputAsset].decimals);
+  const input = BigNumber(inputAmount).shiftedBy(-anyAssetConstants[inputAsset].decimals);
+  const output = BigNumber(outputAmount).shiftedBy(-anyAssetConstants[outputAsset].decimals);
 
   return output.div(input);
 };

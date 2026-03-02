@@ -1,5 +1,5 @@
 import { deferredPromise } from '@chainflip/utils/async';
-import { ChainflipAsset } from '@chainflip/utils/chainflip';
+import { AnyChainflipAsset, ChainflipAsset } from '@chainflip/utils/chainflip';
 import axios from 'axios';
 import { vi, describe, expect, it, beforeEach } from 'vitest';
 import logger from '../../utils/logger.js';
@@ -36,7 +36,7 @@ const priceMap = {
   HubDot: 9.914487887030168,
   HubUsdc: 0.9989897393887496,
   HubUsdt: 0.9996396835618839,
-} as const satisfies Record<ChainflipAsset, number>;
+} as const satisfies Record<AnyChainflipAsset, number>;
 
 describe(PriceCache, () => {
   beforeEach(() => {

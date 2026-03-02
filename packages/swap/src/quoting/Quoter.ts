@@ -1,9 +1,9 @@
 import {
+  AssetAndChain,
   assetConstants,
   ChainflipAsset,
   getInternalAsset,
   InternalAssetMap,
-  UncheckedAssetAndChain,
 } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import assert from 'assert';
@@ -55,8 +55,8 @@ export const approximateIntermediateOutput = async (asset: ChainflipAsset, amoun
 
 export type RpcLimitOrder = {
   LimitOrder: {
-    base_asset: UncheckedAssetAndChain;
-    quote_asset: UncheckedAssetAndChain;
+    base_asset: AssetAndChain;
+    quote_asset: AssetAndChain;
     side: 'buy' | 'sell';
     tick: number;
     sell_amount: `0x${string}`;
@@ -263,8 +263,8 @@ export default class Quoter {
 
       const sellAsset = getInternalAsset(
         leg.side === 'BUY' ? leg.base_asset : leg.quote_asset,
-      ) as Exclude<ChainflipAsset, 'Dot'>;
-      const baseAsset = getInternalAsset(leg.base_asset) as Exclude<ChainflipAsset, 'Dot'>;
+      ) as ChainflipAsset;
+      const baseAsset = getInternalAsset(leg.base_asset) as ChainflipAsset;
       const side = leg.side === 'BUY' ? 'sell' : 'buy';
 
       for (const [accountId, quote] of quotes) {
@@ -375,7 +375,7 @@ export default class Quoter {
     });
   }
 
-  getReplenishmentFactor(sellAsset: Exclude<ChainflipAsset, 'Dot'>): [bigint, bigint] {
+  getReplenishmentFactor(sellAsset: ChainflipAsset): [bigint, bigint] {
     return this.replenishmentFactors[sellAsset];
   }
 }

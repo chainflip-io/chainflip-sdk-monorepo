@@ -1,4 +1,4 @@
-import { internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import { anyInternalAssetToRpcAsset } from '@chainflip/utils/chainflip';
 import express from 'express';
 import { assert } from '@/shared/guards.js';
 import {
@@ -156,11 +156,11 @@ router.get(
     const response = {
       state,
       swapId: swapRequest?.nativeId.toString(),
-      srcAsset: internalAssetToRpcAsset[internalSrcAsset].asset,
-      srcChain: internalAssetToRpcAsset[internalSrcAsset].chain,
+      srcAsset: anyInternalAssetToRpcAsset[internalSrcAsset].asset,
+      srcChain: anyInternalAssetToRpcAsset[internalSrcAsset].chain,
       ...(internalDestAsset && {
-        destAsset: internalAssetToRpcAsset[internalDestAsset].asset,
-        destChain: internalAssetToRpcAsset[internalDestAsset].chain,
+        destAsset: anyInternalAssetToRpcAsset[internalDestAsset].asset,
+        destChain: anyInternalAssetToRpcAsset[internalDestAsset].chain,
       }),
       destAddress: readField(
         swapRequest,

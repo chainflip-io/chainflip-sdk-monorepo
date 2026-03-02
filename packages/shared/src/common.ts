@@ -1,6 +1,5 @@
 import { type bitcoinBroadcasterBroadcastSuccess } from '@chainflip/processor/131/bitcoinBroadcaster/broadcastSuccess';
 import { type ethereumBroadcasterBroadcastSuccess } from '@chainflip/processor/131/ethereumBroadcaster/broadcastSuccess';
-import { type polkadotBroadcasterBroadcastSuccess } from '@chainflip/processor/131/polkadotBroadcaster/broadcastSuccess';
 import { type arbitrumBroadcasterBroadcastSuccess } from '@chainflip/processor/141/arbitrumBroadcaster/broadcastSuccess';
 import { type solanaBroadcasterBroadcastSuccess } from '@chainflip/processor/160/solanaBroadcaster/broadcastSuccess';
 import { type assethubBroadcasterBroadcastSuccess } from '@chainflip/processor/190/assethubBroadcaster/broadcastSuccess';
@@ -17,7 +16,6 @@ type TxRefData = {
       {
         Bitcoin: typeof bitcoinBroadcasterBroadcastSuccess;
         Ethereum: typeof ethereumBroadcasterBroadcastSuccess;
-        Polkadot: typeof polkadotBroadcasterBroadcastSuccess;
         Arbitrum: typeof arbitrumBroadcasterBroadcastSuccess;
         Solana: typeof solanaBroadcasterBroadcastSuccess;
         Assethub: typeof assethubBroadcasterBroadcastSuccess;
@@ -33,7 +31,6 @@ export const formatTxRef = (txRef: TxRefData): string => {
       return txRef.data;
     case 'Bitcoin':
       return reverseBytes(txRef.data.slice(2));
-    case 'Polkadot':
     case 'Assethub':
       return `${txRef.data.blockNumber}-${txRef.data.extrinsicIndex}`;
     case 'Solana':

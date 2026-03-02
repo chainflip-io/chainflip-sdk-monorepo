@@ -1,5 +1,9 @@
 import { cfChainsEvmTransaction } from '@chainflip/processor/141/common';
-import { AssetSymbol, ChainflipChain, internalAssetToRpcAsset } from '@chainflip/utils/chainflip';
+import {
+  AnyChainflipChain,
+  anyInternalAssetToRpcAsset,
+  AssetSymbol,
+} from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions.js';
 import { isNotNullish } from '@/shared/guards.js';
@@ -585,7 +589,7 @@ export const getCcmParams = (
 
 type FeeAggregate = Map<
   `${SwapFee['type']}-${SwapFee['asset']}`,
-  { asset: AssetSymbol; chain: ChainflipChain; type: SwapFee['type']; amount: Prisma.Decimal }
+  { asset: AssetSymbol; chain: AnyChainflipChain; type: SwapFee['type']; amount: Prisma.Decimal }
 >;
 
 export const rollupFees = (fees: SwapFee[], init: FeeAggregate) =>
@@ -594,7 +598,7 @@ export const rollupFees = (fees: SwapFee[], init: FeeAggregate) =>
     let agg = acc.get(key);
     if (!agg) {
       agg = {
-        ...internalAssetToRpcAsset[fee.asset],
+        ...anyInternalAssetToRpcAsset[fee.asset],
         type: fee.type,
         amount: new Prisma.Decimal(0),
       };

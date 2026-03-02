@@ -1,5 +1,24 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`transactionBroadcastRequest > handles Assethub event 1`] = `
+{
+  "abortedAt": null,
+  "abortedBlockIndex": null,
+  "chain": "Assethub",
+  "createdAt": Any<Date>,
+  "id": Any<BigInt>,
+  "nativeId": 1n,
+  "replacedById": null,
+  "requestedAt": 2022-12-06T14:31:45.000Z,
+  "requestedBlockIndex": "119-1",
+  "succeededAt": null,
+  "succeededBlockIndex": null,
+  "transactionPayload": "{"encodedExtrinsic":"0x02000000000101cadd87785ee27e64170e60ed6ac4111a6696ea7f84c79ea419918b4e5b4ebc910100000000fdffffff015602c8120000000022512038ebafad5f3105608104b26d7d71a7eb91be8fc97e24a8a9ca96acfe4ce24c4c0340604e0d08924a89a69eb7c6dd1b632f8e18a07b8e4b02a1a74ae5ba167d2b85f0a04af814a06bf27a41cd87918daa27a8048c8926d3ceb922003931e6cdc6eb3e240075201f7866c3ad904ef2c76c4bd337996a21709c13da8abbb615dce5e2e369ade04fac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000"}",
+  "transactionRef": null,
+  "updatedAt": Any<Date>,
+}
+`;
+
 exports[`transactionBroadcastRequest > handles Bitcoin event 1`] = `
 {
   "abortedAt": null,
@@ -33,25 +52,6 @@ exports[`transactionBroadcastRequest > handles Ethereum event 1`] = `
   "succeededAt": null,
   "succeededBlockIndex": null,
   "transactionPayload": "{"chainId":"1","contract":"0x1234","value":"0","data":"0x02000000000101cadd87785ee27e64170e60ed6ac4111a6696ea7f84c79ea419918b4e5b4ebc910100000000fdffffff015602c8120000000022512038ebafad5f3105608104b26d7d71a7eb91be8fc97e24a8a9ca96acfe4ce24c4c0340604e0d08924a89a69eb7c6dd1b632f8e18a07b8e4b02a1a74ae5ba167d2b85f0a04af814a06bf27a41cd87918daa27a8048c8926d3ceb922003931e6cdc6eb3e240075201f7866c3ad904ef2c76c4bd337996a21709c13da8abbb615dce5e2e369ade04fac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000"}",
-  "transactionRef": null,
-  "updatedAt": Any<Date>,
-}
-`;
-
-exports[`transactionBroadcastRequest > handles Polkadot event 1`] = `
-{
-  "abortedAt": null,
-  "abortedBlockIndex": null,
-  "chain": "Polkadot",
-  "createdAt": Any<Date>,
-  "id": Any<BigInt>,
-  "nativeId": 1n,
-  "replacedById": null,
-  "requestedAt": 2022-12-06T14:31:45.000Z,
-  "requestedBlockIndex": "119-1",
-  "succeededAt": null,
-  "succeededBlockIndex": null,
-  "transactionPayload": "{"encodedExtrinsic":"0x02000000000101cadd87785ee27e64170e60ed6ac4111a6696ea7f84c79ea419918b4e5b4ebc910100000000fdffffff015602c8120000000022512038ebafad5f3105608104b26d7d71a7eb91be8fc97e24a8a9ca96acfe4ce24c4c0340604e0d08924a89a69eb7c6dd1b632f8e18a07b8e4b02a1a74ae5ba167d2b85f0a04af814a06bf27a41cd87918daa27a8048c8926d3ceb922003931e6cdc6eb3e240075201f7866c3ad904ef2c76c4bd337996a21709c13da8abbb615dce5e2e369ade04fac21c0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000"}",
   "transactionRef": null,
   "updatedAt": Any<Date>,
 }

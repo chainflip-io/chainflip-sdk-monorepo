@@ -68,7 +68,7 @@ const mockRpc = ({
     switch (method) {
       case 'cf_available_pools':
         return supportedAssets
-          .filter((a) => a !== 'Usdc' && a !== 'Dot')
+          .filter((a) => a !== 'Usdc')
           .map((a) => ({ base: internalAssetToRpcAsset[a], quote: internalAssetToRpcAsset.Usdc }));
       case 'cf_safe_mode_statuses':
         return safeModeStatuses ?? defaultSafeModeStatuses;

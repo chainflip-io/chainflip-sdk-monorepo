@@ -1,7 +1,13 @@
 import { findVaultSwapData as findBitcoinVaultSwapData } from '@chainflip/bitcoin';
 import RedisClient from '@chainflip/redis';
 import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana';
-import { assetConstants, ChainflipAsset, ChainflipChain } from '@chainflip/utils/chainflip';
+import {
+  AnyChainflipAsset,
+  assetConstants,
+  ChainflipChain,
+  isLegacyChainflipAsset,
+  isLegacyChainflipChain,
+} from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
 import { inspect } from 'util';
 import prisma, { Broadcast } from '../client.js';
@@ -61,10 +67,11 @@ async function getDepositConfirmationCount(
 }
 
 export const getPendingDeposit = async (
-  internalAsset: ChainflipAsset,
+  internalAsset: AnyChainflipAsset,
   address: string,
 ): Promise<PendingDeposit | null> => {
   if (!redis) return null;
+  if (isLegacyChainflipAsset(internalAsset)) return null;
 
   const { chain } = assetConstants[internalAsset];
 
@@ -98,7 +105,7 @@ export const getPendingDeposit = async (
 };
 
 export const getPendingBroadcast = async (broadcast: Broadcast) => {
-  if (!redis) return null;
+  if (!redis || isLegacyChainflipChain(broadcast.chain)) return null;
   try {
     return await redis.getBroadcast(broadcast.chain, broadcast.nativeId);
   } catch (error) {

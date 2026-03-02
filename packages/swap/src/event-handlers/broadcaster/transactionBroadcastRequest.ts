@@ -1,5 +1,4 @@
 import { ethereumBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/120/ethereumBroadcaster/transactionBroadcastRequest';
-import { polkadotBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/120/polkadotBroadcaster/transactionBroadcastRequest';
 import { bitcoinBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/131/bitcoinBroadcaster/transactionBroadcastRequest';
 import { arbitrumBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/141/arbitrumBroadcaster/transactionBroadcastRequest';
 import { solanaBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/180/solanaBroadcaster/transactionBroadcastRequest';
@@ -13,7 +12,6 @@ const schemas = {
   Arbitrum: arbitrumBroadcasterTransactionBroadcastRequest,
   Bitcoin: bitcoinBroadcasterTransactionBroadcastRequest,
   Ethereum: ethereumBroadcasterTransactionBroadcastRequest,
-  Polkadot: polkadotBroadcasterTransactionBroadcastRequest,
   Solana: solanaBroadcasterTransactionBroadcastRequest,
   Assethub: assethubBroadcasterTransactionBroadcastRequest,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;

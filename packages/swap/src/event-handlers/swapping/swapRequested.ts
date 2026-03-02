@@ -1,7 +1,12 @@
 import { swappingSwapRequested as schema200 } from '@chainflip/processor/200/swapping/swapRequested';
 import { swappingSwapRequested as schema210 } from '@chainflip/processor/210/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
-import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
+import {
+  assetConstants,
+  ChainflipAsset,
+  isLegacyChainflipAsset,
+  isLegacyChainflipChain,
+} from '@chainflip/utils/chainflip';
 import { isNullish } from '@chainflip/utils/guard';
 import assert from 'assert';
 import { z } from 'zod';
@@ -71,12 +76,11 @@ export const getVaultOriginTxRef = (
       return formatTxRef({ chain: 'Ethereum', data: origin.txId.value });
     case 'Bitcoin':
       return formatTxRef({ chain: 'Bitcoin', data: origin.txId.value });
-    case 'Polkadot':
-      return formatTxRef({ chain: 'Polkadot', data: origin.txId.value });
     case 'Solana':
     case 'None':
       return undefined;
     default:
+      assert(!isLegacyChainflipChain(kind), 'legacy assets should not have vault origins');
       return assertUnreachable(kind);
   }
 };
@@ -238,6 +242,11 @@ export default async function swapRequested({
   } = schema.parse(event.args);
 
   const requestInfo = getRequestInfo(requestType);
+
+  assert(
+    !isLegacyChainflipAsset(inputAsset) && !isLegacyChainflipAsset(outputAsset),
+    'legacy assets are not supported in swap requests',
+  );
 
   const originInfo = await getOriginInfo(prisma, inputAsset, origin, requestInfo);
 

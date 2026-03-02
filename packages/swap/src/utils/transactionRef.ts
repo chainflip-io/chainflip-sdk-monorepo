@@ -23,7 +23,7 @@ export const getTransactionRefChains = (txRef: string): ChainflipChain[] => {
     return ['Solana'];
   }
   if (dotRegex.test(txRef)) {
-    return ['Polkadot', 'Assethub'];
+    return ['Assethub'];
   }
 
   return [];

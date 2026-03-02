@@ -11,7 +11,7 @@ import env from '../../config/env.js';
 import authenticate from '../authenticate.js';
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
-const allAssets = Object.values(internalAssetToRpcAsset).filter((a) => a.chain !== 'Polkadot');
+const allAssets = Object.values(internalAssetToRpcAsset);
 
 const oldEnv = structuredClone(env);
 

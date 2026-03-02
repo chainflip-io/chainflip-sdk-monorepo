@@ -13,7 +13,6 @@ import type { AssetData } from './types.js';
 const getTokenContractAddress = (asset: ChainflipAsset, network: ChainflipNetwork) => {
   switch (asset) {
     case 'Btc':
-    case 'Dot':
     case 'Eth':
     case 'ArbEth':
     case 'Sol':
@@ -32,7 +31,6 @@ const assetNames: Record<ChainflipAsset, string> = {
   Usdc: 'USDC',
   Usdt: 'USDT',
   Wbtc: 'WBTC',
-  Dot: 'Polkadot',
   Btc: 'Bitcoin',
   ArbEth: 'Arbitrum Ether',
   ArbUsdc: 'Arbitrum USDC',
@@ -46,7 +44,7 @@ const assetNames: Record<ChainflipAsset, string> = {
 };
 
 export const getAssetData = (
-  asset: Exclude<ChainflipAsset, 'Dot'>,
+  asset: ChainflipAsset,
   network: ChainflipNetwork,
   env: Pick<Environment, 'swapping' | 'ingressEgress'>,
 ) => {

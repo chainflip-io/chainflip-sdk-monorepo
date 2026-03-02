@@ -214,14 +214,14 @@ const solDepositChannel11000 = {
   ],
   inputAsset: { __kind: 'Sol' },
   inputAmount: '99999994999',
-  outputAsset: { __kind: 'Dot' },
+  outputAsset: { __kind: 'HubDot' },
   requestType: {
     __kind: 'Regular',
     outputAction: {
       __kind: 'Egress',
       outputAddress: {
         value: '0x02581a69b66b34f0d684f2249f7f45a4ef2c9d2f61c4fb82ed95c37e07850675',
-        __kind: 'Dot',
+        __kind: 'Hub',
       },
     },
   },
@@ -238,7 +238,7 @@ const onChain11000 = {
   ],
   inputAsset: { __kind: 'Sol' },
   inputAmount: '99999994999',
-  outputAsset: { __kind: 'Dot' },
+  outputAsset: { __kind: 'HubDot' },
   requestType: {
     __kind: 'Regular',
     outputAction: {

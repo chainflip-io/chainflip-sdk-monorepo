@@ -42,7 +42,7 @@ exports[`broadcastSuccess > updates an existing broadcast with the tx_ref for po
 {
   "abortedAt": null,
   "abortedBlockIndex": null,
-  "chain": "Polkadot",
+  "chain": "Assethub",
   "createdAt": Any<Date>,
   "id": Any<BigInt>,
   "nativeId": 12n,

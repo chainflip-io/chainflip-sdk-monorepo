@@ -1,3 +1,4 @@
+import { AnyChainflipChain, AssetSymbol } from '@chainflip/utils/chainflip';
 import {
   AffiliateBroker,
   BoostQuote,
@@ -8,7 +9,7 @@ import {
   PaidFee,
   Quote,
 } from '@/shared/schemas.js';
-import { ChainsAndAssets, QuoteRequest } from '../types.js';
+import { QuoteRequest } from '../types.js';
 
 type ChunkFailureReason =
   | 'PriceImpactLimit'
@@ -153,7 +154,11 @@ interface EgressFields {
     | undefined;
 }
 
-interface SwapStatusResponseCommonFields extends ChainsAndAssets {
+interface SwapStatusResponseCommonFields {
+  srcChain: AnyChainflipChain;
+  srcAsset: AssetSymbol;
+  destChain: AnyChainflipChain;
+  destAsset: AssetSymbol;
   swapId: string;
   destAddress: string;
   depositChannel: DepositChannelFields | undefined;

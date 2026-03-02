@@ -7,7 +7,7 @@ import {
 import { AffiliateBroker, Quote, FillOrKillParamsWithMinPrice } from '@/shared/schemas.js';
 
 export interface ChainData {
-  chain: Exclude<ChainflipChain, 'Polkadot'>;
+  chain: ChainflipChain;
   name: string;
   evmChainId: number | undefined;
   isMainnet: boolean;
@@ -16,8 +16,8 @@ export interface ChainData {
 }
 
 export type AssetData = {
-  [C in Exclude<ChainflipChain, 'Polkadot'>]: {
-    chainflipId: Exclude<ChainflipAsset, 'Dot'>;
+  [C in ChainflipChain]: {
+    chainflipId: ChainflipAsset;
     asset: AssetOfChain<C>;
     chain: C;
     contractAddress: string | undefined;
@@ -29,12 +29,12 @@ export type AssetData = {
     maximumSwapAmount: string | null;
     minimumEgressAmount: string;
   };
-}[Exclude<ChainflipChain, 'Polkadot'>];
+}[ChainflipChain];
 
 export interface ChainsAndAssets {
-  srcChain: Exclude<ChainflipChain, 'Polkadot'>;
+  srcChain: ChainflipChain;
   srcAsset: AssetSymbol;
-  destChain: Exclude<ChainflipChain, 'Polkadot'>;
+  destChain: ChainflipChain;
   destAsset: AssetSymbol;
 }
 
@@ -66,5 +66,5 @@ export type BoostPoolDepth = {
   feeTierBps: number;
   availableAmount: bigint;
   asset: AssetSymbol;
-  chain: Exclude<ChainflipChain, 'Polkadot'>;
+  chain: ChainflipChain;
 };

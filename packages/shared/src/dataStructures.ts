@@ -143,14 +143,12 @@ export class MultiCache<T extends FetchMap> {
 const isFunction = (value: unknown): value is Function =>
   typeof value === 'function' && value.constructor === Function;
 
-export function createInternalAssetMap<T>(value: T): Omit<InternalAssetMap<T>, 'Dot'>;
-export function createInternalAssetMap<T>(
-  cb: (asset: Exclude<ChainflipAsset, 'Dot'>) => T,
-): Omit<InternalAssetMap<T>, 'Dot'>;
+export function createInternalAssetMap<T>(value: T): InternalAssetMap<T>;
+export function createInternalAssetMap<T>(cb: (asset: ChainflipAsset) => T): InternalAssetMap<T>;
 export function createInternalAssetMap<T>(value: T | ((asset: ChainflipAsset) => T)) {
   return Object.fromEntries(
-    chainflipAssets
-      .filter((a) => a !== 'Dot')
-      .map((asset) => [asset, isFunction(value) ? value(asset) : structuredClone(value)] as const),
-  ) as Omit<InternalAssetMap<T>, 'Dot'>;
+    chainflipAssets.map(
+      (asset) => [asset, isFunction(value) ? value(asset) : structuredClone(value)] as const,
+    ),
+  ) as InternalAssetMap<T>;
 }

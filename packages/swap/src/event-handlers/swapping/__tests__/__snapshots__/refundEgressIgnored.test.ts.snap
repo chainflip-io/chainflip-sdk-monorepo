@@ -16,7 +16,7 @@ exports[`refundEgressIgnored > handles refundEgressIgnored event 1`] = `
   "depositFinalisedBlockIndex": "20-0",
   "depositTransactionRef": null,
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
-  "destAsset": "Dot",
+  "destAsset": "HubDot",
   "effectiveBoostFeeBps": null,
   "egressId": null,
   "fallbackEgressId": null,

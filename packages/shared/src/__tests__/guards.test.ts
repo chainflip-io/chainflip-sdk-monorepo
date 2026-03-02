@@ -7,7 +7,6 @@ describe(isStableCoin, () => {
     ['ArbEth', false],
     ['ArbUsdc', true],
     ['Btc', false],
-    ['Dot', false],
     ['Eth', false],
     ['Flip', false],
     ['HubDot', false],

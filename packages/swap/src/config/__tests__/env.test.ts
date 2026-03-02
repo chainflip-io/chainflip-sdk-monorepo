@@ -44,7 +44,6 @@ describe('env', () => {
         "DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE": false,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
-          "Dot",
         },
         "INGEST_GATEWAY_URL": "https://ingest.gateway",
         "LIQUIDITY_WARNING_THRESHOLD": -5,
@@ -115,7 +114,6 @@ describe('env', () => {
         "DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE": false,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
-          "Dot",
         },
         "INGEST_GATEWAY_URL": "https://ingest.gateway",
         "LIQUIDITY_WARNING_THRESHOLD": -5,

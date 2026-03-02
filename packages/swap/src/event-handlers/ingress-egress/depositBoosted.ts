@@ -2,7 +2,6 @@ import { arbitrumIngressEgressDepositBoosted as arbitrumSchema11200 } from '@cha
 import { assethubIngressEgressDepositBoosted as assethubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositBoosted';
 import { bitcoinIngressEgressDepositBoosted as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositBoosted';
 import { ethereumIngressEgressDepositBoosted as ethereumSchema11200 } from '@chainflip/processor/11200/ethereumIngressEgress/depositBoosted';
-import { polkadotIngressEgressDepositBoosted as polkadotSchema11200 } from '@chainflip/processor/11200/polkadotIngressEgress/depositBoosted';
 import { solanaIngressEgressDepositBoosted as solanaSchema11200 } from '@chainflip/processor/11200/solanaIngressEgress/depositBoosted';
 import { arbitrumIngressEgressDepositBoosted as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/depositBoosted';
 import { ethereumIngressEgressDepositBoosted as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositBoosted';
@@ -30,10 +29,6 @@ const ethereumSchema = z
     ...args,
     depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
   }));
-const polkadotSchema = polkadotSchema11200.transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Polkadot' as const, data: args.depositDetails },
-}));
 const solanaSchema = z
   .union([solanaSchema210.strict(), solanaSchema11200.strict()])
   .transform((args) => ({
@@ -49,7 +44,6 @@ const schemas = {
   Arbitrum: arbitrumSchema,
   Bitcoin: bitcoinSchema,
   Ethereum: ethereumSchema,
-  Polkadot: polkadotSchema,
   Solana: solanaSchema,
   Assethub: assethubSchema,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;

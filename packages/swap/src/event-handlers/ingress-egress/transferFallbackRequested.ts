@@ -2,7 +2,6 @@ import { arbitrumIngressEgressTransferFallbackRequested as arbitrum190 } from '@
 import { assethubIngressEgressTransferFallbackRequested as assethub190 } from '@chainflip/processor/190/assethubIngressEgress/transferFallbackRequested';
 import { bitcoinIngressEgressTransferFallbackRequested as bitcoin190 } from '@chainflip/processor/190/bitcoinIngressEgress/transferFallbackRequested';
 import { ethereumIngressEgressTransferFallbackRequested as ethereum190 } from '@chainflip/processor/190/ethereumIngressEgress/transferFallbackRequested';
-import { polkadotIngressEgressTransferFallbackRequested as polkadot190 } from '@chainflip/processor/190/polkadotIngressEgress/transferFallbackRequested';
 import { solanaIngressEgressTransferFallbackRequested as solana190 } from '@chainflip/processor/190/solanaIngressEgress/transferFallbackRequested';
 import { arbitrumIngressEgressTransferFallbackRequested as arbitrum210 } from '@chainflip/processor/210/arbitrumIngressEgress/transferFallbackRequested';
 import { ethereumIngressEgressTransferFallbackRequested as ethereum210 } from '@chainflip/processor/210/ethereumIngressEgress/transferFallbackRequested';
@@ -32,13 +31,6 @@ const schemas = {
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Eth',
-      value: args.destinationAddress,
-    }),
-  })),
-  Polkadot: polkadot190.transform((args) => ({
-    ...args,
-    destinationAddress: formatForeignChainAddress({
-      __kind: 'Dot',
       value: args.destinationAddress,
     }),
   })),

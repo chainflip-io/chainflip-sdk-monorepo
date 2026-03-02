@@ -1,5 +1,5 @@
 import { deferredPromise } from '@chainflip/utils/async';
-import { ChainflipAsset } from '@chainflip/utils/chainflip';
+import { AnyChainflipAsset, ChainflipAsset } from '@chainflip/utils/chainflip';
 import axios from 'axios';
 import env from '../config/env.js';
 import logger from '../utils/logger.js';
@@ -24,9 +24,9 @@ export const coinGeckoIdMap = {
   HubDot: 'polkadot',
   HubUsdc: 'usd-coin',
   HubUsdt: 'tether',
-} as const satisfies Record<ChainflipAsset, string>;
+} as const satisfies Record<AnyChainflipAsset, string>;
 
-type CoingeckoId = (typeof coinGeckoIdMap)[ChainflipAsset];
+type CoingeckoId = (typeof coinGeckoIdMap)[AnyChainflipAsset];
 
 type CoingeckoPriceResponse = Record<CoingeckoId, Record<typeof COINGECKO_VS_CURRENCY, number>>;
 
@@ -44,7 +44,7 @@ const coingeckoAxios = env.COINGECKO_API_KEY
 export class PriceCache {
   static TTL = 30_000;
 
-  cache: { [A in ChainflipAsset]?: number } = {};
+  cache: { [A in AnyChainflipAsset]?: number } = {};
 
   lastCacheSet = 0;
 
@@ -54,7 +54,7 @@ export class PriceCache {
     return Date.now() - this.lastCacheSet < PriceCache.TTL;
   }
 
-  async getAssetPrice(asset: ChainflipAsset): Promise<number | undefined> {
+  async getAssetPrice(asset: AnyChainflipAsset): Promise<number | undefined> {
     logger.debug(`getting asset price for "${asset}"`);
 
     if (this.freshEnough()) {

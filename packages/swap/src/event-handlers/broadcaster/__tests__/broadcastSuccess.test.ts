@@ -47,7 +47,7 @@ describe(broadcastSuccess, () => {
   });
 
   it('updates an existing broadcast with the tx_ref for polkadot', async () => {
-    const chain = 'Polkadot';
+    const chain = 'Assethub';
     const { block, event } = broadcastSuccessMock(chain, {
       transactionOutId: '0x',
       transactionRef: {

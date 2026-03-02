@@ -23,7 +23,6 @@ import {
   requestSwapDepositAddress,
   requestSwapParameterEncoding,
 } from '@/shared/broker.js';
-import { envSafeAssetBlacklist } from '@/shared/consts.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
 import { assert, isNotNullish } from '@/shared/guards.js';
@@ -102,8 +101,6 @@ export class SwapSDK {
 
   private dcaV2Enabled = false;
 
-  private blackListedAssets: readonly ChainflipAsset[];
-
   constructor(options: SwapSDKOptions = {}) {
     assert(options.broker?.commissionBps === undefined, 'broker.commissionBps is deprecated');
     const network = options.network ?? 'perseverance';
@@ -135,7 +132,6 @@ export class SwapSDK {
         ttl: 60_000,
       },
     });
-    this.blackListedAssets = envSafeAssetBlacklist(this.options.network);
   }
 
   async getChains(sourceChain?: ChainflipChain, type: AssetState = 'all'): Promise<ChainData[]> {
@@ -152,7 +148,6 @@ export class SwapSDK {
     if (sourceChain && !supportedChains.has(sourceChain)) return [];
 
     return [...supportedChains]
-      .filter((chain) => chain !== 'Polkadot')
       .map((chain) => getChainData(chain, this.options.network, env))
       .filter((chain) => chain.chain !== sourceChain);
   }
@@ -165,7 +160,6 @@ export class SwapSDK {
     const assets = await this.cache.read('networkInfo');
 
     return assets.assets
-      .filter((a) => !this.blackListedAssets.includes(a.asset))
       .filter((a) => {
         switch (type) {
           case 'all':
@@ -202,7 +196,6 @@ export class SwapSDK {
     ]);
 
     return supportedAssets
-      .filter((asset) => asset !== 'Dot')
       .map((asset) => getAssetData(asset, this.options.network, env))
       .filter((asset) => !chain || asset.chain === chain);
   }
@@ -273,15 +266,13 @@ export class SwapSDK {
       ingressEgress: { witnessSafetyMargins },
     } = await this.getStateChainEnvironment();
 
-    return chainflipChains
-      .filter((chain) => chain !== 'Polkadot')
-      .reduce(
-        (acc, chain) => {
-          acc[chain] = witnessSafetyMargins[chain] ? Number(witnessSafetyMargins[chain]) + 1 : null;
-          return acc;
-        },
-        {} as ChainMap<number | null>,
-      );
+    return chainflipChains.reduce(
+      (acc, chain) => {
+        acc[chain] = witnessSafetyMargins[chain] ? Number(witnessSafetyMargins[chain]) + 1 : null;
+        return acc;
+      },
+      {} as ChainMap<number | null>,
+    );
   }
 
   async getChannelOpeningFees(): Promise<ChainMap<bigint>> {

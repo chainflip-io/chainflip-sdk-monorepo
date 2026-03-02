@@ -20,7 +20,7 @@ describe(refundEgressScheduled, () => {
         depositFinalisedAt: new Date(block.timestamp - 12000),
         depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
-        destAsset: 'Dot',
+        destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
         requestType: 'LEGACY_SWAP',
         originType: 'VAULT',
@@ -60,7 +60,7 @@ describe(refundEgressScheduled, () => {
         depositFinalisedAt: new Date(block.timestamp - 12000),
         depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
-        destAsset: 'Dot',
+        destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
         requestType: 'LEGACY_SWAP',
         originType: 'VAULT',
@@ -70,7 +70,7 @@ describe(refundEgressScheduled, () => {
         swaps: {
           create: {
             srcAsset: 'Eth',
-            destAsset: 'Dot',
+            destAsset: 'HubDot',
             swapScheduledAt: new Date(block.timestamp - 30000),
             swapScheduledBlockIndex: `${block.height - 90}-${event.indexInBlock}`,
             nativeId: BigInt(1),

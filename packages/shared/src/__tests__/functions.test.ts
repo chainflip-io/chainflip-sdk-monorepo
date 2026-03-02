@@ -36,7 +36,7 @@ describe(getPriceX128FromPrice, () => {
   it.each([
     [2458.206, 'Eth', 'Usdc', '836484156059252456516448240236'] as const,
     ['2458.206', 'Eth', 'Usdc', '836484156059252456516448240236'] as const,
-    ['600', 'Eth', 'Dot', '2041694201525630780780247644590609'] as const,
+    ['600', 'Eth', 'HubDot', '2041694201525630780780247644590609'] as const,
     [0, 'Eth', 'Usdc', '0'] as const,
   ])('calculates priceX128 from price', (price, srcAsset, destAsset, result) => {
     expect(getPriceX128FromPrice(price, srcAsset, destAsset)).toBe(result);
@@ -47,7 +47,7 @@ describe(getPriceFromPriceX128, () => {
   it.each([
     [836484156059252456516448240236n, 'Eth', 'Usdc', '2458.206'] as const,
     ['836484156059252456516448240236', 'Eth', 'Usdc', '2458.206'] as const,
-    [2041694201525630780780247644590609n, 'Eth', 'Dot', '600'] as const,
+    [2041694201525630780780247644590609n, 'Eth', 'HubDot', '600'] as const,
     [0n, 'Eth', 'Usdc', '0'] as const,
   ])('calculates price from priceX128', (priceX128, srcAsset, destAsset, result) => {
     expect(getPriceFromPriceX128(priceX128, srcAsset, destAsset)).toBe(result);

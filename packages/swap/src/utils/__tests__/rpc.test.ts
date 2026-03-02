@@ -20,7 +20,6 @@ describe(getLpBalances, () => {
       Bitcoin: { BTC: 1n },
       Ethereum: { ETH: 2n, FLIP: 3n, USDC: 4n, USDT: 5n, WBTC: 14n },
       Arbitrum: { ETH: 6n, USDC: 7n, USDT: 15n },
-      Polkadot: { DOT: 8n },
       Solana: { SOL: 9n, USDC: 10n, USDT: 16n },
       Assethub: { DOT: 11n, USDT: 12n, USDC: 13n },
     } as ChainAssetMap<bigint>);
