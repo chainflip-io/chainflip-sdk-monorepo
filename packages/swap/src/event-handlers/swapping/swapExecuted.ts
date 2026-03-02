@@ -7,7 +7,7 @@ const swapExecutedArgs = z.union([
   schema210.strict(),
   schema11100.strict().transform((args) => ({
     ...args,
-    oracleDeltaExFees: null,
+    oracleDeltaExFees: 'oracleDelta' in args ? args.oracleDelta : null,
   })),
 ]);
 
