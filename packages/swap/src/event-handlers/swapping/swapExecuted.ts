@@ -3,7 +3,13 @@ import { swappingSwapExecuted as schema210 } from '@chainflip/processor/210/swap
 import { z } from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-const swapExecutedArgs = z.union([schema210.strict(), schema11100.strict()]);
+const swapExecutedArgs = z.union([
+  schema210.strict(),
+  schema11100.strict().transform((args) => ({
+    ...args,
+    oracleDeltaExFees: 'oracleDelta' in args ? args.oracleDelta : null,
+  })),
+]);
 
 export type SwapExecutedArgs = z.input<typeof swapExecutedArgs>;
 
@@ -19,7 +25,7 @@ export default async function swapExecuted({
     outputAmount,
     networkFee,
     brokerFee,
-    oracleDelta,
+    oracleDeltaExFees,
   } = swapExecutedArgs.parse(event.args);
 
   const fees = [];
@@ -46,7 +52,7 @@ export default async function swapExecuted({
       latestSwapRescheduledAt: null,
       latestSwapRescheduledBlockIndex: null,
       latestSwapRescheduledReason: null,
-      oraclePriceDeltaBps: oracleDelta,
+      oraclePriceDeltaBps: oracleDeltaExFees,
     },
   });
 }

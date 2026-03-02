@@ -46,6 +46,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a DCA swap from an onChain origi
       },
       "remainingChunks": 0,
     },
+    "livePriceExecutionDeltaPercentage": -1,
     "onChain": {
       "accountId": "cFL8fmgKZcchhtLagBH2GKfsuWxBqUaD5CYE1m7DFb8DBSLJ1",
       "outputAmount": "4970072600",
