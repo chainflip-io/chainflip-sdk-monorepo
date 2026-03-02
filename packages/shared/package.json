@@ -22,7 +22,7 @@
     "@chainflip/bitcoin": "2.1.1",
     "@chainflip/rpc": "2.1.1",
     "@chainflip/solana": "2.2.2",
-    "@chainflip/utils": "2.1.2",
+    "@chainflip/utils": "2.1.4",
     "@ts-rest/core": "^3.52.1",
     "axios": "^1.10.0",
     "bignumber.js": "^9.3.0",
