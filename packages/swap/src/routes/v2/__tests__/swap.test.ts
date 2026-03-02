@@ -244,6 +244,7 @@ const swapEventMap = {
       swapRequestId: '368',
       intermediateAmount: '4506169140',
       oracleDelta: 100,
+      oracleDeltaExFees: 100,
     }),
   },
   'Swapping.SwapEgressScheduled': {
@@ -1320,6 +1321,7 @@ describe('server', () => {
           },
           outputAmount: '2491227710',
           swapRequestId: '4',
+          oracleDeltaExFees: -100,
         }),
       };
 
@@ -1342,6 +1344,7 @@ describe('server', () => {
           ...chunkOneExecuted.args,
           swapId: '24',
           outputAmount: '2478844890',
+          oracleDeltaExFees: -100,
         }),
       };
 

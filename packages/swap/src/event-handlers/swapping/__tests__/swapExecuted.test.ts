@@ -36,6 +36,7 @@ const oracleDeltaArgs: SwapExecutedArgs = {
   outputAmount: '2115705684',
   swapRequestId: '489',
   oracleDelta: -10000,
+  oracleDeltaExFees: -10000,
 } as const;
 
 const runEvent = async (args: SwapExecutedArgs) => {
