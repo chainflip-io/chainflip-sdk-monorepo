@@ -12,15 +12,8 @@ export default async function swapExecuted({
   block,
   event,
 }: EventHandlerArgs): Promise<void> {
-  const {
-    swapId,
-    inputAmount,
-    intermediateAmount,
-    outputAmount,
-    networkFee,
-    brokerFee,
-    oracleDelta,
-  } = swapExecutedArgs.parse(event.args);
+  const { swapId, inputAmount, intermediateAmount, outputAmount, networkFee, brokerFee, ...rest } =
+    swapExecutedArgs.parse(event.args);
 
   const fees = [];
 
@@ -32,6 +25,12 @@ export default async function swapExecuted({
   // >= 1.6 we have a broker fee on the event
   if (brokerFee) {
     fees.push({ type: 'BROKER', asset: 'Usdc', amount: brokerFee.toString() } as const);
+  }
+
+  // TODO(2.1): remove check after upgrading network
+  let oracleDeltaExFeesBps = null;
+  if ('oracleDeltaExFees' in rest) {
+    oracleDeltaExFeesBps = rest.oracleDeltaExFees;
   }
 
   await prisma.swap.update({
@@ -46,7 +45,7 @@ export default async function swapExecuted({
       latestSwapRescheduledAt: null,
       latestSwapRescheduledBlockIndex: null,
       latestSwapRescheduledReason: null,
-      oraclePriceDeltaBps: oracleDelta,
+      oraclePriceDeltaBps: oracleDeltaExFeesBps,
     },
   });
 }
