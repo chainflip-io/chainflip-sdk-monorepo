@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { describe, it, beforeEach, expect, vi } from 'vitest';
+import { getEnvironment } from '@/shared/rpc/index.js';
 import { createChainAssetMap } from '@/shared/tests/fixtures.js';
 import env from '../../config/env.js';
 import {
@@ -7,14 +8,20 @@ import {
   calculateRecommendedSlippage,
 } from '../autoSlippage.js';
 import { getDeployedLiquidity, getUndeployedLiquidity } from '../pools.js';
-import { getNetworkFees, getRequiredBlockConfirmations } from '../rpc.js';
+import { getRequiredBlockConfirmations } from '../rpc.js';
+
+vi.mock('@/shared/rpc/index.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/shared/rpc/index.js')>()),
+  getEnvironment: vi.fn(),
+}));
 
 vi.mock('../pools', () => ({
   getDeployedLiquidity: vi.fn(),
   getUndeployedLiquidity: vi.fn(),
 }));
 
-vi.mock('../rpc', () => ({
+vi.mock('../rpc', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../rpc.js')>()),
   getRequiredBlockConfirmations: vi.fn(),
   getNetworkFees: vi.fn(),
 }));
@@ -255,66 +262,67 @@ describe(calculateRecommendedSlippage, () => {
 });
 
 describe(calculateRecommendedLivePriceSlippage, () => {
+  const defaultOraclePriceProtection = 100;
+  const defaultStableOraclePriceProtection = 50;
   beforeEach(() => {
-    vi.mocked(getNetworkFees).mockResolvedValue({
-      regularNetworkFee: {
-        standardRateAndMinimum: { rate: 1000n, minimum: 500000n },
-        rates: createChainAssetMap(1000n),
+    env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE = false;
+    env.DEFAULT_LPP_SLIPPAGE_BPS = undefined;
+    env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS = 20;
+
+    vi.mocked(getEnvironment).mockResolvedValue({
+      swapping: {
+        defaultOraclePriceProtection: createChainAssetMap(defaultOraclePriceProtection, {
+          Usdc: null,
+          Flip: null,
+          HubDot: null,
+          Usdt: defaultStableOraclePriceProtection,
+          ArbUsdc: defaultStableOraclePriceProtection,
+          SolUsdc: defaultStableOraclePriceProtection,
+          HubUsdc: defaultStableOraclePriceProtection,
+          HubUsdt: defaultStableOraclePriceProtection,
+          SolUsdt: defaultStableOraclePriceProtection,
+          ArbUsdt: defaultStableOraclePriceProtection,
+        }),
       },
-      internalSwapNetworkFee: {
-        standardRateAndMinimum: { rate: 1000n, minimum: 500000n },
-        rates: {
-          Ethereum: { ETH: 1000n, FLIP: 1000n, USDC: 100n, USDT: 100n, WBTC: 1000n },
-          Bitcoin: { BTC: 1000n },
-          Arbitrum: { ETH: 1000n, USDC: 100n, USDT: 100n },
-          Solana: { SOL: 1000n, USDC: 100n, USDT: 100n },
-          Assethub: { DOT: 1000n, USDT: 100n, USDC: 100n },
-        },
-      },
-    });
+    } as any);
   });
 
   it('should return the correct value for stable assets', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'Usdt',
-      brokerCommissionBps: 0,
     });
-    expect(result).toEqual(0.5 + 0.1);
+    expect(result).toEqual(env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS / 100);
   });
 
   it('should return the correct value for stable assets in opposite direction', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdt',
       destAsset: 'Usdc',
-      brokerCommissionBps: 0,
     });
-    expect(result).toEqual(0.5 + 0.1);
+    expect(result).toEqual(env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS / 100);
   });
 
-  it('should return 1 for non-stable assets', async () => {
+  it('should return the correct value for non-stable assets', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Eth',
       destAsset: 'Usdc',
-      brokerCommissionBps: 0,
     });
-    expect(result).toEqual(1 + 0.1);
+    expect(result).toEqual(defaultOraclePriceProtection / 100);
   });
 
-  it('should return 1 for non-stable assets in opposite direction', async () => {
+  it('should return the correct value for non-stable assets in opposite direction', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdt',
       destAsset: 'Eth',
-      brokerCommissionBps: 0,
     });
-    expect(result).toEqual(1 + 0.1);
+    expect(result).toEqual(defaultOraclePriceProtection / 100);
   });
 
   it('should return undefined for non-oracle assets', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Flip',
       destAsset: 'Usdc',
-      brokerCommissionBps: 0,
     });
     expect(result).toEqual(undefined);
   });
@@ -323,66 +331,25 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'Flip',
-      brokerCommissionBps: 0,
     });
     expect(result).toEqual(undefined);
-  });
-
-  it('should return the correct value for stable assets with broker commission', async () => {
-    const result = await calculateRecommendedLivePriceSlippage({
-      srcAsset: 'Usdc',
-      destAsset: 'Usdt',
-      brokerCommissionBps: 70,
-    });
-    expect(result).toEqual(0.5 + 0.7 + 0.1);
-  });
-
-  it('should return the correct value for non-stable assets with broker commission', async () => {
-    const result = await calculateRecommendedLivePriceSlippage({
-      srcAsset: 'Eth',
-      destAsset: 'Usdc',
-      brokerCommissionBps: 70,
-    });
-    expect(result).toEqual(1 + 0.7 + 0.1);
   });
 
   it('should return the correct value for the same asset cross-chain', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Eth',
       destAsset: 'ArbEth',
-      brokerCommissionBps: 70,
     });
-    expect(result).toEqual(0.5 + 0.7 + 0.1);
+
+    expect(result).toEqual(env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS / 100);
   });
 
   it('rounds the value to 2 decimal places', async () => {
-    env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE = false;
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'Eth',
-      brokerCommissionBps: 123,
     });
-    expect(result).toEqual(1 + 1.23 + 0.1);
-  });
-
-  it('uses internal swap network fees when isInternal is true (stables)', async () => {
-    const result = await calculateRecommendedLivePriceSlippage({
-      srcAsset: 'Usdc',
-      destAsset: 'ArbUsdc',
-      brokerCommissionBps: 0,
-      isInternal: true,
-    });
-    expect(result).toEqual(0.5 + 0.01);
-  });
-
-  it('uses internal swap network fees when isInternal is true (non-stables)', async () => {
-    const result = await calculateRecommendedLivePriceSlippage({
-      srcAsset: 'Eth',
-      destAsset: 'Btc',
-      brokerCommissionBps: 0,
-      isInternal: true,
-    });
-    expect(result).toEqual(1 + 0.1);
+    expect(result).toEqual(defaultOraclePriceProtection / 100);
   });
 
   it('returns undefined if DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE is true', async () => {
@@ -390,8 +357,16 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Usdc',
       destAsset: 'Eth',
-      brokerCommissionBps: 0,
     });
     expect(result).toEqual(undefined);
+  });
+
+  it('overrides the default value with the DEFAULT_LPP_SLIPPAGE_BPS if set', async () => {
+    env.DEFAULT_LPP_SLIPPAGE_BPS = 10;
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdc',
+      destAsset: 'Eth',
+    });
+    expect(result).toEqual(10 / 100);
   });
 });
