@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as prettier from 'prettier';
 import { createInterface } from 'readline/promises';
 import * as util from 'util';
-import yargs from 'yargs';
+import yargs from 'yargs/yargs';
 
 const execAsync = util.promisify(exec);
 
