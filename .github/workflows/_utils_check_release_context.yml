@@ -66,7 +66,7 @@ jobs:
           if [[ -n "$custom_tag" ]]; then
             echo "Custom tag provided: $custom_tag"
             echo "publish_tag=$custom_tag" >> $GITHUB_OUTPUT
-            echo "git_tag=v$version" >> $GITHUB_OUTPUT
+            echo "git_tag=$version" >> $GITHUB_OUTPUT
           elif [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Stable version detected: $version"
             echo "publish_tag=latest" >> $GITHUB_OUTPUT
