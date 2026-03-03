@@ -13,9 +13,6 @@ updates:
       prisma:
         patterns:
           - '*prisma*'
-      trpc:
-        patterns:
-          - '@trpc*'
       types:
         patterns:
           - '@types/*'

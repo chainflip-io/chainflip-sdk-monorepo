@@ -1,4 +1,3 @@
-import * as trpcExpress from '@trpc/server/adapters/express';
 import { createExpressEndpoints } from '@ts-rest/express';
 import cors from 'cors';
 import { randomUUID } from 'crypto';
@@ -16,7 +15,6 @@ import { createIpBlacklist } from './routes/ipBlacklist.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
 import swapV2 from './routes/v2/swap.js';
-import { appRouter } from './trpc.js';
 import { lastUpdateHeader } from './utils/intercept.js';
 import logger, { logStorage } from './utils/logger.js';
 
@@ -55,8 +53,6 @@ app.get('/healthcheck', (req, res) => {
 });
 
 app.use('/v2/quote', quoteMiddleware, quoteRouterV2(quoter));
-
-app.use('/trpc', maintenanceMode, trpcExpress.createExpressMiddleware({ router: appRouter }));
 
 const contract = createApiContract(env.CHAINFLIP_NETWORK);
 createExpressEndpoints(contract, createApiRouter(contract), app, {

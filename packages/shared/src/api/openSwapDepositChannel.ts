@@ -1,27 +1,13 @@
 import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { asset, assetAndChain, chain, numericString } from '../parsers.js';
+import { assetAndChain, numericString } from '../parsers.js';
 import { ccmParamsSchema, dcaParams, fillOrKillParams } from '../schemas.js';
 import { validateAddress } from '../validation/addressValidation.js';
 
-const assets = z.union([
-  z.object({
-    srcAsset: assetAndChain,
-    destAsset: assetAndChain,
-  }),
-  /** @deprecated DEPRECATED(1.12): remove this variant */
-  z
-    .object({
-      srcAsset: asset,
-      destAsset: asset,
-      srcChain: chain,
-      destChain: chain,
-    })
-    .transform(({ srcAsset, destAsset, srcChain, destChain }) => ({
-      srcAsset: assetAndChain.parse({ asset: srcAsset, chain: srcChain }),
-      destAsset: assetAndChain.parse({ asset: destAsset, chain: destChain }),
-    })),
-]);
+const assets = z.object({
+  srcAsset: assetAndChain,
+  destAsset: assetAndChain,
+});
 
 export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
   z

@@ -59,7 +59,6 @@ packages/
 
 Configured in `tsconfig.json`:
 - `@/shared/*` → `./packages/shared/src/*`
-- `@/swap/trpc.js` → `./packages/swap/src/trpc.js`
 
 ### SDK Structure
 
