@@ -100,7 +100,7 @@ jobs:
             1. **Correctness**: Logic errors, bugs, or edge cases
             2. **Security**: Potential vulnerabilities (XSS, injection, etc.)
             3. **Performance**: Unnecessary re-renders, missing memoization, inefficient queries
-            4. **Code quality**: Readability, naming, adherence to existing patterns in CLAUDE.md
+            4. **Code quality**: Readability, naming, DRY violations, unnecessary complexity, dead code, commented-out code
 
             Keep the review concise. Only comment on issues that matter — skip style nitpicks. Use inline comments for line-specific issues
             If the changes look good, say so briefly. At the end of the review, show the model used and the estimated cost in tokens and USD.

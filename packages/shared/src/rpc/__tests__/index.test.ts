@@ -38,6 +38,33 @@ describe('getSwappingEnvironment', () => {
 
     expect(await getSwappingEnvironment({ network: 'perseverance' })).toMatchInlineSnapshot(`
       {
+        "defaultOraclePriceProtection": {
+          "Arbitrum": {
+            "ETH": 100,
+            "USDC": 50,
+            "USDT": 50,
+          },
+          "Assethub": {
+            "DOT": null,
+            "USDC": 50,
+            "USDT": 50,
+          },
+          "Bitcoin": {
+            "BTC": 100,
+          },
+          "Ethereum": {
+            "ETH": 100,
+            "FLIP": null,
+            "USDC": null,
+            "USDT": 50,
+            "WBTC": 100,
+          },
+          "Solana": {
+            "SOL": 100,
+            "USDC": 50,
+            "USDT": 50,
+          },
+        },
         "maxSwapRequestDurationBlocks": 10,
         "maxSwapRetryDurationBlocks": 10,
         "maximumSwapAmounts": {

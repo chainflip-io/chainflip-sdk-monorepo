@@ -161,8 +161,8 @@ export const calculateRecommendedLivePriceSlippage = async ({
   if (env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE) return undefined;
 
   const baseAsset = [srcAsset, destAsset].filter(
-    (asset) => asset !== 'Usdc',
-  ) as BaseChainflipAsset[];
+    (asset): asset is BaseChainflipAsset => asset !== 'Usdc',
+  );
 
   const results = await Promise.all(
     baseAsset.map((asset) => getDefaultOracleProtectionValue(asset)),
