@@ -85,8 +85,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.1.1
-        version: 2.1.1
+        specifier: 2.1.2
+        version: 2.1.2
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)
@@ -158,8 +158,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.1.1
-        version: 2.1.1
+        specifier: 2.1.2
+        version: 2.1.2
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -195,8 +195,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.8.3)
       '@chainflip/rpc':
-        specifier: 2.1.1
-        version: 2.1.1
+        specifier: 2.1.2
+        version: 2.1.2
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -259,8 +259,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       '@chainflip/rpc':
-        specifier: 2.1.1
-        version: 2.1.1
+        specifier: 2.1.2
+        version: 2.1.2
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -495,8 +495,8 @@ packages:
   '@chainflip/redis@2.1.1':
     resolution: {integrity: sha512-fRa4wLfSTw66U4SmmECX38Dqm4I2Fn5Z7Dk5H6Inv//6LiC7J7TYAoGjDM3FRoOPaPhVmltY+65cX3jPgzPIzA==}
 
-  '@chainflip/rpc@2.1.1':
-    resolution: {integrity: sha512-YS5i+hrZHbIDFEqpn5Yl/msdChihUjXcdsNj51hzGqVAfoQ+uWBCsblp0uLBKdBT3iOVMAmvfz/cPtg/ozuMVw==}
+  '@chainflip/rpc@2.1.2':
+    resolution: {integrity: sha512-CVE4xOyOODt7RsCmfGWNUruVPg5iQZayArWGGSAn9ynyuRewBk/LNiQlaSl5bzTB6b33W5uuYTUfjCKvZ+ElaQ==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -5777,7 +5777,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.1.1':
+  '@chainflip/rpc@2.1.2':
     dependencies:
       '@chainflip/utils': 2.1.2
       zod: 3.25.76

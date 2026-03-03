@@ -10,6 +10,7 @@ import {
   isLegacyChainflipAsset,
   isLegacyChainflipChain,
   AnyChainflipChain,
+  BaseChainflipAsset,
 } from '@chainflip/utils/chainflip';
 import { isNotNullish } from '@/shared/guards.js';
 import {
@@ -172,4 +173,15 @@ export const getLpBalances = async <T extends string>(
   );
 
   return accounts.filter(isNotNullish);
+};
+
+// Ethereum Usdc will always return null
+export const getDefaultOracleProtectionValue = async (asset: BaseChainflipAsset) => {
+  const environment = await cachedGetEnvironment(rpcConfig);
+
+  const defaultOracleProtectionValue = environment.swapping.defaultOraclePriceProtection;
+
+  if (!defaultOracleProtectionValue) return null;
+
+  return readAssetValue(defaultOracleProtectionValue, asset);
 };

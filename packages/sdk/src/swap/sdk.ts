@@ -11,7 +11,6 @@ import {
   internalAssetToRpcAsset,
   ChainMap,
   AssetAndChain,
-  readAssetValue,
 } from '@chainflip/utils/chainflip';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
@@ -606,17 +605,16 @@ export class SwapSDK {
     );
   }
 
+  /**
+   * @deprecated This method is deprecated and will be removed in a future release.
+   * There is no need to calculate the live price slippage tolerance percent anymore. What you give is what you get.
+   * It still returns false if LPP is not supported for the asset pair.
+   */
   async calculateLivePriceSlippageTolerancePercent(
     slippageTolerancePercent: number,
-    brokerCommissionBpsInput: number | undefined,
     quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset' | 'isOnChain'>,
   ): Promise<number | false> {
     assert(slippageTolerancePercent >= 0, 'slippageTolerancePercent must be non-negative');
-    assert(
-      brokerCommissionBpsInput === undefined || brokerCommissionBpsInput >= 0,
-      'brokerCommissionBps must be non-negative',
-    );
-    const brokerCommissionBps = await this.getCommissionBps(brokerCommissionBpsInput);
     const { assets } = await this.cache.read('networkInfo');
     const srcAsset = getInternalAsset(quote.srcAsset);
     const destAsset = getInternalAsset(quote.destAsset);
@@ -629,19 +627,6 @@ export class SwapSDK {
       return false;
     }
 
-    const env = await this.getStateChainEnvironment();
-
-    const networkFeeRates =
-      env.swapping.networkFees[quote.isOnChain ? 'internalSwapNetworkFee' : 'regularNetworkFee']
-        .rates;
-
-    // divide by 100 to convert from hundredth bps to bps
-    const networkFeeBps =
-      Math.max(
-        Number(readAssetValue(networkFeeRates, srcAsset)),
-        Number(readAssetValue(networkFeeRates, destAsset)),
-      ) / 100;
-
-    return slippageTolerancePercent + networkFeeBps / 100 + brokerCommissionBps / 100;
+    return slippageTolerancePercent;
   }
 }

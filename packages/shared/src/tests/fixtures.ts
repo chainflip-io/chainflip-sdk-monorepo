@@ -27,26 +27,26 @@ export const createChainAssetMap = <T>(
 ): ChainAssetMap<T> => ({
   Bitcoin: { BTC: overrides?.Btc ?? defaultValue },
   Ethereum: {
-    ETH: overrides?.Eth ?? defaultValue,
-    FLIP: overrides?.Flip ?? defaultValue,
-    USDC: overrides?.Usdc ?? defaultValue,
-    USDT: overrides?.Usdt ?? defaultValue,
-    WBTC: overrides?.Wbtc ?? defaultValue,
+    ETH: overrides?.Eth === undefined ? defaultValue : overrides.Eth,
+    FLIP: overrides?.Flip === undefined ? defaultValue : overrides.Flip,
+    USDC: overrides?.Usdc === undefined ? defaultValue : overrides.Usdc,
+    USDT: overrides?.Usdt === undefined ? defaultValue : overrides.Usdt,
+    WBTC: overrides?.Wbtc === undefined ? defaultValue : overrides.Wbtc,
   },
   Arbitrum: {
-    ETH: overrides?.ArbEth ?? defaultValue,
-    USDC: overrides?.ArbUsdc ?? defaultValue,
-    USDT: overrides?.ArbUsdt ?? defaultValue,
+    ETH: overrides?.ArbEth === undefined ? defaultValue : overrides.ArbEth,
+    USDC: overrides?.ArbUsdc === undefined ? defaultValue : overrides.ArbUsdc,
+    USDT: overrides?.ArbUsdt === undefined ? defaultValue : overrides.ArbUsdt,
   },
   Solana: {
-    SOL: overrides?.Sol ?? defaultValue,
-    USDC: overrides?.SolUsdc ?? defaultValue,
-    USDT: overrides?.SolUsdt ?? defaultValue,
+    SOL: overrides?.Sol === undefined ? defaultValue : overrides.Sol,
+    USDC: overrides?.SolUsdc === undefined ? defaultValue : overrides.SolUsdc,
+    USDT: overrides?.SolUsdt === undefined ? defaultValue : overrides.SolUsdt,
   },
   Assethub: {
-    DOT: overrides?.HubDot ?? defaultValue,
-    USDC: overrides?.HubUsdc ?? defaultValue,
-    USDT: overrides?.HubUsdt ?? defaultValue,
+    DOT: overrides?.HubDot === undefined ? defaultValue : overrides.HubDot,
+    USDC: overrides?.HubUsdc === undefined ? defaultValue : overrides.HubUsdc,
+    USDT: overrides?.HubUsdt === undefined ? defaultValue : overrides.HubUsdt,
   },
 });
 
