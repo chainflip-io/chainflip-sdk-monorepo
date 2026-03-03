@@ -91,6 +91,18 @@ export const swappingEnvironment = ({
         },
       },
     },
+    default_oracle_price_protection: createChainAssetMap(100, {
+      Usdc: null,
+      Flip: null,
+      HubDot: null,
+      Usdt: 50,
+      ArbUsdc: 50,
+      SolUsdc: 50,
+      HubUsdc: 50,
+      HubUsdt: 50,
+      SolUsdt: 50,
+      ArbUsdt: 50,
+    }),
   },
 });
 
@@ -321,6 +333,8 @@ export const cfAccountInfo = () => ({
         },
       ],
     }),
+    lending_positions: [],
+    collateral_balances: [],
   },
   id: 'some-id',
 });

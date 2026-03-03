@@ -384,7 +384,6 @@ describe('server', () => {
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
-
       expect(status).toBe(400);
       expect(body.message).toBe('insufficient liquidity for the requested amount');
       expect(sendSpy).toHaveBeenCalledTimes(1);
