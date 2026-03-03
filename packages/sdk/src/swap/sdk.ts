@@ -61,7 +61,6 @@ export type SwapSDKOptions = {
   backendUrl?: string;
   broker?: {
     url: string;
-    // this property and the assertion can be removed
   };
   rpcUrl?: string;
   enabledFeatures?: {

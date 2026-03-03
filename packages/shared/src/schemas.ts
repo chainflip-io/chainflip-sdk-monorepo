@@ -151,7 +151,7 @@ export const ccmParamsSchema = z
     ccmAdditionalData: ccmAdditionalData ?? '0x',
   }));
 
-export type CcmParams = Omit<z.input<typeof ccmParamsSchema>, 'cfParameters'>;
+export type CcmParams = z.input<typeof ccmParamsSchema>;
 
 export const affiliateBroker = z
   .object({
