@@ -38,11 +38,19 @@ jobs:
             echo "publish_cli=true" >> $GITHUB_OUTPUT
             echo "publish_sdk=false" >> $GITHUB_OUTPUT
             echo "PACKAGE_JSON_PATH=packages/cli/package.json" >> $GITHUB_ENV
+            if [[ $commit_message =~ @chainflip/cli/v[0-9]+\.[0-9]+\.[0-9]+[^@]*@([a-zA-Z0-9_-]+) ]]; then
+              echo "Custom tag detected: ${BASH_REMATCH[1]}"
+              echo "custom_tag=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            fi
           elif  [[ $commit_message =~ @chainflip/sdk/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
             echo "Publishing SDK package"
             echo "publish_cli=false" >> $GITHUB_OUTPUT
             echo "publish_sdk=true" >> $GITHUB_OUTPUT
             echo "PACKAGE_JSON_PATH=packages/sdk/package.json" >> $GITHUB_ENV
+            if [[ $commit_message =~ @chainflip/sdk/v[0-9]+\.[0-9]+\.[0-9]+[^@]*@([a-zA-Z0-9_-]+) ]]; then
+              echo "Custom tag detected: ${BASH_REMATCH[1]}"
+              echo "custom_tag=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            fi
           else
             echo "No package name found in commit message"
             echo "publish_cli=false" >> $GITHUB_OUTPUT
@@ -53,8 +61,13 @@ jobs:
         id: check-version
         if: steps.check-commit-message.outputs.publish_cli == 'true' || steps.check-commit-message.outputs.publish_sdk == 'true'
         run: |
+          custom_tag="${{ steps.check-commit-message.outputs.custom_tag }}"
           version=$(jq -r .version $PACKAGE_JSON_PATH)
-          if [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ -n "$custom_tag" ]]; then
+            echo "Custom tag provided: $custom_tag"
+            echo "publish_tag=$custom_tag" >> $GITHUB_OUTPUT
+            echo "git_tag=$version" >> $GITHUB_OUTPUT
+          elif [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Stable version detected: $version"
             echo "publish_tag=latest" >> $GITHUB_OUTPUT
             echo "git_tag=$version" >> $GITHUB_OUTPUT

@@ -6,15 +6,12 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as prettier from 'prettier';
 import { createInterface } from 'readline/promises';
-import * as url from 'url';
 import * as util from 'util';
 import yargs from 'yargs/yargs';
 
 const execAsync = util.promisify(exec);
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-
-const root = path.join(__dirname, '..');
+const root = path.join(import.meta.dirname, '..');
 
 const args = yargs(process.argv)
   .option('new-version', {
@@ -35,9 +32,14 @@ const args = yargs(process.argv)
     demandOption: true,
     choices: ['cli', 'sdk'],
   })
+  .option('tag', {
+    alias: 't',
+    type: 'string',
+    description: 'custom npm tag to publish with (e.g. "next")',
+  })
   .option('dry-run', {
     demandOption: false,
-    default: !['0', 'false'].includes(process.env.DRY_RUN?.toLowerCase() as string),
+    default: !['0', 'false'].includes(process.env.DRY_RUN?.toLowerCase() ?? 'true'),
     boolean: true,
     description:
       'whether the script should run in dry run mode, can be disabled with `DRY_RUN=false` or `--no-dry-run`. ' +
@@ -99,12 +101,13 @@ let isDryRun = args['dry-run'];
 
 if (isDryRun) console.log('DRY RUN MODE');
 
-const execCommand = async (cmd: string) => {
-  console.log('executing command %O', cmd);
+const execCommand = async (cmd: string, print = false) => {
+  if (!print) console.log('executing command %O', cmd);
 
   if (!isDryRun) {
     try {
-      await execAsync(cmd);
+      const { stdout } = await execAsync(cmd);
+      if (print) console.log(stdout.trim());
     } catch (error) {
       console.error(error);
       process.exit(1);
@@ -130,14 +133,16 @@ const updateReleases = async () => {
 
 const openVersionPR = async () => {
   await updateReleases();
-  const message = `chore(${args.package}): release ${packageJSON.name}/v${newVersion}`;
-  const newBranch = `chore/release-${newVersion}`;
+  const tagSuffix = args.tag ? `@${args.tag}` : '';
+  const message = `chore(${args.package}): release ${packageJSON.name}/v${newVersion}${tagSuffix}`;
+  const newBranch = `chore/release-${args.package}-${newVersion}`;
   await execCommand(`git switch -c ${newBranch}`);
   await execCommand(`pnpm --filter ${packageJSON.name} exec pnpm version ${newVersion}`);
   await execCommand(`git add .`);
   await execCommand(`git commit -m "${message}" --no-verify`);
   await execCommand(`git push origin ${newBranch}`);
   await execCommand(`gh pr create --title "${message}" --body ""`);
+  await execCommand(`echo "$(gh pr view --json url --jq '.url')"`, true);
 };
 
 await openVersionPR();
@@ -150,7 +155,7 @@ if (isDryRun) {
 
   rl.close();
 
-  if (runAgain?.trim().toLowerCase() === 'y') {
+  if (runAgain.trim().toLowerCase() === 'y') {
     isDryRun = false;
     console.log('running without dry run mode');
     await openVersionPR();
