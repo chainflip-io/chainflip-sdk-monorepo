@@ -9,6 +9,34 @@ which it is deprecated.
 
 ## Unreleased
 
+## 2.1.0
+
+### Added
+
+- New assets: `Wbtc` (Wrapped Bitcoin on Ethereum), `ArbUsdt` (USDT on
+  Arbitrum), and `SolUsdt` (USDT on Solana).
+
+### Removed
+
+- `SwapSDK.prototype.calculateLivePriceSlippageTolerancePercent` has been
+  removed. The quote response's `recommendedLivePriceSlippageTolerancePercent`
+  should be used instead, or you can provide the desired slippage tolerance
+  directly
+- `SwapSDKOptions`: The deprecated `broker.commissionBps` option has been
+  removed. Set the `brokerCommissionBps` param on
+  `SwapSDK.prototype.encodeVaultSwapData` and
+  `SwapSDK.prototype.requestDepositAddressV2` instead.
+- The deprecated `ccmParams.cfParameters` property has been removed from
+  `DepositAddressRequest` and `DepositAddressRequestV2`. Use
+  `ccmParams.ccmAdditionalData` instead.
+
+### Dependencies
+
+- `@chainflip/rpc` upgraded to 2.1.3
+- `@chainflip/bitcoin` upgraded to 2.1.1
+- `@chainflip/solana` upgraded to 2.2.2
+- `@chainflip/utils` upgraded to 2.1.4
+
 ## 2.0.3
 
 ### Added
