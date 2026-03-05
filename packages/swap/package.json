@@ -50,7 +50,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "eslint-plugin-n": "^17.20.0",
     "graphql": "^16.11.0",
-    "prisma": "^6.10.1",
+    "prisma": "^7.4.2",
     "socket.io-client": "^4.8.1",
     "supertest": "^7.1.1"
   },
@@ -67,7 +67,8 @@
     "@chainflip/utils": "2.1.4",
     "@polkadot/api": "^15.10.2",
     "@polkadot/types": "^15.10.2",
-    "@prisma/client": "^6.10.1",
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.4.2",
     "@ts-rest/express": "^3.52.1",
     "axios": "^1.10.0",
     "bignumber.js": "^9.3.0",
