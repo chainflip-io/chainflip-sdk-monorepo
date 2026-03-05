@@ -4332,38 +4332,4 @@ describe(SwapSDK, () => {
       expect(await sdk.checkBoostEnabled()).toBe(false);
     });
   });
-
-  describe(SwapSDK.prototype.calculateLivePriceSlippageTolerancePercent, () => {
-    const slippageTolerancePercent = 1;
-
-    it('calculates the live price slippage tolerance percent correctly', async () => {
-      expect(
-        await sdk.calculateLivePriceSlippageTolerancePercent(slippageTolerancePercent, {
-          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
-          destAsset: { asset: 'ETH', chain: 'Ethereum' },
-          isOnChain: false,
-        }),
-      ).toBe(1);
-    });
-
-    it('calculates the live price slippage tolerance percent correctly (internal)', async () => {
-      expect(
-        await sdk.calculateLivePriceSlippageTolerancePercent(slippageTolerancePercent, {
-          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
-          destAsset: { asset: 'ETH', chain: 'Ethereum' },
-          isOnChain: true,
-        }),
-      ).toBe(1);
-    });
-
-    it('returns false if LPP is not supported', async () => {
-      expect(
-        await sdk.calculateLivePriceSlippageTolerancePercent(slippageTolerancePercent, {
-          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
-          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
-          isOnChain: false,
-        }),
-      ).toBe(false);
-    });
-  });
 });

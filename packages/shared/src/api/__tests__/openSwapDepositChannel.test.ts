@@ -3,10 +3,8 @@ import { getOpenSwapDepositChannelSchema } from '../openSwapDepositChannel.js';
 
 describe(getOpenSwapDepositChannelSchema, () => {
   const swapBody = {
-    srcAsset: 'BTC',
-    srcChain: 'Bitcoin',
-    destAsset: 'ETH',
-    destChain: 'Ethereum',
+    srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+    destAsset: { asset: 'ETH', chain: 'Ethereum' },
     destAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
     amount: '123',
     fillOrKillParams: {
@@ -66,7 +64,7 @@ describe(getOpenSwapDepositChannelSchema, () => {
         ...swapBody,
         ccmParams: {
           message: '0xdeadc0de',
-          cfParameters: '0xcafebabe',
+          ccmAdditionalData: '0xcafebabe',
         },
       }),
     ).toThrow();
@@ -81,7 +79,7 @@ describe(getOpenSwapDepositChannelSchema, () => {
         ccmParams: {
           gasBudget: '123',
           message: '0xdeadc0de',
-          cfParameters: '0xcafebabe',
+          ccmAdditional: '0xcafebabe',
         },
       }),
     ).toThrow();

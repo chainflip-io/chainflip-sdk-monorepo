@@ -61,9 +61,6 @@ export type SwapSDKOptions = {
   backendUrl?: string;
   broker?: {
     url: string;
-    // this property and the assertion can be removed
-    /** @deprecated DEPRECATED(1.12) set the brokerCommissionBps param of the requestDepositAddress and encodeVaultSwapData method instead */
-    commissionBps?: never;
   };
   rpcUrl?: string;
   enabledFeatures?: {
@@ -101,7 +98,6 @@ export class SwapSDK {
   private dcaV2Enabled = false;
 
   constructor(options: SwapSDKOptions = {}) {
-    assert(options.broker?.commissionBps === undefined, 'broker.commissionBps is deprecated');
     const network = options.network ?? 'perseverance';
     this.options = {
       ...options,
@@ -603,30 +599,5 @@ export class SwapSDK {
     throw new Error(
       'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
     );
-  }
-
-  /**
-   * @deprecated This method is deprecated and will be removed in a future release.
-   * There is no need to calculate the live price slippage tolerance percent anymore. What you give is what you get.
-   * It still returns false if LPP is not supported for the asset pair.
-   */
-  async calculateLivePriceSlippageTolerancePercent(
-    slippageTolerancePercent: number,
-    quote: Pick<Quote | BoostQuote, 'srcAsset' | 'destAsset' | 'isOnChain'>,
-  ): Promise<number | false> {
-    assert(slippageTolerancePercent >= 0, 'slippageTolerancePercent must be non-negative');
-    const { assets } = await this.cache.read('networkInfo');
-    const srcAsset = getInternalAsset(quote.srcAsset);
-    const destAsset = getInternalAsset(quote.destAsset);
-
-    if (
-      ![srcAsset, destAsset].every(
-        (asset) => assets.find((a) => a.asset === asset)?.livePriceProtectionEnabled,
-      )
-    ) {
-      return false;
-    }
-
-    return slippageTolerancePercent;
   }
 }
