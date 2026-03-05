@@ -91,6 +91,7 @@ export const getOriginInfo = async (
   origin: Origin,
   requestInfo: ReturnType<typeof getRequestInfo>,
 ) => {
+  // TODO(2.1): remove this branch once all networks are upgraded
   if (requestInfo.type === 'ACCOUNT_CREATION') {
     const channel = await prisma.accountCreationDepositChannel.findFirstOrThrow({
       where: { chain: assetConstants[srcAsset].chain, lpAccountId: requestInfo.lpAccountId },
@@ -106,21 +107,35 @@ export const getOriginInfo = async (
   }
 
   if (origin.__kind === 'DepositChannel') {
-    const depositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
-      where: {
-        srcChain: assetConstants[srcAsset].chain,
-        depositAddress: origin.depositAddress.address,
-        channelId: origin.channelId,
-      },
-      orderBy: {
-        issuedBlock: 'desc',
-      },
+    const depositChannel = await prisma.swapDepositChannel.findFirst({
+      where: { srcChain: assetConstants[srcAsset].chain, channelId: origin.channelId },
+      orderBy: { issuedBlock: 'desc' },
       select: { id: true },
     });
 
+    if (depositChannel) {
+      return {
+        originType: 'DEPOSIT_CHANNEL',
+        swapDepositChannelId: depositChannel.id,
+        brokerId: origin.brokerId,
+      } as const;
+    }
+
+    const accountCreationDepositChannel = await prisma.accountCreationDepositChannel.findFirst({
+      where: { chain: assetConstants[srcAsset].chain, channelId: origin.channelId },
+      orderBy: { issuedBlock: 'desc' },
+      select: { id: true },
+    });
+
+    if (!accountCreationDepositChannel) {
+      throw new Error(
+        `no matching deposit channel found for origin channelId: ${origin.channelId}`,
+      );
+    }
+
     return {
       originType: 'DEPOSIT_CHANNEL',
-      swapDepositChannelId: depositChannel.id,
+      accountCreationDepositChannelId: accountCreationDepositChannel.id,
       brokerId: origin.brokerId,
     } as const;
   }
