@@ -83,13 +83,13 @@ importers:
     dependencies:
       '@chainflip/bitcoin':
         specifier: 2.1.1
-        version: 2.1.1(typescript@5.8.3)
+        version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.1.2
-        version: 2.1.2
+        specifier: 2.1.3
+        version: 2.1.3
       '@chainflip/solana':
         specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
         specifier: 2.1.4
         version: 2.1.4
@@ -114,13 +114,13 @@ importers:
         version: 17.0.33
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0)
 
   packages/examples:
     dependencies:
       '@solana/web3.js':
         specifier: ^1.98.2
-        version: 1.98.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 1.98.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       bitcoin-core:
         specifier: ^5.0.0
         version: 5.0.0
@@ -135,7 +135,7 @@ importers:
         version: 16.5.0
       ecpair:
         specifier: 3.0.0-rc.0
-        version: 3.0.0-rc.0(typescript@5.8.3)
+        version: 3.0.0-rc.0(typescript@5.9.3)
       ethers:
         specifier: ^6.14.4
         version: 6.14.4(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -156,13 +156,13 @@ importers:
     dependencies:
       '@chainflip/bitcoin':
         specifier: 2.1.1
-        version: 2.1.1(typescript@5.8.3)
+        version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.1.2
-        version: 2.1.2
+        specifier: 2.1.3
+        version: 2.1.3
       '@chainflip/solana':
         specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: 2.1.4
         version: 2.1.4
@@ -184,19 +184,19 @@ importers:
     devDependencies:
       tsup:
         specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0)
 
   packages/shared:
     dependencies:
       '@chainflip/bitcoin':
         specifier: 2.1.1
-        version: 2.1.1(typescript@5.8.3)
+        version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.1.2
-        version: 2.1.2
+        specifier: 2.1.3
+        version: 2.1.3
       '@chainflip/solana':
         specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: 2.1.4
         version: 2.1.4
@@ -230,16 +230,16 @@ importers:
         version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.8.3))(typescript@5.8.3)
+        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
       eslint-plugin-n:
         specifier: ^17.20.0
-        version: 17.20.0(eslint@8.57.1)(typescript@5.8.3)
+        version: 17.20.0(eslint@8.57.1)(typescript@5.9.3)
       typechain:
         specifier: ^8.3.2
-        version: 8.3.2(typescript@5.8.3)
+        version: 8.3.2(typescript@5.9.3)
       winston:
         specifier: ^3.17.0
         version: 3.17.0
@@ -248,7 +248,7 @@ importers:
     dependencies:
       '@chainflip/bitcoin':
         specifier: 2.1.1
-        version: 2.1.1(typescript@5.8.3)
+        version: 2.1.1(typescript@5.9.3)
       '@chainflip/processor':
         specifier: 2.1.3
         version: 2.1.3
@@ -256,11 +256,11 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       '@chainflip/rpc':
-        specifier: 2.1.2
-        version: 2.1.2
+        specifier: 2.1.3
+        version: 2.1.3
       '@chainflip/solana':
         specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: 2.1.4
         version: 2.1.4
@@ -272,7 +272,7 @@ importers:
         version: 15.10.2
       '@prisma/client':
         specifier: ^6.10.1
-        version: 6.10.1(prisma@6.10.1(typescript@5.8.3))(typescript@5.8.3)
+        version: 6.10.1(prisma@6.10.1(typescript@5.9.3))(typescript@5.9.3)
       '@ts-rest/express':
         specifier: ^3.52.1
         version: 3.52.1(@ts-rest/core@3.52.1(@types/node@24.0.4)(zod@3.25.76))(express@4.21.2)(zod@3.25.76)
@@ -330,7 +330,7 @@ importers:
         version: 1.45.1
       '@graphql-codegen/cli':
         specifier: ^5.0.7
-        version: 5.0.7(@types/node@24.0.4)(bufferutil@4.1.0)(enquirer@2.4.1)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        version: 5.0.7(@types/node@24.0.4)(bufferutil@4.1.0)(enquirer@2.4.1)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@graphql-codegen/client-preset':
         specifier: ^4.8.3
         version: 4.8.3(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)
@@ -363,13 +363,13 @@ importers:
         version: 3.2.4(vitest@3.2.4(@types/node@24.0.4)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))
       eslint-plugin-n:
         specifier: ^17.20.0
-        version: 17.20.0(eslint@8.57.1)(typescript@5.8.3)
+        version: 17.20.0(eslint@8.57.1)(typescript@5.9.3)
       graphql:
         specifier: ^16.11.0
         version: 16.11.0
       prisma:
         specifier: ^6.10.1
-        version: 6.10.1(typescript@5.8.3)
+        version: 6.10.1(typescript@5.9.3)
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -489,8 +489,8 @@ packages:
   '@chainflip/redis@2.1.1':
     resolution: {integrity: sha512-fRa4wLfSTw66U4SmmECX38Dqm4I2Fn5Z7Dk5H6Inv//6LiC7J7TYAoGjDM3FRoOPaPhVmltY+65cX3jPgzPIzA==}
 
-  '@chainflip/rpc@2.1.2':
-    resolution: {integrity: sha512-CVE4xOyOODt7RsCmfGWNUruVPg5iQZayArWGGSAn9ynyuRewBk/LNiQlaSl5bzTB6b33W5uuYTUfjCKvZ+ElaQ==}
+  '@chainflip/rpc@2.1.3':
+    resolution: {integrity: sha512-1Xyq6GFVTBZ79BbwzLclVQrAynquR/UdQ9aHqULbZ+iy3CPsv8qpDxvscyBTy17zpdMHQIIQlTYalTyLDGNDIw==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -1361,67 +1361,56 @@ packages:
     resolution: {integrity: sha512-x+e/Z9H0RAWckn4V2OZZl6EmV0L2diuX3QB0uM1r6BvhUIv6xBPL5mrAX2E3e8N8rEHVPwFfz/ETUbV4oW9+lQ==}
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.44.0':
     resolution: {integrity: sha512-1exwiBFf4PU/8HvI8s80icyCcnAIB86MCBdst51fwFmH5dyeoWVPVgmQPcKrMtBQ0W5pAs7jBCWuRXgEpRzSCg==}
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.44.0':
     resolution: {integrity: sha512-ZTR2mxBHb4tK4wGf9b8SYg0Y6KQPjGpR4UWwTFdnmjB4qRtoATZ5dWn3KsDwGa5Z2ZBOE7K52L36J9LueKBdOQ==}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.44.0':
     resolution: {integrity: sha512-GFWfAhVhWGd4r6UxmnKRTBwP1qmModHtd5gkraeW2G490BpFOZkFtem8yuX2NyafIP/mGpRJgTJ2PwohQkUY/Q==}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-loongarch64-gnu@4.44.0':
     resolution: {integrity: sha512-xw+FTGcov/ejdusVOqKgMGW3c4+AgqrfvzWEVXcNP6zq2ue+lsYUgJ+5Rtn/OTJf7e2CbgTFvzLW2j0YAtj0Gg==}
     cpu: [loong64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-powerpc64le-gnu@4.44.0':
     resolution: {integrity: sha512-bKGibTr9IdF0zr21kMvkZT4K6NV+jjRnBoVMt2uNMG0BYWm3qOVmYnXKzx7UhwrviKnmK46IKMByMgvpdQlyJQ==}
     cpu: [ppc64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-gnu@4.44.0':
     resolution: {integrity: sha512-vV3cL48U5kDaKZtXrti12YRa7TyxgKAIDoYdqSIOMOFBXqFj2XbChHAtXquEn2+n78ciFgr4KIqEbydEGPxXgA==}
     cpu: [riscv64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.44.0':
     resolution: {integrity: sha512-TDKO8KlHJuvTEdfw5YYFBjhFts2TR0VpZsnLLSYmB7AaohJhM8ctDSdDnUGq77hUh4m/djRafw+9zQpkOanE2Q==}
     cpu: [riscv64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.44.0':
     resolution: {integrity: sha512-8541GEyktXaw4lvnGp9m84KENcxInhAt6vPWJ9RodsB/iGjHoMB2Pp5MVBCiKIRxrxzJhGCxmNzdu+oDQ7kwRA==}
     cpu: [s390x]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.44.0':
     resolution: {integrity: sha512-iUVJc3c0o8l9Sa/qlDL2Z9UP92UZZW1+EmQ4xfjTc1akr0iUFZNfxrXJ/R1T90h/ILm9iXEY6+iPrmYB3pXKjw==}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.44.0':
     resolution: {integrity: sha512-PQUobbhLTQT5yz/SPg116VJBgz+XOtXt8D1ck+sfJJhuEsMj2jSej5yTdp8CvWBSceu+WW+ibVL6dm0ptG5fcA==}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-win32-arm64-msvc@4.44.0':
     resolution: {integrity: sha512-M0CpcHf8TWn+4oTxJfh7LQuTuaYeXGbk0eageVjQCKzYLsajWS/lFC94qlRqOlyC2KvRT90ZrfXULYmukeIy7w==}
@@ -3123,19 +3112,20 @@ packages:
 
   glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@6.0.4:
     resolution: {integrity: sha512-MKZeRNyYZAVVVG1oZeLaWie1uweH40m9AZwIwxyPbTSX4hHrVYSzLg0Ro5Z5R7XKkIX+Cc6oD1rqeDJnwsB8/A==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@7.1.7:
     resolution: {integrity: sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   globals@11.12.0:
     resolution: {integrity: sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==}
@@ -5212,6 +5202,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   typical@4.0.0:
     resolution: {integrity: sha512-VAH4IvQ7BDFYglMd7BPRDfLgxZZX4O4TFcRDA6EN5X7erNJJq+McIEp8np9aVtxrCJ6qx4GTYVfOWNjcqwZgRw==}
     engines: {node: '>=8'}
@@ -5755,11 +5750,11 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@chainflip/bitcoin@2.1.1(typescript@5.8.3)':
+  '@chainflip/bitcoin@2.1.1(typescript@5.9.3)':
     dependencies:
       '@chainflip/utils': 2.1.2
       bignumber.js: 9.3.1
-      bitcoinjs-lib: 7.0.1(typescript@5.8.3)
+      bitcoinjs-lib: 7.0.1(typescript@5.9.3)
       scale-ts: 1.6.1
       zod: 3.25.76
     transitivePeerDependencies:
@@ -5779,7 +5774,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.1.2':
+  '@chainflip/rpc@2.1.3':
     dependencies:
       '@chainflip/utils': 2.1.2
       zod: 3.25.76
@@ -5789,12 +5784,12 @@ snapshots:
       '@chainflip/utils': 0.8.22
       scale-ts: 1.6.1
 
-  '@chainflip/solana@2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/scale': 1.11.0
       '@chainflip/utils': 2.1.2
-      '@coral-xyz/anchor': 0.32.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@coral-xyz/anchor': 0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       bn.js: 5.2.3
       scale-ts: 1.6.1
       zod: 3.25.76
@@ -5804,12 +5799,12 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@chainflip/solana@2.2.2(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)':
+  '@chainflip/solana@2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
     dependencies:
       '@chainflip/scale': 1.11.0
       '@chainflip/utils': 2.1.2
-      '@coral-xyz/anchor': 0.32.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)
+      '@coral-xyz/anchor': 0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       bn.js: 5.2.3
       scale-ts: 1.6.1
       zod: 3.25.76
@@ -5843,12 +5838,12 @@ snapshots:
 
   '@coral-xyz/anchor-errors@0.31.1': {}
 
-  '@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@coral-xyz/anchor-errors': 0.31.1
-      '@coral-xyz/borsh': 0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10))
+      '@coral-xyz/borsh': 0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))
       '@noble/hashes': 1.8.0
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       bn.js: 5.2.3
       bs58: 4.0.1
       buffer-layout: 1.2.2
@@ -5864,12 +5859,12 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)':
+  '@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
     dependencies:
       '@coral-xyz/anchor-errors': 0.31.1
-      '@coral-xyz/borsh': 0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6))
+      '@coral-xyz/borsh': 0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6))
       '@noble/hashes': 1.8.0
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)
+      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       bn.js: 5.2.3
       bs58: 4.0.1
       buffer-layout: 1.2.2
@@ -5885,15 +5880,15 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@coral-xyz/borsh@0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10))':
+  '@coral-xyz/borsh@0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))':
     dependencies:
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       bn.js: 5.2.3
       buffer-layout: 1.2.2
 
-  '@coral-xyz/borsh@0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6))':
+  '@coral-xyz/borsh@0.31.1(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6))':
     dependencies:
-      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)
+      '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       bn.js: 5.2.3
       buffer-layout: 1.2.2
 
@@ -6218,7 +6213,7 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.6.3
 
-  '@graphql-codegen/cli@5.0.7(@types/node@24.0.4)(bufferutil@4.1.0)(enquirer@2.4.1)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@graphql-codegen/cli@5.0.7(@types/node@24.0.4)(bufferutil@4.1.0)(enquirer@2.4.1)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@babel/generator': 7.27.5
       '@babel/template': 7.27.2
@@ -6238,11 +6233,11 @@ snapshots:
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@whatwg-node/fetch': 0.10.8
       chalk: 4.1.2
-      cosmiconfig: 8.3.6(typescript@5.8.3)
+      cosmiconfig: 8.3.6(typescript@5.9.3)
       debounce: 1.2.1
       detect-indent: 6.1.0
       graphql: 16.11.0
-      graphql-config: 5.1.5(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@5.0.10)
+      graphql-config: 5.1.5(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       inquirer: 8.2.6
       is-glob: 4.0.3
       jiti: 1.21.7
@@ -7056,10 +7051,10 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@prisma/client@6.10.1(prisma@6.10.1(typescript@5.8.3))(typescript@5.8.3)':
+  '@prisma/client@6.10.1(prisma@6.10.1(typescript@5.9.3))(typescript@5.9.3)':
     optionalDependencies:
-      prisma: 6.10.1(typescript@5.8.3)
-      typescript: 5.8.3
+      prisma: 6.10.1(typescript@5.9.3)
+      typescript: 5.9.3
 
   '@prisma/config@6.10.1':
     dependencies:
@@ -7160,47 +7155,47 @@ snapshots:
     dependencies:
       buffer: 6.0.3
 
-  '@solana/codecs-core@2.1.1(typescript@5.8.3)':
+  '@solana/codecs-core@2.1.1(typescript@5.9.3)':
     dependencies:
-      '@solana/errors': 2.1.1(typescript@5.8.3)
-      typescript: 5.8.3
+      '@solana/errors': 2.1.1(typescript@5.9.3)
+      typescript: 5.9.3
 
-  '@solana/codecs-core@2.3.0(typescript@5.8.3)':
+  '@solana/codecs-core@2.3.0(typescript@5.9.3)':
     dependencies:
-      '@solana/errors': 2.3.0(typescript@5.8.3)
-      typescript: 5.8.3
+      '@solana/errors': 2.3.0(typescript@5.9.3)
+      typescript: 5.9.3
 
-  '@solana/codecs-numbers@2.1.1(typescript@5.8.3)':
+  '@solana/codecs-numbers@2.1.1(typescript@5.9.3)':
     dependencies:
-      '@solana/codecs-core': 2.1.1(typescript@5.8.3)
-      '@solana/errors': 2.1.1(typescript@5.8.3)
-      typescript: 5.8.3
+      '@solana/codecs-core': 2.1.1(typescript@5.9.3)
+      '@solana/errors': 2.1.1(typescript@5.9.3)
+      typescript: 5.9.3
 
-  '@solana/codecs-numbers@2.3.0(typescript@5.8.3)':
+  '@solana/codecs-numbers@2.3.0(typescript@5.9.3)':
     dependencies:
-      '@solana/codecs-core': 2.3.0(typescript@5.8.3)
-      '@solana/errors': 2.3.0(typescript@5.8.3)
-      typescript: 5.8.3
+      '@solana/codecs-core': 2.3.0(typescript@5.9.3)
+      '@solana/errors': 2.3.0(typescript@5.9.3)
+      typescript: 5.9.3
 
-  '@solana/errors@2.1.1(typescript@5.8.3)':
+  '@solana/errors@2.1.1(typescript@5.9.3)':
     dependencies:
       chalk: 5.4.1
       commander: 13.1.0
-      typescript: 5.8.3
+      typescript: 5.9.3
 
-  '@solana/errors@2.3.0(typescript@5.8.3)':
+  '@solana/errors@2.3.0(typescript@5.9.3)':
     dependencies:
       chalk: 5.6.2
       commander: 14.0.3
-      typescript: 5.8.3
+      typescript: 5.9.3
 
-  '@solana/web3.js@1.98.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@solana/web3.js@1.98.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@babel/runtime': 7.27.6
       '@noble/curves': 1.9.2
       '@noble/hashes': 1.8.0
       '@solana/buffer-layout': 4.0.1
-      '@solana/codecs-numbers': 2.1.1(typescript@5.8.3)
+      '@solana/codecs-numbers': 2.1.1(typescript@5.9.3)
       agentkeepalive: 4.6.0
       bn.js: 5.2.2
       borsh: 0.7.0
@@ -7217,13 +7212,13 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@babel/runtime': 7.28.6
       '@noble/curves': 1.9.7
       '@noble/hashes': 1.8.0
       '@solana/buffer-layout': 4.0.1
-      '@solana/codecs-numbers': 2.3.0(typescript@5.8.3)
+      '@solana/codecs-numbers': 2.3.0(typescript@5.9.3)
       agentkeepalive: 4.6.0
       bn.js: 5.2.3
       borsh: 0.7.0
@@ -7240,13 +7235,13 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.8.3)(utf-8-validate@6.0.6)':
+  '@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
     dependencies:
       '@babel/runtime': 7.28.6
       '@noble/curves': 1.9.7
       '@noble/hashes': 1.8.0
       '@solana/buffer-layout': 4.0.1
-      '@solana/codecs-numbers': 2.3.0(typescript@5.8.3)
+      '@solana/codecs-numbers': 2.3.0(typescript@5.9.3)
       agentkeepalive: 4.6.0
       bn.js: 5.2.3
       borsh: 0.7.0
@@ -7320,13 +7315,13 @@ snapshots:
     optionalDependencies:
       zod: 3.25.76
 
-  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.8.3))(typescript@5.8.3)':
+  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
       ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       lodash: 4.17.21
-      ts-essentials: 7.0.3(typescript@5.8.3)
-      typechain: 8.3.2(typescript@5.8.3)
-      typescript: 5.8.3
+      ts-essentials: 7.0.3(typescript@5.9.3)
+      typechain: 8.3.2(typescript@5.9.3)
+      typescript: 5.9.3
 
   '@types/bn.js@5.2.0':
     dependencies:
@@ -7500,6 +7495,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@typescript-eslint/project-service@8.35.0(typescript@5.9.3)':
+    dependencies:
+      '@typescript-eslint/tsconfig-utils': 8.35.0(typescript@5.9.3)
+      '@typescript-eslint/types': 8.35.0
+      debug: 4.4.3
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/scope-manager@6.21.0':
     dependencies:
       '@typescript-eslint/types': 6.21.0
@@ -7518,6 +7522,10 @@ snapshots:
   '@typescript-eslint/tsconfig-utils@8.35.0(typescript@5.8.3)':
     dependencies:
       typescript: 5.8.3
+
+  '@typescript-eslint/tsconfig-utils@8.35.0(typescript@5.9.3)':
+    dependencies:
+      typescript: 5.9.3
 
   '@typescript-eslint/type-utils@7.18.0(eslint@8.57.1)(typescript@5.8.3)':
     dependencies:
@@ -7583,6 +7591,22 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@typescript-eslint/typescript-estree@8.35.0(typescript@5.9.3)':
+    dependencies:
+      '@typescript-eslint/project-service': 8.35.0(typescript@5.9.3)
+      '@typescript-eslint/tsconfig-utils': 8.35.0(typescript@5.9.3)
+      '@typescript-eslint/types': 8.35.0
+      '@typescript-eslint/visitor-keys': 8.35.0
+      debug: 4.4.3
+      fast-glob: 3.3.3
+      is-glob: 4.0.3
+      minimatch: 9.0.5
+      semver: 7.7.2
+      ts-api-utils: 2.1.0(typescript@5.9.3)
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/utils@7.18.0(eslint@8.57.1)(typescript@5.8.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.7.0(eslint@8.57.1)
@@ -7602,6 +7626,17 @@ snapshots:
       '@typescript-eslint/typescript-estree': 8.35.0(typescript@5.8.3)
       eslint: 8.57.1
       typescript: 5.8.3
+    transitivePeerDependencies:
+      - supports-color
+
+  '@typescript-eslint/utils@8.35.0(eslint@8.57.1)(typescript@5.9.3)':
+    dependencies:
+      '@eslint-community/eslint-utils': 4.7.0(eslint@8.57.1)
+      '@typescript-eslint/scope-manager': 8.35.0
+      '@typescript-eslint/types': 8.35.0
+      '@typescript-eslint/typescript-estree': 8.35.0(typescript@5.9.3)
+      eslint: 8.57.1
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -7941,14 +7976,14 @@ snapshots:
       typeforce: 1.18.0
       varuint-bitcoin: 1.1.2
 
-  bitcoinjs-lib@7.0.1(typescript@5.8.3):
+  bitcoinjs-lib@7.0.1(typescript@5.9.3):
     dependencies:
       '@noble/hashes': 1.8.0
       bech32: 2.0.0
       bip174: 3.0.0
       bs58check: 4.0.0
       uint8array-tools: 0.0.9
-      valibot: 1.2.0(typescript@5.8.3)
+      valibot: 1.2.0(typescript@5.9.3)
       varuint-bitcoin: 2.0.0
     transitivePeerDependencies:
       - typescript
@@ -8335,14 +8370,14 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig@8.3.6(typescript@5.8.3):
+  cosmiconfig@8.3.6(typescript@5.9.3):
     dependencies:
       import-fresh: 3.3.1
       js-yaml: 4.1.0
       parse-json: 5.2.0
       path-type: 4.0.0
     optionalDependencies:
-      typescript: 5.8.3
+      typescript: 5.9.3
 
   cosmiconfig@9.0.0(typescript@5.8.3):
     dependencies:
@@ -8519,10 +8554,10 @@ snapshots:
       '@noble/curves': 1.9.2
       '@noble/hashes': 1.8.0
 
-  ecpair@3.0.0-rc.0(typescript@5.8.3):
+  ecpair@3.0.0-rc.0(typescript@5.9.3):
     dependencies:
       uint8array-tools: 0.0.8
-      valibot: 0.37.0(typescript@5.8.3)
+      valibot: 0.37.0(typescript@5.9.3)
       wif: 5.0.0
     transitivePeerDependencies:
       - typescript
@@ -8810,10 +8845,10 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-n@17.20.0(eslint@8.57.1)(typescript@5.8.3):
+  eslint-plugin-n@17.20.0(eslint@8.57.1)(typescript@5.9.3):
     dependencies:
       '@eslint-community/eslint-utils': 4.7.0(eslint@8.57.1)
-      '@typescript-eslint/utils': 8.35.0(eslint@8.57.1)(typescript@5.8.3)
+      '@typescript-eslint/utils': 8.35.0(eslint@8.57.1)(typescript@5.9.3)
       enhanced-resolve: 5.18.2
       eslint: 8.57.1
       eslint-plugin-es-x: 7.8.0(eslint@8.57.1)
@@ -8822,7 +8857,7 @@ snapshots:
       ignore: 5.3.2
       minimatch: 9.0.5
       semver: 7.7.2
-      ts-declaration-location: 1.0.7(typescript@5.8.3)
+      ts-declaration-location: 1.0.7(typescript@5.9.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -9358,7 +9393,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  graphql-config@5.1.5(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(typescript@5.8.3)(utf-8-validate@5.0.10):
+  graphql-config@5.1.5(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@5.0.10):
     dependencies:
       '@graphql-tools/graphql-file-loader': 8.0.20(graphql@16.11.0)
       '@graphql-tools/json-file-loader': 8.0.18(graphql@16.11.0)
@@ -9366,7 +9401,7 @@ snapshots:
       '@graphql-tools/merge': 9.0.24(graphql@16.11.0)
       '@graphql-tools/url-loader': 8.0.31(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
-      cosmiconfig: 8.3.6(typescript@5.8.3)
+      cosmiconfig: 8.3.6(typescript@5.9.3)
       graphql: 16.11.0
       jiti: 2.4.2
       minimatch: 9.0.5
@@ -10644,12 +10679,12 @@ snapshots:
 
   prettier@3.6.1: {}
 
-  prisma@6.10.1(typescript@5.8.3):
+  prisma@6.10.1(typescript@5.9.3):
     dependencies:
       '@prisma/config': 6.10.1
       '@prisma/engines': 6.10.1
     optionalDependencies:
-      typescript: 5.8.3
+      typescript: 5.9.3
 
   proc-log@4.2.0: {}
 
@@ -11431,6 +11466,10 @@ snapshots:
     dependencies:
       typescript: 5.8.3
 
+  ts-api-utils@2.1.0(typescript@5.9.3):
+    dependencies:
+      typescript: 5.9.3
+
   ts-command-line-args@2.5.1:
     dependencies:
       chalk: 4.1.2
@@ -11438,14 +11477,14 @@ snapshots:
       command-line-usage: 6.1.3
       string-format: 2.0.0
 
-  ts-declaration-location@1.0.7(typescript@5.8.3):
+  ts-declaration-location@1.0.7(typescript@5.9.3):
     dependencies:
       picomatch: 4.0.2
-      typescript: 5.8.3
+      typescript: 5.9.3
 
-  ts-essentials@7.0.3(typescript@5.8.3):
+  ts-essentials@7.0.3(typescript@5.9.3):
     dependencies:
-      typescript: 5.8.3
+      typescript: 5.9.3
 
   ts-interface-checker@0.1.13: {}
 
@@ -11485,7 +11524,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0):
+  tsup@8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.5)
       cac: 6.7.14
@@ -11506,7 +11545,7 @@ snapshots:
       tree-kill: 1.2.2
     optionalDependencies:
       postcss: 8.5.6
-      typescript: 5.8.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - jiti
       - supports-color
@@ -11539,7 +11578,7 @@ snapshots:
       media-typer: 0.3.0
       mime-types: 2.1.35
 
-  typechain@8.3.2(typescript@5.8.3):
+  typechain@8.3.2(typescript@5.9.3):
     dependencies:
       '@types/prettier': 2.7.3
       debug: 4.4.1
@@ -11550,8 +11589,8 @@ snapshots:
       mkdirp: 1.0.4
       prettier: 2.8.8
       ts-command-line-args: 2.5.1
-      ts-essentials: 7.0.3(typescript@5.8.3)
-      typescript: 5.8.3
+      ts-essentials: 7.0.3(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -11591,6 +11630,8 @@ snapshots:
   typeforce@1.18.0: {}
 
   typescript@5.8.3: {}
+
+  typescript@5.9.3: {}
 
   typical@4.0.0: {}
 
@@ -11671,13 +11712,13 @@ snapshots:
 
   uuid@8.3.2: {}
 
-  valibot@0.37.0(typescript@5.8.3):
+  valibot@0.37.0(typescript@5.9.3):
     optionalDependencies:
-      typescript: 5.8.3
+      typescript: 5.9.3
 
-  valibot@1.2.0(typescript@5.8.3):
+  valibot@1.2.0(typescript@5.9.3):
     optionalDependencies:
-      typescript: 5.8.3
+      typescript: 5.9.3
 
   validate-npm-package-name@5.0.1: {}
 
