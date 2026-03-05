@@ -67,6 +67,7 @@
     "@chainflip/utils": "2.1.4",
     "@polkadot/api": "^15.10.2",
     "@polkadot/types": "^15.10.2",
+    "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
     "@ts-rest/express": "^3.52.1",
     "axios": "^1.10.0",
