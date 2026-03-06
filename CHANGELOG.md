@@ -22,6 +22,7 @@ which it is deprecated.
   removed. The quote response's `recommendedLivePriceSlippageTolerancePercent`
   should be used instead, or you can provide the desired slippage tolerance
   directly
+- `livePriceSlippageTolerancePercent` in `fillOrKillParams` can no longer be set to `false` to disable live price protection since it is enabled by default at the protocol level
 - `SwapSDKOptions`: The deprecated `broker.commissionBps` option has been
   removed. Set the `brokerCommissionBps` param on
   `SwapSDK.prototype.encodeVaultSwapData` and
