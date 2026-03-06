@@ -99,31 +99,28 @@ export function parseFoKParams(
 ) {
   const srcAsset = getInternalAsset(quote.srcAsset);
   const destAsset = getInternalAsset(quote.destAsset);
-  const livePriceProtectionEnabled =
+  const customLpp =
     typeof params.livePriceSlippageTolerancePercent === 'string' ||
     typeof params.livePriceSlippageTolerancePercent === 'number';
-  const livePriceProtectionAvailable = isNotNullish(
-    quote.recommendedLivePriceSlippageTolerancePercent,
-  );
+  const lppAvailable = isNotNullish(quote.recommendedLivePriceSlippageTolerancePercent);
 
-  if (livePriceProtectionEnabled && !livePriceProtectionAvailable) {
+  if (customLpp && !lppAvailable) {
     throw new Error('Live price protection is not available for this asset pair');
   }
 
   let minPrice: string;
-  let livePriceSlippageTolerancePercent = null as BigNumber | null;
+  let lpp = null as BigNumber | null;
+
   if (isNotNullish(params.livePriceSlippageTolerancePercent)) {
-    livePriceSlippageTolerancePercent = new BigNumber(params.livePriceSlippageTolerancePercent);
-    assert(!livePriceSlippageTolerancePercent.isNaN(), 'Invalid live price slippage tolerance');
+    lpp = new BigNumber(params.livePriceSlippageTolerancePercent);
+    assert(!lpp.isNaN(), 'Invalid live price slippage tolerance');
     assert(
-      livePriceSlippageTolerancePercent.gte(0) && livePriceSlippageTolerancePercent.lte(100),
+      lpp.gte(0) && lpp.lte(100),
       'Live price slippage tolerance must be between 0 and 100 inclusive',
     );
   } else if (quote.recommendedLivePriceSlippageTolerancePercent) {
-    livePriceSlippageTolerancePercent = new BigNumber(
-      quote.recommendedLivePriceSlippageTolerancePercent,
-    );
-    assert(!livePriceSlippageTolerancePercent.isNaN(), 'Invalid live price slippage tolerance');
+    lpp = new BigNumber(quote.recommendedLivePriceSlippageTolerancePercent);
+    assert(!lpp.isNaN(), 'Invalid live price slippage tolerance');
   }
 
   if ('minPrice' in params) {
@@ -160,8 +157,7 @@ export function parseFoKParams(
       ? params.retryDurationBlocks
       : Math.max(Math.ceil(params.retryDurationMinutes * blocksPerMinute), 0);
 
-  const maxOraclePriceSlippage =
-    livePriceSlippageTolerancePercent?.multipliedBy(100).toNumber() ?? null;
+  const maxOraclePriceSlippage = lpp?.multipliedBy(100).toNumber() ?? null;
 
   const parsed = {
     retryDurationBlocks,
