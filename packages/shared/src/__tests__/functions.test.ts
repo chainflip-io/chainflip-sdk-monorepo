@@ -196,26 +196,6 @@ describe(parseFoKParams, () => {
     }).toThrow('Either minPrice or slippageTolerancePercent must be provided');
   });
 
-  it('does not set maxOraclePriceSlippage if livePriceSlippageTolerancePercent is false', () => {
-    expect(
-      parseFoKParams(
-        {
-          slippageTolerancePercent: 1.5,
-          refundAddress: '0x1234',
-          retryDurationBlocks: 100,
-          livePriceSlippageTolerancePercent: false,
-        },
-        quote,
-      ),
-    ).toStrictEqual({
-      maxOraclePriceSlippage: null,
-      minPriceX128: '83892489958826316385497263710123985244108278726772',
-      refundAddress: '0x1234',
-      refundCcmMetadata: null,
-      retryDurationBlocks: 100,
-    });
-  });
-
   it('sets the default livePriceSlippageTolerancePercent from quote if not provided', () => {
     expect(
       parseFoKParams(

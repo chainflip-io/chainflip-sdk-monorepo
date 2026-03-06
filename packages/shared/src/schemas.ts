@@ -260,7 +260,7 @@ export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsX128, 'minPriceX
 };
 
 export type FillOrKillParamsWithoutRefundAddress = {
-  livePriceSlippageTolerancePercent?: string | number | false;
+  livePriceSlippageTolerancePercent?: string | number;
   refundCcmMetadata?: CcmParams | null;
 } & (
   | { minPrice: string; retryDurationBlocks: number }
@@ -276,7 +276,7 @@ export type FillOrKillParamsWithoutRefundAddress = {
 );
 
 export type FillOrKillParams = {
-  livePriceSlippageTolerancePercent?: string | number | false;
+  livePriceSlippageTolerancePercent?: string | number;
   refundAddress: string;
   refundCcmMetadata?: CcmParams | null;
 } & (
