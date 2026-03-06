@@ -99,19 +99,14 @@ export function parseFoKParams(
 ) {
   const srcAsset = getInternalAsset(quote.srcAsset);
   const destAsset = getInternalAsset(quote.destAsset);
-  const customLpp =
-    typeof params.livePriceSlippageTolerancePercent === 'string' ||
-    typeof params.livePriceSlippageTolerancePercent === 'number';
   const lppAvailable = isNotNullish(quote.recommendedLivePriceSlippageTolerancePercent);
-
-  if (customLpp && !lppAvailable) {
-    throw new Error('Live price protection is not available for this asset pair');
-  }
-
   let minPrice: string;
   let lpp = null as BigNumber | null;
 
   if (isNotNullish(params.livePriceSlippageTolerancePercent)) {
+    if (!lppAvailable) {
+      throw new Error('Live price protection is not available for this asset pair');
+    }
     lpp = new BigNumber(params.livePriceSlippageTolerancePercent);
     assert(!lpp.isNaN(), 'Invalid live price slippage tolerance');
     assert(
