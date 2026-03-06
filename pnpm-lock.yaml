@@ -13,8 +13,8 @@ importers:
         version: 3.25.76
     devDependencies:
       '@types/node':
-        specifier: ^22.15.33
-        version: 22.15.33
+        specifier: ^25.3.5
+        version: 25.3.5
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.33
@@ -26,7 +26,7 @@ importers:
         version: 6.21.0(eslint@8.57.1)(typescript@5.8.3)
       '@vitest/eslint-plugin':
         specifier: ^1.2.7
-        version: 1.2.7(eslint@8.57.1)(typescript@5.8.3)(vitest@3.2.4(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
+        version: 1.2.7(eslint@8.57.1)(typescript@5.8.3)(vitest@3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
       envlocker:
         specifier: ^0.2.0
         version: 0.2.0
@@ -71,10 +71,10 @@ importers:
         version: 5.8.3
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
+        version: 5.1.4(typescript@5.8.3)(vite@7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
+        version: 3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -89,7 +89,7 @@ importers:
         version: 2.1.3
       '@chainflip/solana':
         specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
         specifier: 2.1.4
         version: 2.1.4
@@ -98,13 +98,13 @@ importers:
         version: 1.10.0
       ethers:
         specifier: ^6.14.4
-        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       ioredis:
         specifier: ^5.6.1
         version: 5.6.1
       ws:
         specifier: ^8.18.2
-        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -168,7 +168,7 @@ importers:
         version: 2.1.4
       '@ts-rest/core':
         specifier: ^3.52.1
-        version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
+        version: 3.52.1(@types/node@25.3.5)(zod@3.25.76)
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -202,7 +202,7 @@ importers:
         version: 2.1.4
       '@ts-rest/core':
         specifier: ^3.52.1
-        version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
+        version: 3.52.1(@types/node@25.3.5)(zod@3.25.76)
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -260,13 +260,13 @@ importers:
         version: 2.1.3
       '@chainflip/solana':
         specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: 2.1.4
         version: 2.1.4
       '@polkadot/api':
         specifier: ^15.10.2
-        version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot/types':
         specifier: ^15.10.2
         version: 15.10.2
@@ -278,7 +278,7 @@ importers:
         version: 7.4.2(prisma@7.4.2(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
       '@ts-rest/express':
         specifier: ^3.52.1
-        version: 3.52.1(@ts-rest/core@3.52.1(@types/node@24.0.4)(zod@3.25.76))(express@4.21.2)(zod@3.25.76)
+        version: 3.52.1(@ts-rest/core@3.52.1(@types/node@25.3.5)(zod@3.25.76))(express@4.21.2)(zod@3.25.76)
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -293,7 +293,7 @@ importers:
         version: 16.5.0
       ethers:
         specifier: ^6.14.4
-        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       express:
         specifier: ^4.21.2
         version: 4.21.2
@@ -314,7 +314,7 @@ importers:
         version: 2.5.0
       socket.io:
         specifier: ^4.8.1
-        version: 4.8.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 4.8.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       superjson:
         specifier: ^1.13.3
         version: 1.13.3
@@ -323,7 +323,7 @@ importers:
         version: 3.17.0
       ws:
         specifier: ^8.18.2
-        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     devDependencies:
       '@babel/core':
         specifier: ^7.27.4
@@ -333,7 +333,7 @@ importers:
         version: 1.45.1
       '@graphql-codegen/cli':
         specifier: ^5.0.7
-        version: 5.0.7(@types/node@24.0.4)(bufferutil@4.1.0)(enquirer@2.4.1)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+        version: 5.0.7(@types/node@25.3.5)(bufferutil@4.1.0)(enquirer@2.4.1)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@graphql-codegen/client-preset':
         specifier: ^4.8.3
         version: 4.8.3(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)
@@ -342,7 +342,7 @@ importers:
         version: 3.2.0(graphql@16.11.0)
       '@ts-rest/core':
         specifier: ^3.52.1
-        version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
+        version: 3.52.1(@types/node@25.3.5)(zod@3.25.76)
       '@types/cors':
         specifier: ^2.8.19
         version: 2.8.19
@@ -350,8 +350,8 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       '@types/express-serve-static-core':
-        specifier: ^5.0.6
-        version: 5.0.6
+        specifier: ^5.1.1
+        version: 5.1.1
       '@types/graphql-fields':
         specifier: ^1.3.9
         version: 1.3.9
@@ -363,7 +363,7 @@ importers:
         version: 8.18.1
       '@vitest/coverage-v8':
         specifier: ^3.2.4
-        version: 3.2.4(vitest@3.2.4(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
+        version: 3.2.4(vitest@3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
       eslint-plugin-n:
         specifier: ^17.20.0
         version: 17.20.0(eslint@8.57.1)(typescript@5.9.3)
@@ -375,7 +375,7 @@ importers:
         version: 7.4.2(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       socket.io-client:
         specifier: ^4.8.1
-        version: 4.8.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 4.8.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       supertest:
         specifier: ^7.1.1
         version: 7.1.1
@@ -1428,67 +1428,56 @@ packages:
     resolution: {integrity: sha512-x+e/Z9H0RAWckn4V2OZZl6EmV0L2diuX3QB0uM1r6BvhUIv6xBPL5mrAX2E3e8N8rEHVPwFfz/ETUbV4oW9+lQ==}
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.44.0':
     resolution: {integrity: sha512-1exwiBFf4PU/8HvI8s80icyCcnAIB86MCBdst51fwFmH5dyeoWVPVgmQPcKrMtBQ0W5pAs7jBCWuRXgEpRzSCg==}
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.44.0':
     resolution: {integrity: sha512-ZTR2mxBHb4tK4wGf9b8SYg0Y6KQPjGpR4UWwTFdnmjB4qRtoATZ5dWn3KsDwGa5Z2ZBOE7K52L36J9LueKBdOQ==}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.44.0':
     resolution: {integrity: sha512-GFWfAhVhWGd4r6UxmnKRTBwP1qmModHtd5gkraeW2G490BpFOZkFtem8yuX2NyafIP/mGpRJgTJ2PwohQkUY/Q==}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-loongarch64-gnu@4.44.0':
     resolution: {integrity: sha512-xw+FTGcov/ejdusVOqKgMGW3c4+AgqrfvzWEVXcNP6zq2ue+lsYUgJ+5Rtn/OTJf7e2CbgTFvzLW2j0YAtj0Gg==}
     cpu: [loong64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-powerpc64le-gnu@4.44.0':
     resolution: {integrity: sha512-bKGibTr9IdF0zr21kMvkZT4K6NV+jjRnBoVMt2uNMG0BYWm3qOVmYnXKzx7UhwrviKnmK46IKMByMgvpdQlyJQ==}
     cpu: [ppc64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-gnu@4.44.0':
     resolution: {integrity: sha512-vV3cL48U5kDaKZtXrti12YRa7TyxgKAIDoYdqSIOMOFBXqFj2XbChHAtXquEn2+n78ciFgr4KIqEbydEGPxXgA==}
     cpu: [riscv64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.44.0':
     resolution: {integrity: sha512-TDKO8KlHJuvTEdfw5YYFBjhFts2TR0VpZsnLLSYmB7AaohJhM8ctDSdDnUGq77hUh4m/djRafw+9zQpkOanE2Q==}
     cpu: [riscv64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.44.0':
     resolution: {integrity: sha512-8541GEyktXaw4lvnGp9m84KENcxInhAt6vPWJ9RodsB/iGjHoMB2Pp5MVBCiKIRxrxzJhGCxmNzdu+oDQ7kwRA==}
     cpu: [s390x]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.44.0':
     resolution: {integrity: sha512-iUVJc3c0o8l9Sa/qlDL2Z9UP92UZZW1+EmQ4xfjTc1akr0iUFZNfxrXJ/R1T90h/ILm9iXEY6+iPrmYB3pXKjw==}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.44.0':
     resolution: {integrity: sha512-PQUobbhLTQT5yz/SPg116VJBgz+XOtXt8D1ck+sfJJhuEsMj2jSej5yTdp8CvWBSceu+WW+ibVL6dm0ptG5fcA==}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-win32-arm64-msvc@4.44.0':
     resolution: {integrity: sha512-M0CpcHf8TWn+4oTxJfh7LQuTuaYeXGbk0eageVjQCKzYLsajWS/lFC94qlRqOlyC2KvRT90ZrfXULYmukeIy7w==}
@@ -1648,8 +1637,8 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
-  '@types/express-serve-static-core@5.0.6':
-    resolution: {integrity: sha512-3xhRnjJPkULekpSzgtoNYYcTWgEZkp4myc+Saevii5JPnHNvHMRlBSHDbs7Bh1iPPoVTERHEZXyhyLbMEsExsA==}
+  '@types/express-serve-static-core@5.1.1':
+    resolution: {integrity: sha512-v4zIMr/cX7/d2BpAEX3KNKL/JrT1s43s96lLvvdTmza1oEvDudCqK9aF/djc/SWgy8Yh0h30TZx5VpzqFCxk5A==}
 
   '@types/express@5.0.3':
     resolution: {integrity: sha512-wGA0NX93b19/dZC1J18tKWVIYWyyF2ZjT9vin/NRu0qzzvfVzWjs04iq2rQ3H65vCTQYlRqs3YHfY7zjdV+9Kw==}
@@ -1675,23 +1664,17 @@ packages:
   '@types/methods@1.1.4':
     resolution: {integrity: sha512-ymXWVrDiCxTBE3+RIrrP533E70eA+9qu7zdWoHuOmGujkYtzf4HQF96b8nwHLqhuf4ykX61IGRIB38CC6/sImQ==}
 
-  '@types/mime@1.3.5':
-    resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
-
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
   '@types/node@12.20.55':
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
 
-  '@types/node@22.15.33':
-    resolution: {integrity: sha512-wzoocdnnpSxZ+6CjW4ADCK1jVmd1S/J3ArNWfn8FDDQtRm8dkDg7TA+mvek2wNrfCgwuZxqEOiB9B1XCJ6+dbw==}
-
   '@types/node@22.7.5':
     resolution: {integrity: sha512-jML7s2NAzMWc//QSJ1a3prpk78cOPchGvXJsC3C6R6PSMoooztvRVQEz89gmBTBY1SPMaqo5teB4uNHPdetShQ==}
 
-  '@types/node@24.0.4':
-    resolution: {integrity: sha512-ulyqAkrhnuNq9pB76DRBTkcS6YsmDALy6Ua63V8OhrOBgbcYt6IOdzpw5P1+dyRIyMerzLkeYWBeOXPpA9GMAA==}
+  '@types/node@25.3.5':
+    resolution: {integrity: sha512-oX8xrhvpiyRCQkG1MFchB09f+cXftgIXb3a7UUa4Y3wpmZPw5tyZGTLWhlESOLq1Rq6oDlc8npVU2/9xiCuXMA==}
 
   '@types/pg@8.15.4':
     resolution: {integrity: sha512-I6UNVBAoYbvuWkkU3oosC8yxqH21f4/Jc4DK71JLG3dT2mdlGe1z+ep/LQGXaKaOgcvUrsQoPRqfgtMcvZiJhg==}
@@ -1699,8 +1682,8 @@ packages:
   '@types/prettier@2.7.3':
     resolution: {integrity: sha512-+68kP9yzs4LMp7VNh8gdzMSPZFL44MLGqiHWvttYJe+6qnuVr4Ek9wSBQoveqY/r+LwjCcU29kNVkidwim+kYA==}
 
-  '@types/qs@6.14.0':
-    resolution: {integrity: sha512-eOunJqu0K1923aExK6y8p6fsihYEn/BYuQ4g0CxAAgFc4b/ZLN4CrsRZ55srTdqoiLzU2B2evC+apEIxprEzkQ==}
+  '@types/qs@6.15.0':
+    resolution: {integrity: sha512-JawvT8iBVWpzTrz3EGw9BTQFg3BQNmwERdKE22vlTxawwtbyUSlMppvZYKLZzB5zgACXdXxbD3m1bXaMqP/9ow==}
 
   '@types/range-parser@1.2.7':
     resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
@@ -1708,8 +1691,8 @@ packages:
   '@types/react@19.2.14':
     resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
 
-  '@types/send@0.17.5':
-    resolution: {integrity: sha512-z6F2D3cOStZvuk2SaP6YrwkNO65iTZcwA2ZkSABegdkAh/lf+Aa/YQndZVfmEXT5vgAp6zv06VQ3ejSVjAny4w==}
+  '@types/send@1.2.1':
+    resolution: {integrity: sha512-arsCikDvlU99zl1g69TcAB3mzZPpxgw0UQnaHeC1Nwb015xp8bknZv5rIfri9xTOcMuaVgvabfIRA7PSZVuZIQ==}
 
   '@types/serve-static@1.15.8':
     resolution: {integrity: sha512-roei0UY3LhpOJvjbIP6ZZFngyLKl5dskOtDhxY5THRSpO+ZI+nzJ+m5yUMzGrp89YRa7lvknKkMYjqQFGwA7Sg==}
@@ -5530,11 +5513,8 @@ packages:
   undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
-  undici-types@6.21.0:
-    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
-
-  undici-types@7.8.0:
-    resolution: {integrity: sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==}
+  undici-types@7.18.2:
+    resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
   unicorn-magic@0.1.0:
     resolution: {integrity: sha512-lRfVq8fE8gz6QMBuDM6a+LO3IAzTi05H6gCVaUpir2E1Rwpo4ZUog45KpNXKC/Mn3Yb9UDuHumeFTo9iV/D9FQ==}
@@ -6526,7 +6506,7 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.6.3
 
-  '@graphql-codegen/cli@5.0.7(@types/node@24.0.4)(bufferutil@4.1.0)(enquirer@2.4.1)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
+  '@graphql-codegen/cli@5.0.7(@types/node@25.3.5)(bufferutil@4.1.0)(enquirer@2.4.1)(graphql-sock@1.0.1(graphql@16.11.0))(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@babel/generator': 7.27.5
       '@babel/template': 7.27.2
@@ -6537,12 +6517,12 @@ snapshots:
       '@graphql-tools/apollo-engine-loader': 8.0.20(graphql@16.11.0)
       '@graphql-tools/code-file-loader': 8.1.20(graphql@16.11.0)
       '@graphql-tools/git-loader': 8.0.24(graphql@16.11.0)
-      '@graphql-tools/github-loader': 8.0.20(@types/node@24.0.4)(graphql@16.11.0)
+      '@graphql-tools/github-loader': 8.0.20(@types/node@25.3.5)(graphql@16.11.0)
       '@graphql-tools/graphql-file-loader': 8.0.20(graphql@16.11.0)
       '@graphql-tools/json-file-loader': 8.0.18(graphql@16.11.0)
       '@graphql-tools/load': 8.1.0(graphql@16.11.0)
-      '@graphql-tools/prisma-loader': 8.0.17(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)
-      '@graphql-tools/url-loader': 8.0.31(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)
+      '@graphql-tools/prisma-loader': 8.0.17(@types/node@25.3.5)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)
+      '@graphql-tools/url-loader': 8.0.31(@types/node@25.3.5)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@whatwg-node/fetch': 0.10.8
       chalk: 4.1.2
@@ -6550,7 +6530,7 @@ snapshots:
       debounce: 1.2.1
       detect-indent: 6.1.0
       graphql: 16.11.0
-      graphql-config: 5.1.5(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+      graphql-config: 5.1.5(@types/node@25.3.5)(bufferutil@4.1.0)(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       inquirer: 8.2.6
       is-glob: 4.0.3
       jiti: 1.21.7
@@ -6740,16 +6720,16 @@ snapshots:
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       graphql: 16.11.0
 
-  '@graphql-tools/executor-graphql-ws@2.0.5(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)':
+  '@graphql-tools/executor-graphql-ws@2.0.5(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@graphql-tools/executor-common': 0.0.4(graphql@16.11.0)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@whatwg-node/disposablestack': 0.0.6
       graphql: 16.11.0
-      graphql-ws: 6.0.5(graphql@16.11.0)(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6))
-      isomorphic-ws: 5.0.0(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+      graphql-ws: 6.0.5(graphql@16.11.0)(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+      isomorphic-ws: 5.0.0(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       tslib: 2.8.1
-      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@fastify/websocket'
       - bufferutil
@@ -6757,7 +6737,7 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@graphql-tools/executor-http@1.3.3(@types/node@24.0.4)(graphql@16.11.0)':
+  '@graphql-tools/executor-http@1.3.3(@types/node@25.3.5)(graphql@16.11.0)':
     dependencies:
       '@graphql-hive/signal': 1.0.0
       '@graphql-tools/executor-common': 0.0.4(graphql@16.11.0)
@@ -6767,19 +6747,19 @@ snapshots:
       '@whatwg-node/fetch': 0.10.8
       '@whatwg-node/promise-helpers': 1.3.2
       graphql: 16.11.0
-      meros: 1.3.1(@types/node@24.0.4)
+      meros: 1.3.1(@types/node@25.3.5)
       tslib: 2.8.1
     transitivePeerDependencies:
       - '@types/node'
 
-  '@graphql-tools/executor-legacy-ws@1.1.17(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)':
+  '@graphql-tools/executor-legacy-ws@1.1.17(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@types/ws': 8.18.1
       graphql: 16.11.0
-      isomorphic-ws: 5.0.0(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+      isomorphic-ws: 5.0.0(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       tslib: 2.8.1
-      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -6806,9 +6786,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@graphql-tools/github-loader@8.0.20(@types/node@24.0.4)(graphql@16.11.0)':
+  '@graphql-tools/github-loader@8.0.20(@types/node@25.3.5)(graphql@16.11.0)':
     dependencies:
-      '@graphql-tools/executor-http': 1.3.3(@types/node@24.0.4)(graphql@16.11.0)
+      '@graphql-tools/executor-http': 1.3.3(@types/node@25.3.5)(graphql@16.11.0)
       '@graphql-tools/graphql-tag-pluck': 8.3.19(graphql@16.11.0)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@whatwg-node/fetch': 0.10.8
@@ -6876,9 +6856,9 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.6.3
 
-  '@graphql-tools/prisma-loader@8.0.17(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)':
+  '@graphql-tools/prisma-loader@8.0.17(@types/node@25.3.5)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@graphql-tools/url-loader': 8.0.31(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)
+      '@graphql-tools/url-loader': 8.0.31(@types/node@25.3.5)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@types/js-yaml': 4.0.9
       '@whatwg-node/fetch': 0.10.8
@@ -6921,21 +6901,21 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.8.1
 
-  '@graphql-tools/url-loader@8.0.31(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)':
+  '@graphql-tools/url-loader@8.0.31(@types/node@25.3.5)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@graphql-tools/executor-graphql-ws': 2.0.5(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)
-      '@graphql-tools/executor-http': 1.3.3(@types/node@24.0.4)(graphql@16.11.0)
-      '@graphql-tools/executor-legacy-ws': 1.1.17(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)
+      '@graphql-tools/executor-graphql-ws': 2.0.5(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)
+      '@graphql-tools/executor-http': 1.3.3(@types/node@25.3.5)(graphql@16.11.0)
+      '@graphql-tools/executor-legacy-ws': 1.1.17(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       '@graphql-tools/wrap': 10.1.0(graphql@16.11.0)
       '@types/ws': 8.18.1
       '@whatwg-node/fetch': 0.10.8
       '@whatwg-node/promise-helpers': 1.3.2
       graphql: 16.11.0
-      isomorphic-ws: 5.0.0(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+      isomorphic-ws: 5.0.0(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       sync-fetch: 0.6.0-2
       tslib: 2.8.1
-      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@fastify/websocket'
       - '@types/node'
@@ -7096,10 +7076,10 @@ snapshots:
   '@polkadot-api/utils@0.1.0':
     optional: true
 
-  '@polkadot/api-augment@15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@polkadot/api-augment@15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@polkadot/api-base': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/rpc-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@polkadot/api-base': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/rpc-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot/types': 15.10.2
       '@polkadot/types-augment': 15.10.2
       '@polkadot/types-codec': 15.10.2
@@ -7110,9 +7090,9 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@polkadot/api-base@15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@polkadot/api-base@15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@polkadot/rpc-core': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@polkadot/rpc-core': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot/types': 15.10.2
       '@polkadot/util': 13.5.2
       rxjs: 7.8.2
@@ -7122,12 +7102,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@polkadot/api-derive@15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@polkadot/api-derive@15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@polkadot/api': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/api-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/api-base': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/rpc-core': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@polkadot/api': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/api-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/api-base': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/rpc-core': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot/types': 15.10.2
       '@polkadot/types-codec': 15.10.2
       '@polkadot/util': 13.5.2
@@ -7139,15 +7119,15 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@polkadot/api@15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@polkadot/api@15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@polkadot/api-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/api-base': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/api-derive': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@polkadot/api-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/api-base': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/api-derive': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot/keyring': 13.5.2(@polkadot/util-crypto@13.5.2(@polkadot/util@13.5.2))(@polkadot/util@13.5.2)
-      '@polkadot/rpc-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/rpc-core': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/rpc-provider': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@polkadot/rpc-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/rpc-core': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/rpc-provider': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot/types': 15.10.2
       '@polkadot/types-augment': 15.10.2
       '@polkadot/types-codec': 15.10.2
@@ -7175,9 +7155,9 @@ snapshots:
       '@substrate/ss58-registry': 1.51.0
       tslib: 2.8.1
 
-  '@polkadot/rpc-augment@15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@polkadot/rpc-augment@15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@polkadot/rpc-core': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@polkadot/rpc-core': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot/types': 15.10.2
       '@polkadot/types-codec': 15.10.2
       '@polkadot/util': 13.5.2
@@ -7187,10 +7167,10 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@polkadot/rpc-core@15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@polkadot/rpc-core@15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@polkadot/rpc-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@polkadot/rpc-provider': 15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@polkadot/rpc-augment': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      '@polkadot/rpc-provider': 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@polkadot/types': 15.10.2
       '@polkadot/util': 13.5.2
       rxjs: 7.8.2
@@ -7200,7 +7180,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@polkadot/rpc-provider@15.10.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@polkadot/rpc-provider@15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@polkadot/keyring': 13.5.2(@polkadot/util-crypto@13.5.2(@polkadot/util@13.5.2))(@polkadot/util@13.5.2)
       '@polkadot/types': 15.10.2
@@ -7209,13 +7189,13 @@ snapshots:
       '@polkadot/util-crypto': 13.5.2(@polkadot/util@13.5.2)
       '@polkadot/x-fetch': 13.5.2
       '@polkadot/x-global': 13.5.2
-      '@polkadot/x-ws': 13.5.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@polkadot/x-ws': 13.5.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       eventemitter3: 5.0.1
       mock-socket: 9.3.1
       nock: 13.5.6
       tslib: 2.8.1
     optionalDependencies:
-      '@substrate/connect': 0.8.11(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@substrate/connect': 0.8.11(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -7364,11 +7344,11 @@ snapshots:
       '@polkadot/x-global': 13.5.2
       tslib: 2.8.1
 
-  '@polkadot/x-ws@13.5.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@polkadot/x-ws@13.5.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@polkadot/x-global': 13.5.2
       tslib: 2.8.1
-      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -7645,18 +7625,18 @@ snapshots:
   '@substrate/connect-known-chains@1.10.2':
     optional: true
 
-  '@substrate/connect@0.8.11(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@substrate/connect@0.8.11(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@substrate/connect-extension-protocol': 2.2.2
       '@substrate/connect-known-chains': 1.10.2
-      '@substrate/light-client-extension-helpers': 1.0.0(smoldot@2.0.26(bufferutil@4.1.0)(utf-8-validate@6.0.6))
-      smoldot: 2.0.26(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      '@substrate/light-client-extension-helpers': 1.0.0(smoldot@2.0.26(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+      smoldot: 2.0.26(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
     optional: true
 
-  '@substrate/light-client-extension-helpers@1.0.0(smoldot@2.0.26(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
+  '@substrate/light-client-extension-helpers@1.0.0(smoldot@2.0.26(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
     dependencies:
       '@polkadot-api/json-rpc-provider': 0.0.1
       '@polkadot-api/json-rpc-provider-proxy': 0.1.0
@@ -7665,7 +7645,7 @@ snapshots:
       '@substrate/connect-extension-protocol': 2.2.2
       '@substrate/connect-known-chains': 1.10.2
       rxjs: 7.8.2
-      smoldot: 2.0.26(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      smoldot: 2.0.26(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     optional: true
 
   '@substrate/ss58-registry@1.51.0': {}
@@ -7684,14 +7664,14 @@ snapshots:
       minimatch: 9.0.5
       path-browserify: 1.0.1
 
-  '@ts-rest/core@3.52.1(@types/node@24.0.4)(zod@3.25.76)':
+  '@ts-rest/core@3.52.1(@types/node@25.3.5)(zod@3.25.76)':
     optionalDependencies:
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
       zod: 3.25.76
 
-  '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@24.0.4)(zod@3.25.76))(express@4.21.2)(zod@3.25.76)':
+  '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@25.3.5)(zod@3.25.76))(express@4.21.2)(zod@3.25.76)':
     dependencies:
-      '@ts-rest/core': 3.52.1(@types/node@24.0.4)(zod@3.25.76)
+      '@ts-rest/core': 3.52.1(@types/node@25.3.5)(zod@3.25.76)
       express: 4.21.2
     optionalDependencies:
       zod: 3.25.76
@@ -7706,12 +7686,12 @@ snapshots:
 
   '@types/bn.js@5.2.0':
     dependencies:
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
 
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
 
   '@types/chai@5.2.2':
     dependencies:
@@ -7719,29 +7699,29 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 12.20.55
+      '@types/node': 25.3.5
 
   '@types/cookiejar@2.1.5': {}
 
   '@types/cors@2.8.19':
     dependencies:
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
 
   '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.8': {}
 
-  '@types/express-serve-static-core@5.0.6':
+  '@types/express-serve-static-core@5.1.1':
     dependencies:
-      '@types/node': 24.0.4
-      '@types/qs': 6.14.0
+      '@types/node': 25.3.5
+      '@types/qs': 6.15.0
       '@types/range-parser': 1.2.7
-      '@types/send': 0.17.5
+      '@types/send': 1.2.1
 
   '@types/express@5.0.3':
     dependencies:
       '@types/body-parser': 1.19.6
-      '@types/express-serve-static-core': 5.0.6
+      '@types/express-serve-static-core': 5.1.1
       '@types/serve-static': 1.15.8
 
   '@types/graphql-fields@1.3.9':
@@ -7759,37 +7739,31 @@ snapshots:
   '@types/jsonwebtoken@9.0.10':
     dependencies:
       '@types/ms': 2.1.0
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
 
   '@types/methods@1.1.4': {}
-
-  '@types/mime@1.3.5': {}
 
   '@types/ms@2.1.0': {}
 
   '@types/node@12.20.55': {}
 
-  '@types/node@22.15.33':
-    dependencies:
-      undici-types: 6.21.0
-
   '@types/node@22.7.5':
     dependencies:
       undici-types: 6.19.8
 
-  '@types/node@24.0.4':
+  '@types/node@25.3.5':
     dependencies:
-      undici-types: 7.8.0
+      undici-types: 7.18.2
 
   '@types/pg@8.15.4':
     dependencies:
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
       pg-protocol: 1.10.2
       pg-types: 2.2.0
 
   '@types/prettier@2.7.3': {}
 
-  '@types/qs@6.14.0': {}
+  '@types/qs@6.15.0': {}
 
   '@types/range-parser@1.2.7': {}
 
@@ -7797,22 +7771,21 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@types/send@0.17.5':
+  '@types/send@1.2.1':
     dependencies:
-      '@types/mime': 1.3.5
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
 
   '@types/serve-static@1.15.8':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 24.0.4
-      '@types/send': 0.17.5
+      '@types/node': 25.3.5
+      '@types/send': 1.2.1
 
   '@types/superagent@8.1.9':
     dependencies:
       '@types/cookiejar': 2.1.5
       '@types/methods': 1.1.4
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
       form-data: 4.0.3
 
   '@types/supertest@6.0.3':
@@ -7828,11 +7801,11 @@ snapshots:
 
   '@types/ws@7.4.7':
     dependencies:
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -8047,7 +8020,7 @@ snapshots:
       request: 2.88.2
       uuid: 3.4.0
 
-  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))':
+  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
@@ -8062,17 +8035,17 @@ snapshots:
       std-env: 3.9.0
       test-exclude: 7.0.1
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
+      vitest: 3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/eslint-plugin@1.2.7(eslint@8.57.1)(typescript@5.8.3)(vitest@3.2.4(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))':
+  '@vitest/eslint-plugin@1.2.7(eslint@8.57.1)(typescript@5.8.3)(vitest@3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
       '@typescript-eslint/utils': 8.35.0(eslint@8.57.1)(typescript@5.8.3)
       eslint: 8.57.1
     optionalDependencies:
       typescript: 5.8.3
-      vitest: 3.2.4(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
+      vitest: 3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -8084,13 +8057,13 @@ snapshots:
       chai: 5.2.0
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.4(vite@7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))':
+  '@vitest/mocker@3.2.4(vite@7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
       '@vitest/spy': 3.2.4
       estree-walker: 3.0.3
       magic-string: 0.30.17
     optionalDependencies:
-      vite: 7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
 
   '@vitest/pretty-format@3.2.4':
     dependencies:
@@ -9028,12 +9001,12 @@ snapshots:
 
   encodeurl@2.0.0: {}
 
-  engine.io-client@6.6.3(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  engine.io-client@6.6.3(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.3.7
       engine.io-parser: 5.2.3
-      ws: 8.17.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.17.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       xmlhttprequest-ssl: 2.1.2
     transitivePeerDependencies:
       - bufferutil
@@ -9042,17 +9015,17 @@ snapshots:
 
   engine.io-parser@5.2.3: {}
 
-  engine.io@6.6.4(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  engine.io@6.6.4(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     dependencies:
       '@types/cors': 2.8.19
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
       accepts: 1.3.8
       base64id: 2.0.0
       cookie: 0.7.2
       cors: 2.8.5
       debug: 4.3.7
       engine.io-parser: 5.2.3
-      ws: 8.17.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.17.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -9856,13 +9829,13 @@ snapshots:
 
   graphmatch@1.1.1: {}
 
-  graphql-config@5.1.5(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@6.0.6):
+  graphql-config@5.1.5(@types/node@25.3.5)(bufferutil@4.1.0)(graphql@16.11.0)(typescript@5.9.3)(utf-8-validate@5.0.10):
     dependencies:
       '@graphql-tools/graphql-file-loader': 8.0.20(graphql@16.11.0)
       '@graphql-tools/json-file-loader': 8.0.18(graphql@16.11.0)
       '@graphql-tools/load': 8.1.0(graphql@16.11.0)
       '@graphql-tools/merge': 9.0.24(graphql@16.11.0)
-      '@graphql-tools/url-loader': 8.0.31(@types/node@24.0.4)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@6.0.6)
+      '@graphql-tools/url-loader': 8.0.31(@types/node@25.3.5)(bufferutil@4.1.0)(graphql@16.11.0)(utf-8-validate@5.0.10)
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
       cosmiconfig: 8.3.6(typescript@5.9.3)
       graphql: 16.11.0
@@ -9914,11 +9887,11 @@ snapshots:
     dependencies:
       graphql: 15.10.1
 
-  graphql-ws@6.0.5(graphql@16.11.0)(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
+  graphql-ws@6.0.5(graphql@16.11.0)(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)):
     dependencies:
       graphql: 16.11.0
     optionalDependencies:
-      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
 
   graphql@15.10.1: {}
 
@@ -10303,9 +10276,9 @@ snapshots:
     dependencies:
       ws: 7.5.10(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
-  isomorphic-ws@5.0.0(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
+  isomorphic-ws@5.0.0(ws@8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)):
     dependencies:
-      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
 
   isstream@0.1.2: {}
 
@@ -10657,9 +10630,9 @@ snapshots:
 
   merge2@1.4.1: {}
 
-  meros@1.3.1(@types/node@24.0.4):
+  meros@1.3.1(@types/node@25.3.5):
     optionalDependencies:
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
 
   methods@1.1.2: {}
 
@@ -11677,9 +11650,9 @@ snapshots:
       ansi-styles: 6.2.1
       is-fullwidth-code-point: 5.0.0
 
-  smoldot@2.0.26(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  smoldot@2.0.26(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     dependencies:
-      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -11690,20 +11663,20 @@ snapshots:
       dot-case: 3.0.4
       tslib: 2.8.1
 
-  socket.io-adapter@2.5.5(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  socket.io-adapter@2.5.5(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     dependencies:
       debug: 4.3.7
-      ws: 8.17.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.17.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  socket.io-client@4.8.1(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  socket.io-client@4.8.1(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.3.7
-      engine.io-client: 6.6.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      engine.io-client: 6.6.3(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       socket.io-parser: 4.2.4
     transitivePeerDependencies:
       - bufferutil
@@ -11717,14 +11690,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.1(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  socket.io@4.8.1(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
       cors: 2.8.5
       debug: 4.3.7
-      engine.io: 6.6.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      socket.io-adapter: 2.5.5(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      engine.io: 6.6.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      socket.io-adapter: 2.5.5(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       socket.io-parser: 4.2.4
     transitivePeerDependencies:
       - bufferutil
@@ -12241,9 +12214,7 @@ snapshots:
 
   undici-types@6.19.8: {}
 
-  undici-types@6.21.0: {}
-
-  undici-types@7.8.0: {}
+  undici-types@7.18.2: {}
 
   unicorn-magic@0.1.0: {}
 
@@ -12321,13 +12292,13 @@ snapshots:
       core-util-is: 1.0.2
       extsprintf: 1.3.0
 
-  vite-node@3.2.4(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
+  vite-node@3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
     dependencies:
       cac: 6.7.14
       debug: 4.4.1
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -12342,39 +12313,18 @@ snapshots:
       - tsx
       - yaml
 
-  vite-node@3.2.4(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
-    dependencies:
-      cac: 6.7.14
-      debug: 4.4.1
-      es-module-lexer: 1.7.0
-      pathe: 2.0.3
-      vite: 7.0.0(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - jiti
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  vite-tsconfig-paths@5.1.4(typescript@5.8.3)(vite@7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)):
+  vite-tsconfig-paths@5.1.4(typescript@5.8.3)(vite@7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)):
     dependencies:
       debug: 4.4.1
       globrex: 0.1.2
       tsconfck: 3.1.6(typescript@5.8.3)
     optionalDependencies:
-      vite: 7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  vite@7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
+  vite@7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
     dependencies:
       esbuild: 0.25.5
       fdir: 6.4.6(picomatch@4.0.2)
@@ -12383,32 +12333,17 @@ snapshots:
       rollup: 4.44.0
       tinyglobby: 0.2.14
     optionalDependencies:
-      '@types/node': 22.15.33
+      '@types/node': 25.3.5
       fsevents: 2.3.3
       jiti: 2.6.1
       tsx: 4.20.3
       yaml: 2.8.0
 
-  vite@7.0.0(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
-    dependencies:
-      esbuild: 0.25.5
-      fdir: 6.4.6(picomatch@4.0.2)
-      picomatch: 4.0.2
-      postcss: 8.5.6
-      rollup: 4.44.0
-      tinyglobby: 0.2.14
-    optionalDependencies:
-      '@types/node': 24.0.4
-      fsevents: 2.3.3
-      jiti: 2.6.1
-      tsx: 4.20.3
-      yaml: 2.8.0
-
-  vitest@3.2.4(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
+  vitest@3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(vite@7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
+      '@vitest/mocker': 3.2.4(vite@7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.2.4
       '@vitest/snapshot': 3.2.4
@@ -12426,52 +12361,11 @@ snapshots:
       tinyglobby: 0.2.14
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
-      vite-node: 3.2.4(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
+      vite: 7.0.0(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
+      vite-node: 3.2.4(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 22.15.33
-    transitivePeerDependencies:
-      - jiti
-      - less
-      - lightningcss
-      - msw
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  vitest@3.2.4(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0):
-    dependencies:
-      '@types/chai': 5.2.2
-      '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(vite@7.0.0(@types/node@22.15.33)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0))
-      '@vitest/pretty-format': 3.2.4
-      '@vitest/runner': 3.2.4
-      '@vitest/snapshot': 3.2.4
-      '@vitest/spy': 3.2.4
-      '@vitest/utils': 3.2.4
-      chai: 5.2.0
-      debug: 4.4.1
-      expect-type: 1.2.1
-      magic-string: 0.30.17
-      pathe: 2.0.3
-      picomatch: 4.0.2
-      std-env: 3.9.0
-      tinybench: 2.9.0
-      tinyexec: 0.3.2
-      tinyglobby: 0.2.14
-      tinypool: 1.1.1
-      tinyrainbow: 2.0.0
-      vite: 7.0.0(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
-      vite-node: 3.2.4(@types/node@24.0.4)(jiti@2.6.1)(tsx@4.20.3)(yaml@2.8.0)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 24.0.4
+      '@types/node': 25.3.5
     transitivePeerDependencies:
       - jiti
       - less
