@@ -10,7 +10,6 @@ import {
   chainflipChains,
   internalAssetToRpcAsset,
   ChainMap,
-  AssetAndChain,
 } from '@chainflip/utils/chainflip';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
@@ -24,7 +23,7 @@ import {
 } from '@/shared/broker.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
-import { assert, isNotNullish } from '@/shared/guards.js';
+import { assert } from '@/shared/guards.js';
 import {
   BoostPoolsDepth,
   Environment,
@@ -336,8 +335,6 @@ export class SwapSDK {
       amount: quote.depositAmount,
     };
 
-    await this.checkLivePriceProtectionRequirement(depositAddressRequest, quote);
-
     let response;
 
     if (this.options.broker) {
@@ -439,8 +436,6 @@ export class SwapSDK {
       affiliates,
     };
 
-    await this.checkLivePriceProtectionRequirement(vaultSwapRequest, quote);
-
     if (this.options.broker) {
       assert(
         !vaultSwapRequest.brokerAccount,
@@ -513,8 +508,6 @@ export class SwapSDK {
       affiliates,
     };
 
-    await this.checkLivePriceProtectionRequirement(requestParams, quote);
-
     if (this.options.broker) {
       assert(
         !brokerAccount,
@@ -574,30 +567,5 @@ export class SwapSDK {
     }
 
     return res.body;
-  }
-
-  private async checkLivePriceProtectionRequirement(
-    request: Parameters<typeof requestSwapDepositAddress>[0] | CfParametersEncodingRequest,
-    quote: Quote | BoostQuote,
-  ): Promise<void> {
-    if (!this.dcaV2Enabled || quote.type !== 'DCA') return;
-
-    const { assets } = await this.cache.read('networkInfo');
-
-    const srcAsset = getInternalAsset(request.srcAsset as AssetAndChain);
-    const destAsset = getInternalAsset(request.destAsset as AssetAndChain);
-    if (
-      ![srcAsset, destAsset].every(
-        (asset) => assets.find((a) => a.asset === asset)?.livePriceProtectionEnabled,
-      )
-    ) {
-      return;
-    }
-
-    if (isNotNullish(request.fillOrKillParams.maxOraclePriceSlippage)) return;
-
-    throw new Error(
-      'Max oracle price slippage must be set in FillOrKillParams when live price protection is enabled for both assets in DCA V2',
-    );
   }
 }

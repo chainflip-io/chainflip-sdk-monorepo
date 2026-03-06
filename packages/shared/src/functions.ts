@@ -99,37 +99,23 @@ export function parseFoKParams(
 ) {
   const srcAsset = getInternalAsset(quote.srcAsset);
   const destAsset = getInternalAsset(quote.destAsset);
-  const livePriceProtectionDisabled = params.livePriceSlippageTolerancePercent === false;
-  const livePriceProtectionEnabled =
-    typeof params.livePriceSlippageTolerancePercent === 'string' ||
-    typeof params.livePriceSlippageTolerancePercent === 'number';
-  const livePriceProtectionAvailable = isNotNullish(
-    quote.recommendedLivePriceSlippageTolerancePercent,
-  );
-
-  if (livePriceProtectionEnabled && !livePriceProtectionAvailable) {
-    throw new Error('Live price protection is not available for this asset pair');
-  }
-
+  const lppAvailable = isNotNullish(quote.recommendedLivePriceSlippageTolerancePercent);
   let minPrice: string;
-  let livePriceSlippageTolerancePercent = null as BigNumber | null;
-  if (!livePriceProtectionDisabled) {
-    if (
-      isNotNullish(params.livePriceSlippageTolerancePercent) &&
-      params.livePriceSlippageTolerancePercent !== false
-    ) {
-      livePriceSlippageTolerancePercent = new BigNumber(params.livePriceSlippageTolerancePercent);
-      assert(!livePriceSlippageTolerancePercent.isNaN(), 'Invalid live price slippage tolerance');
-      assert(
-        livePriceSlippageTolerancePercent.gte(0) && livePriceSlippageTolerancePercent.lte(100),
-        'Live price slippage tolerance must be between 0 and 100 inclusive',
-      );
-    } else if (quote.recommendedLivePriceSlippageTolerancePercent) {
-      livePriceSlippageTolerancePercent = new BigNumber(
-        quote.recommendedLivePriceSlippageTolerancePercent,
-      );
-      assert(!livePriceSlippageTolerancePercent.isNaN(), 'Invalid live price slippage tolerance');
+  let lpp = null as BigNumber | null;
+
+  if (isNotNullish(params.livePriceSlippageTolerancePercent)) {
+    if (!lppAvailable) {
+      throw new Error('Live price protection is not available for this asset pair');
     }
+    lpp = new BigNumber(params.livePriceSlippageTolerancePercent);
+    assert(!lpp.isNaN(), 'Invalid live price slippage tolerance');
+    assert(
+      lpp.gte(0) && lpp.lte(100),
+      'Live price slippage tolerance must be between 0 and 100 inclusive',
+    );
+  } else if (quote.recommendedLivePriceSlippageTolerancePercent) {
+    lpp = new BigNumber(quote.recommendedLivePriceSlippageTolerancePercent);
+    assert(!lpp.isNaN(), 'Invalid live price slippage tolerance');
   }
 
   if ('minPrice' in params) {
@@ -166,8 +152,7 @@ export function parseFoKParams(
       ? params.retryDurationBlocks
       : Math.max(Math.ceil(params.retryDurationMinutes * blocksPerMinute), 0);
 
-  const maxOraclePriceSlippage =
-    livePriceSlippageTolerancePercent?.multipliedBy(100).toNumber() ?? null;
+  const maxOraclePriceSlippage = lpp?.multipliedBy(100).toNumber() ?? null;
 
   const parsed = {
     retryDurationBlocks,
