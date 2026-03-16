@@ -215,6 +215,7 @@ export default class Quoter {
 
     if (expectedResponses === 0) return [];
 
+    const initialExpectedResponses = expectedResponses;
     const clientsReceivedQuotes = new Map<AccountId, BetaQuote>();
     const respondedClients = new Set<AccountId>();
 
@@ -223,7 +224,11 @@ export default class Quoter {
 
       let timer: ReturnType<typeof setTimeout>;
 
+      let completed = false;
+
       const complete = () => {
+        if (completed) return;
+        completed = true;
         resolve(clientsReceivedQuotes.entries().toArray());
         sub.unsubscribe();
         clearTimeout(timer);
@@ -254,7 +259,7 @@ export default class Quoter {
         );
         logger.warn('quote request timed out', {
           requestId: request.request_id,
-          expectedResponses,
+          initialExpectedResponses,
           receivedResponses: clientsReceivedQuotes.size,
           timedOutMarketMakers,
         });
