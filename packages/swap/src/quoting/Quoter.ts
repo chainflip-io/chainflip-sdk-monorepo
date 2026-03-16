@@ -245,7 +245,20 @@ export default class Quoter {
         if (clientsReceivedQuotes.size === expectedResponses) complete();
       });
 
-      timer = setTimeout(complete, env.QUOTE_TIMEOUT);
+      timer = setTimeout(() => {
+        const respondedMarketMakers = [...clientsReceivedQuotes.keys()];
+        const timedOutMarketMakers = [...quotedLegsMap.keys()].filter(
+          (mm) => !clientsReceivedQuotes.has(mm),
+        );
+        logger.warn('quote request timed out', {
+          requestId: request.request_id,
+          expectedResponses,
+          receivedResponses: clientsReceivedQuotes.size,
+          respondedMarketMakers,
+          timedOutMarketMakers,
+        });
+        complete();
+      }, env.QUOTE_TIMEOUT);
     });
   }
 
