@@ -216,6 +216,7 @@ export default class Quoter {
     if (expectedResponses === 0) return [];
 
     const clientsReceivedQuotes = new Map<AccountId, BetaQuote>();
+    const respondedClients = new Set<AccountId>();
 
     return new Promise((resolve) => {
       let sub: Subscription;
@@ -231,11 +232,13 @@ export default class Quoter {
 
       sub = this.quotes$.subscribe(({ marketMaker, quote, beta }) => {
         if (!quote) {
+          respondedClients.add(marketMaker);
           expectedResponses -= 1;
           return;
         }
         const { format } = quotedLegsMap.get(marketMaker) ?? {};
         if (quote.request_id !== request.request_id) return;
+        respondedClients.add(marketMaker);
         if (format) {
           clientsReceivedQuotes.set(marketMaker, { ...quote, beta, legs: format(quote.legs) });
         } else {
@@ -246,15 +249,13 @@ export default class Quoter {
       });
 
       timer = setTimeout(() => {
-        const respondedMarketMakers = [...clientsReceivedQuotes.keys()];
         const timedOutMarketMakers = [...quotedLegsMap.keys()].filter(
-          (mm) => !clientsReceivedQuotes.has(mm),
+          (mm) => !respondedClients.has(mm),
         );
         logger.warn('quote request timed out', {
           requestId: request.request_id,
           expectedResponses,
           receivedResponses: clientsReceivedQuotes.size,
-          respondedMarketMakers,
           timedOutMarketMakers,
         });
         complete();
