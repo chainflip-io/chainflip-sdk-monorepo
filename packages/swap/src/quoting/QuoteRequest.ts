@@ -577,6 +577,9 @@ export default class QuoteRequest {
     }
 
     if (!regularEagerLiquidityExists && !dcaEagerLiquidityExists) {
+      logger.warn(
+        `insufficient liquidity for requested amount. details: regularEagerLiquidityExists=${regularEagerLiquidityExists} dcaEagerLiquidityExists=${dcaEagerLiquidityExists}`,
+      );
       throw ServiceError.badRequest(`insufficient liquidity for the requested amount`);
     }
 
