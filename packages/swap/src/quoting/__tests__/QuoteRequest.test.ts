@@ -1,7 +1,14 @@
 /* eslint-disable dot-notation */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import env from '../../config/env.js';
-import { getUsdValue } from '../../pricing/checkPriceWarning.js';
+import { checkPriceWarning, getUsdValue } from '../../pricing/checkPriceWarning.js';
+import {
+  calculateRecommendedLivePriceSlippage,
+  calculateRecommendedSlippage,
+} from '../../utils/autoSlippage.js';
+import { getMinimumEgressAmount } from '../../utils/rpc.js';
+import { getSwapRateV3, SwapRateResult } from '../../utils/statechain.js';
+import { estimateSwapDuration } from '../../utils/swap.js';
 import QuoteRequest, { MAX_NUMBER_OF_CHUNKS } from '../QuoteRequest.js';
 
 const originalEnv = structuredClone(env);
@@ -33,6 +40,10 @@ vi.mock('../../polkadot/api');
 vi.mock('../../pricing/checkPriceWarning', () => ({
   checkPriceWarning: vi.fn(),
   getUsdValue: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('../../utils/fees', () => ({
+  getPoolFees: vi.fn().mockReturnValue([]),
 }));
 
 const createRequest = (amount: bigint) =>
@@ -160,6 +171,117 @@ describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
         ],
       ]
     `);
+  });
+});
+
+describe(QuoteRequest.prototype['getPoolQuote'], () => {
+  // BTC (8 decimals) → FLIP (18 decimals), 2-leg swap via USDC
+  // depositAmount = 10_000 satoshis (0.0001 BTC)
+  // srcIndexPrice = $100_000/BTC, destIndexPrice = $5/FLIP
+  // swapInputAmount = 10_000 (0 ingress fee)
+  // srcAmountInTokens = 0.0001 BTC
+  // expectedOutputInTokens = 0.0001 * 100_000 / 5 = 2 FLIP
+  //
+  // with recommendedSlippage = 1.5%, lpp = undefined:
+  //   effectiveSlippage = max(0, 1.5) = 1.5%
+  //   minimumOutput = 2 * 0.985 = 1.97 FLIP = 1_970_000_000_000_000_000n
+  //
+  // with recommendedSlippage = 1.5%, lpp = 2.5%:
+  //   effectiveSlippage = max(2.5, 1.5) = 2.5%
+  //   minimumOutput = 2 * 0.975 = 1.95 FLIP = 1_950_000_000_000_000_000n
+
+  const defaultSwapRateResult = {
+    ingressFee: { amount: 0n, asset: 'BTC', chain: 'Bitcoin' },
+    networkFee: { amount: 0n, asset: 'USDC', chain: 'Ethereum' },
+    brokerFee: { amount: 0n, asset: 'BTC', chain: 'Bitcoin' },
+    egressFee: { amount: 0n, asset: 'FLIP', chain: 'Ethereum' },
+    intermediateAmount: 10_000_000n, // 10 USDC intermediate
+    egressAmount: 2_000_000_000_000_000_000n, // 2 FLIP nominal
+  } as unknown as SwapRateResult;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getSwapRateV3).mockResolvedValue(defaultSwapRateResult);
+    vi.mocked(calculateRecommendedSlippage).mockResolvedValue(1.5);
+    vi.mocked(calculateRecommendedLivePriceSlippage).mockResolvedValue(undefined);
+    vi.mocked(estimateSwapDuration).mockResolvedValue({
+      total: 702,
+      durations: { swap: 12, deposit: 600, egress: 90 },
+    });
+    vi.mocked(checkPriceWarning).mockResolvedValue(undefined);
+    vi.mocked(getMinimumEgressAmount).mockResolvedValue(0n);
+  });
+
+  it('passes when egress amount is above the minimum threshold', async () => {
+    const request = createRequest(10_000n);
+    request['regularLimitOrders'] = [];
+    request['srcAssetIndexPrice'] = 100_000;
+    request['destAssetIndexPrice'] = 5;
+    vi.mocked(getSwapRateV3).mockResolvedValue({
+      ...defaultSwapRateResult,
+      egressAmount: 1_970_000_000_000_000_001n, // just above 1.97 FLIP minimum
+    });
+
+    await expect(request['getPoolQuote']()).resolves.toMatchObject({
+      egressAmount: '1970000000000000001',
+    });
+  });
+
+  it('throws when egress amount is below the minimum threshold', async () => {
+    const request = createRequest(10_000n);
+    request['regularLimitOrders'] = [];
+    request['srcAssetIndexPrice'] = 100_000;
+    request['destAssetIndexPrice'] = 5;
+    vi.mocked(getSwapRateV3).mockResolvedValue({
+      ...defaultSwapRateResult,
+      egressAmount: 1_969_999_999_999_999_999n, // just below 1.97 FLIP minimum
+    });
+
+    await expect(request['getPoolQuote']()).rejects.toThrow(
+      'insufficient liquidity for the requested amount',
+    );
+  });
+
+  it('uses lpp when it is larger than recommendedSlippage, making the check more lenient', async () => {
+    const request = createRequest(10_000n);
+    request['regularLimitOrders'] = [];
+    request['srcAssetIndexPrice'] = 100_000;
+    request['destAssetIndexPrice'] = 5;
+    vi.mocked(calculateRecommendedLivePriceSlippage).mockResolvedValue(2.5);
+    // 1.96 FLIP is between the 2.5% threshold (1.95) and the 1.5% threshold (1.97)
+    // so it passes with lpp=2.5% but would fail with just recommendedSlippage=1.5%
+    vi.mocked(getSwapRateV3).mockResolvedValue({
+      ...defaultSwapRateResult,
+      egressAmount: 1_960_000_000_000_000_000n,
+    });
+
+    await expect(request['getPoolQuote']()).resolves.toMatchObject({
+      egressAmount: '1960000000000000000',
+    });
+  });
+
+  it('skips the check when no index prices are available', async () => {
+    const request = createRequest(10_000n);
+    request['regularLimitOrders'] = [];
+    vi.mocked(getSwapRateV3).mockResolvedValue({
+      ...defaultSwapRateResult,
+      egressAmount: 1n, // would fail if check ran
+    });
+
+    await expect(request['getPoolQuote']()).resolves.toMatchObject({ egressAmount: '1' });
+  });
+
+  it('skips the check when only one index price is available', async () => {
+    const request = createRequest(10_000n);
+    request['regularLimitOrders'] = [];
+    request['srcAssetIndexPrice'] = 100_000;
+    // destAssetIndexPrice not set
+    vi.mocked(getSwapRateV3).mockResolvedValue({
+      ...defaultSwapRateResult,
+      egressAmount: 1n, // would fail if check ran
+    });
+
+    await expect(request['getPoolQuote']()).resolves.toMatchObject({ egressAmount: '1' });
   });
 });
 

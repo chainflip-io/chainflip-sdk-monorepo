@@ -378,6 +378,41 @@ export default class QuoteRequest {
         destAsset: this.destAsset,
       });
 
+    if (this.srcAssetIndexPrice && this.destAssetIndexPrice) {
+      const srcAmountInTokens = new BigNumber(swapInputAmount.toString()).shiftedBy(
+        -assetConstants[this.srcAsset].decimals,
+      );
+      const expectedOutputInTokens = srcAmountInTokens
+        .times(this.srcAssetIndexPrice)
+        .dividedBy(this.destAssetIndexPrice);
+      const slippagePercent = Math.max(
+        recommendedLivePriceSlippageTolerancePercent ?? 0,
+        recommendedSlippageTolerancePercent,
+      );
+      const minimumOutputInTokens = expectedOutputInTokens.times(1 - slippagePercent / 100);
+      const actualOutputInTokens = new BigNumber(egressAmount.toString()).shiftedBy(
+        -assetConstants[this.destAsset].decimals,
+      );
+
+      if (actualOutputInTokens.lt(minimumOutputInTokens)) {
+        const priceDeltaPercent = actualOutputInTokens
+          .minus(expectedOutputInTokens)
+          .dividedBy(expectedOutputInTokens)
+          .times(100)
+          .toFixed(2);
+        logger.warn('quote execution price delta below acceptable threshold', {
+          srcAsset: this.srcAsset,
+          destAsset: this.destAsset,
+          depositAmount: this.depositAmount.toString(),
+          egressAmount: egressAmount.toString(),
+          priceDeltaPercent,
+          recommendedLivePriceSlippageTolerancePercent,
+          recommendedSlippageTolerancePercent,
+        });
+        throw ServiceError.badRequest('insufficient liquidity for the requested amount');
+      }
+    }
+
     return {
       intermediateAmount: intermediateAmount?.toString(),
       egressAmount: egressAmount.toString(),
