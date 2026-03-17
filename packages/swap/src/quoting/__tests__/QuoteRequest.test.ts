@@ -2,10 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import env from '../../config/env.js';
 import { checkPriceWarning, getUsdValue } from '../../pricing/checkPriceWarning.js';
-import {
-  calculateRecommendedLivePriceSlippage,
-  calculateRecommendedSlippage,
-} from '../../utils/autoSlippage.js';
+import { calculateRecommendedSlippage } from '../../utils/autoSlippage.js';
 import { getMinimumEgressAmount } from '../../utils/rpc.js';
 import { getSwapRateV3, SwapRateResult } from '../../utils/statechain.js';
 import { estimateSwapDuration } from '../../utils/swap.js';
@@ -182,13 +179,8 @@ describe(QuoteRequest.prototype['getPoolQuote'], () => {
   // srcAmountInTokens = 0.0001 BTC
   // expectedOutputInTokens = 0.0001 * 100_000 / 5 = 2 FLIP
   //
-  // with recommendedSlippage = 1.5%, lpp = undefined:
-  //   effectiveSlippage = max(0, 1.5) = 1.5%
+  // with recommendedSlippage = 1.5%:
   //   minimumOutput = 2 * 0.985 = 1.97 FLIP = 1_970_000_000_000_000_000n
-  //
-  // with recommendedSlippage = 1.5%, lpp = 2.5%:
-  //   effectiveSlippage = max(2.5, 1.5) = 2.5%
-  //   minimumOutput = 2 * 0.975 = 1.95 FLIP = 1_950_000_000_000_000_000n
 
   const defaultSwapRateResult = {
     ingressFee: { amount: 0n, asset: 'BTC', chain: 'Bitcoin' },
@@ -203,7 +195,6 @@ describe(QuoteRequest.prototype['getPoolQuote'], () => {
     vi.clearAllMocks();
     vi.mocked(getSwapRateV3).mockResolvedValue(defaultSwapRateResult);
     vi.mocked(calculateRecommendedSlippage).mockResolvedValue(1.5);
-    vi.mocked(calculateRecommendedLivePriceSlippage).mockResolvedValue(undefined);
     vi.mocked(estimateSwapDuration).mockResolvedValue({
       total: 702,
       durations: { swap: 12, deposit: 600, egress: 90 },
@@ -240,24 +231,6 @@ describe(QuoteRequest.prototype['getPoolQuote'], () => {
     await expect(request['getPoolQuote']()).rejects.toThrow(
       'insufficient liquidity for the requested amount',
     );
-  });
-
-  it('uses lpp when it is larger than recommendedSlippage, making the check more lenient', async () => {
-    const request = createRequest(10_000n);
-    request['regularLimitOrders'] = [];
-    request['srcAssetIndexPrice'] = 100_000;
-    request['destAssetIndexPrice'] = 5;
-    vi.mocked(calculateRecommendedLivePriceSlippage).mockResolvedValue(2.5);
-    // 1.96 FLIP is between the 2.5% threshold (1.95) and the 1.5% threshold (1.97)
-    // so it passes with lpp=2.5% but would fail with just recommendedSlippage=1.5%
-    vi.mocked(getSwapRateV3).mockResolvedValue({
-      ...defaultSwapRateResult,
-      egressAmount: 1_960_000_000_000_000_000n,
-    });
-
-    await expect(request['getPoolQuote']()).resolves.toMatchObject({
-      egressAmount: '1960000000000000000',
-    });
   });
 
   it('skips the check when no index prices are available', async () => {

@@ -378,18 +378,24 @@ export default class QuoteRequest {
         destAsset: this.destAsset,
       });
 
-    if (this.srcAssetIndexPrice && this.destAssetIndexPrice) {
+    if (
+      Number.isFinite(this.srcAssetIndexPrice) &&
+      this.srcAssetIndexPrice != null &&
+      this.srcAssetIndexPrice > 0 &&
+      Number.isFinite(this.destAssetIndexPrice) &&
+      this.destAssetIndexPrice != null &&
+      this.destAssetIndexPrice > 0
+    ) {
       const srcAmountInTokens = new BigNumber(swapInputAmount.toString()).shiftedBy(
         -assetConstants[this.srcAsset].decimals,
       );
       const expectedOutputInTokens = srcAmountInTokens
         .times(this.srcAssetIndexPrice)
         .dividedBy(this.destAssetIndexPrice);
-      const slippagePercent = Math.max(
-        recommendedLivePriceSlippageTolerancePercent ?? 0,
-        recommendedSlippageTolerancePercent,
+
+      const minimumOutputInTokens = expectedOutputInTokens.times(
+        new BigNumber(1).minus(new BigNumber(recommendedSlippageTolerancePercent).dividedBy(100)),
       );
-      const minimumOutputInTokens = expectedOutputInTokens.times(1 - slippagePercent / 100);
       const actualOutputInTokens = new BigNumber(egressAmount.toString()).shiftedBy(
         -assetConstants[this.destAsset].decimals,
       );
@@ -406,7 +412,6 @@ export default class QuoteRequest {
           depositAmount: this.depositAmount.toString(),
           egressAmount: egressAmount.toString(),
           priceDeltaPercent,
-          recommendedLivePriceSlippageTolerancePercent,
           recommendedSlippageTolerancePercent,
         });
         throw ServiceError.badRequest('insufficient liquidity for the requested amount');
