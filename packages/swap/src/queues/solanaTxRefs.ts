@@ -92,7 +92,7 @@ const updateChannel = async (url: string, data: PendingChannelTxRef, network: So
     return assertUnreachable(data, 'unexpected channel model');
   }
 
-  assert(asset === 'Sol' || asset === 'SolUsdc', 'unexpected asset');
+  assert(asset === 'Sol' || asset === 'SolUsdc' || asset === 'SolUsdt', 'unexpected asset');
 
   const deposits: Deposit[] = [
     ...channel.swapRequests.map((sr) => ({
