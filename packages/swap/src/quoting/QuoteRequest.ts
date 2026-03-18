@@ -277,6 +277,22 @@ export default class QuoteRequest {
       excludeFees.push('IngressVaultSwap');
     }
 
+    // TODO: remove after we have finished debugging
+    logger.info('calling cf_swap_rate_v3 with payload', {
+      srcAsset: this.srcAsset,
+      destAsset: this.destAsset,
+      depositAmount: cfRateInputAmount.toString(),
+      limitOrders: ensure(
+        dcaParams ? this.dcaLimitOrders : this.regularLimitOrders,
+        'Limit orders must be fetched before calling getPoolQuote',
+      ),
+      brokerCommissionBps: this.brokerCommissionBps,
+      ccmParams: this.ccmParams,
+      dcaParams,
+      excludeFees,
+      isInternal: this.isOnChain,
+    });
+
     let swapRateResult = await getSwapRateV3({
       srcAsset: this.srcAsset,
       destAsset: this.destAsset,
@@ -380,18 +396,16 @@ export default class QuoteRequest {
 
     if (
       Number.isFinite(this.srcAssetIndexPrice) &&
-      this.srcAssetIndexPrice != null &&
-      this.srcAssetIndexPrice > 0 &&
+      this.srcAssetIndexPrice! > 0 &&
       Number.isFinite(this.destAssetIndexPrice) &&
-      this.destAssetIndexPrice != null &&
-      this.destAssetIndexPrice > 0
+      this.destAssetIndexPrice! > 0
     ) {
       const srcAmountInTokens = new BigNumber(swapInputAmount.toString()).shiftedBy(
         -assetConstants[this.srcAsset].decimals,
       );
       const expectedOutputInTokens = srcAmountInTokens
-        .times(this.srcAssetIndexPrice)
-        .dividedBy(this.destAssetIndexPrice);
+        .times(this.srcAssetIndexPrice!)
+        .dividedBy(this.destAssetIndexPrice!);
 
       const minimumOutputInTokens = expectedOutputInTokens.times(
         new BigNumber(1).minus(new BigNumber(recommendedSlippageTolerancePercent).dividedBy(100)),
