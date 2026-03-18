@@ -160,21 +160,31 @@ export const calculateRecommendedLivePriceSlippage = async ({
 }) => {
   if (env.DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE) return undefined;
 
-  const baseAsset = [srcAsset, destAsset].filter(
+  const baseAssets = [srcAsset, destAsset].filter(
     (asset): asset is BaseChainflipAsset => asset !== 'Usdc',
   );
 
   const results = await Promise.all(
-    baseAsset.map((asset) => getDefaultOracleProtectionValue(asset)),
+    baseAssets.map((asset) => getDefaultOracleProtectionValue(asset)),
   );
 
+  // we don't recommend lpp if either of the base assets has no oracle protection value since
+  // oracle protection is applied on the entire swap, not per leg. the protocol will then
+  // apply defaults on the legs where possible
   if (results.some((result) => isNullish(result))) return undefined;
 
   const oracleProtectionValues = results.filter(isNotNullish);
 
-  const slippage = canUseTightSlippage(srcAsset, destAsset)
-    ? env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS
-    : (env.DEFAULT_LPP_SLIPPAGE_BPS ?? Math.max(...oracleProtectionValues));
+  const baseAssetCount = baseAssets.length;
+
+  let slippage: number;
+  if (canUseTightSlippage(srcAsset, destAsset)) {
+    slippage = env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS * baseAssetCount;
+  } else if (env.DEFAULT_LPP_SLIPPAGE_BPS != null) {
+    slippage = env.DEFAULT_LPP_SLIPPAGE_BPS * baseAssetCount;
+  } else {
+    slippage = oracleProtectionValues.reduce((acc, v) => acc + v, 0);
+  }
 
   return Number((slippage / 100).toFixed(2));
 };
