@@ -380,6 +380,15 @@ describe(calculateRecommendedLivePriceSlippage, () => {
     expect(result).toEqual((10 * 2) / 100);
   });
 
+  it('multiplies DEFAULT_TIGHT_LPP_SLIPPAGE_BPS by baseAssetCount for two stable assets', async () => {
+    env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS = 10;
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdt',
+      destAsset: 'ArbUsdt',
+    });
+    expect(result).toEqual((10 * 2) / 100);
+  });
+
   it('sums oracle protection values for two non-Usdc non-stable assets', async () => {
     const result = await calculateRecommendedLivePriceSlippage({
       srcAsset: 'Btc',
