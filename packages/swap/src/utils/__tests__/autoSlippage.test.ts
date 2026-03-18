@@ -316,7 +316,9 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       srcAsset: 'Usdt',
       destAsset: 'Eth',
     });
-    expect(result).toEqual(defaultOraclePriceProtection / 100);
+    expect(result).toEqual(
+      (defaultStableOraclePriceProtection + defaultOraclePriceProtection) / 100,
+    );
   });
 
   it('should return undefined for non-oracle assets', async () => {
@@ -340,8 +342,7 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       srcAsset: 'Eth',
       destAsset: 'ArbEth',
     });
-
-    expect(result).toEqual(env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS / 100);
+    expect(result).toEqual((env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS * 2) / 100);
   });
 
   it('rounds the value to 2 decimal places', async () => {
@@ -368,5 +369,39 @@ describe(calculateRecommendedLivePriceSlippage, () => {
       destAsset: 'Eth',
     });
     expect(result).toEqual(10 / 100);
+  });
+
+  it('multiplies DEFAULT_LPP_SLIPPAGE_BPS by baseAssetCount for two non-Usdc assets', async () => {
+    env.DEFAULT_LPP_SLIPPAGE_BPS = 10;
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Btc',
+      destAsset: 'Eth',
+    });
+    expect(result).toEqual((10 * 2) / 100);
+  });
+
+  it('multiplies DEFAULT_TIGHT_LPP_SLIPPAGE_BPS by baseAssetCount for two stable assets', async () => {
+    env.DEFAULT_TIGHT_LPP_SLIPPAGE_BPS = 10;
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Usdt',
+      destAsset: 'ArbUsdt',
+    });
+    expect(result).toEqual((10 * 2) / 100);
+  });
+
+  it('sums oracle protection values for two non-Usdc non-stable assets', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Btc',
+      destAsset: 'Eth',
+    });
+    expect(result).toEqual((defaultOraclePriceProtection + defaultOraclePriceProtection) / 100);
+  });
+
+  it('returns undefined if one of two non-Usdc assets has no oracle protection value', async () => {
+    const result = await calculateRecommendedLivePriceSlippage({
+      srcAsset: 'Btc',
+      destAsset: 'Flip',
+    });
+    expect(result).toEqual(undefined);
   });
 });
