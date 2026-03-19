@@ -4,7 +4,10 @@ import { hexEncodeNumber } from '@chainflip/utils/number';
 import WebSocket from 'ws';
 import { DcaParams, SwapFeeType } from '@/shared/schemas.js';
 import { memoize } from './function.js';
+import baseLogger from './logger.js';
 import env from '../config/env.js';
+
+const logger = baseLogger.child({ module: 'rpc' });
 
 const initializeClient = memoize(() => new WsClient(env.RPC_NODE_WSS_URL, WebSocket as never));
 export type QuoteLimitOrders = NonNullable<RpcParams['cf_swap_rate_v3'][7]>;
@@ -64,6 +67,18 @@ export const getSwapRateV3 = async ({
     : undefined;
 
   const additionalOrders = limitOrders?.filter((order) => order.LimitOrder.sell_amount !== '0x0');
+
+  logger.info('calling cf_swap_rate_v3 with payload', {
+    srcAsset,
+    destAsset,
+    depositAmount: hexEncodeNumber(depositAmount),
+    brokerCommissionBps: brokerCommissionBps ?? 0,
+    dcaParams,
+    ccmParams,
+    excludeFees,
+    additionalOrders,
+    isInternal,
+  });
 
   const {
     ingress_fee: ingressFee,

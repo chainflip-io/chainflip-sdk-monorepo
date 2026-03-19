@@ -52,9 +52,7 @@ vi.mock('@chainflip/rpc', async (importOriginal) => {
   };
 });
 
-vi.mock('../../../pricing/index', () => ({
-  getAssetPrice: vi.fn().mockResolvedValue(undefined),
-}));
+vi.mock('../../../pricing/index');
 vi.mock('../../../pricing/checkPriceWarning', () => ({
   checkPriceWarning: vi.fn(),
   getUsdValue: vi.fn().mockResolvedValue(undefined),

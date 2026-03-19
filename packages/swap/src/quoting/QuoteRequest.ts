@@ -277,22 +277,6 @@ export default class QuoteRequest {
       excludeFees.push('IngressVaultSwap');
     }
 
-    // TODO: remove after we have finished debugging
-    logger.info('calling cf_swap_rate_v3 with payload', {
-      srcAsset: this.srcAsset,
-      destAsset: this.destAsset,
-      depositAmount: cfRateInputAmount.toString(),
-      limitOrders: ensure(
-        dcaParams ? this.dcaLimitOrders : this.regularLimitOrders,
-        'Limit orders must be fetched before calling getPoolQuote',
-      ),
-      brokerCommissionBps: this.brokerCommissionBps,
-      ccmParams: this.ccmParams,
-      dcaParams,
-      excludeFees,
-      isInternal: this.isOnChain,
-    });
-
     let swapRateResult = await getSwapRateV3({
       srcAsset: this.srcAsset,
       destAsset: this.destAsset,
@@ -393,44 +377,6 @@ export default class QuoteRequest {
         srcAsset: this.srcAsset,
         destAsset: this.destAsset,
       });
-
-    if (
-      Number.isFinite(this.srcAssetIndexPrice) &&
-      this.srcAssetIndexPrice! > 0 &&
-      Number.isFinite(this.destAssetIndexPrice) &&
-      this.destAssetIndexPrice! > 0
-    ) {
-      const srcAmountInTokens = new BigNumber(swapInputAmount.toString()).shiftedBy(
-        -assetConstants[this.srcAsset].decimals,
-      );
-      const expectedOutputInTokens = srcAmountInTokens
-        .times(this.srcAssetIndexPrice!)
-        .dividedBy(this.destAssetIndexPrice!);
-
-      const minimumOutputInTokens = expectedOutputInTokens.times(
-        new BigNumber(1).minus(new BigNumber(recommendedSlippageTolerancePercent).dividedBy(100)),
-      );
-      const actualOutputInTokens = new BigNumber(egressAmount.toString()).shiftedBy(
-        -assetConstants[this.destAsset].decimals,
-      );
-
-      if (actualOutputInTokens.lt(minimumOutputInTokens)) {
-        const priceDeltaPercent = actualOutputInTokens
-          .minus(expectedOutputInTokens)
-          .dividedBy(expectedOutputInTokens)
-          .times(100)
-          .toFixed(2);
-        logger.warn('quote execution price delta below acceptable threshold', {
-          srcAsset: this.srcAsset,
-          destAsset: this.destAsset,
-          depositAmount: this.depositAmount.toString(),
-          egressAmount: egressAmount.toString(),
-          priceDeltaPercent,
-          recommendedSlippageTolerancePercent,
-        });
-        throw ServiceError.badRequest('insufficient liquidity for the requested amount');
-      }
-    }
 
     return {
       intermediateAmount: intermediateAmount?.toString(),
