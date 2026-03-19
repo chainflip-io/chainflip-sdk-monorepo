@@ -1,5 +1,4 @@
 /* eslint-disable n/no-process-env */
-import { PrismaPg } from '@prisma/adapter-pg';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { PrismaClient } from '@prisma/swapping';
 import { randomUUID } from 'crypto';
@@ -15,9 +14,6 @@ const tempDbUrl = new URL(process.env.DATABASE_URL!);
 tempDbUrl.pathname += `_vitest_${process.env.VITEST_POOL_ID}`;
 
 process.env.DATABASE_URL = tempDbUrl.toString();
-
-const createClient = (connectionString: string) =>
-  new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 
 const withMutex = async (cb: () => Promise<void>) => {
   const redis = new Redis('redis://localhost:6379');
@@ -73,7 +69,7 @@ beforeAll(async () => {
   const templateDbName = dbUrl.pathname.slice(1);
 
   await withMutex(async () => {
-    const adminClient = createClient(dbUrl.toString());
+    const adminClient = new PrismaClient({ datasourceUrl: dbUrl.toString() });
     try {
       const exists = await dbExists(adminClient, tempDbName);
       if (!exists) {
@@ -87,7 +83,7 @@ beforeAll(async () => {
   });
 
   // Truncate tables to ensure clean state (works for both new and existing DBs)
-  const tempClient = createClient(tempDbUrl.toString());
+  const tempClient = new PrismaClient({ datasourceUrl: tempDbUrl.toString() });
   await truncateAllTables(tempClient);
   await tempClient.$disconnect();
 
