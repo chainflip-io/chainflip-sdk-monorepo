@@ -40,7 +40,7 @@ const fetchBlocks = async (height: number): Promise<Block[]> => {
 
       return blocks;
     } catch (error) {
-      logger.error('failed to fetch batch', { error: inspect(error) });
+      logger.error('failed to fetch batch', { error: inspect(error, { depth: null }) });
       if (i === 4) throw error;
     }
   }
@@ -110,7 +110,7 @@ export default async function processBlocks() {
               await eventHandler({ prisma: txClient, event, block });
             } catch (error) {
               logger.error('processBlock error: Error handling event', {
-                error: inspect(error),
+                error: inspect(error, { depth: null }),
                 eventName: event.name,
                 indexInBlock: event.indexInBlock,
                 blockHeight: block.height,

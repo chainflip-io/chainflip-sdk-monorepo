@@ -5,7 +5,7 @@ import logger from './utils/logger.js';
 // start
 const start = async () => {
   processBlocks().catch((error) => {
-    logger.error('error processing blocks', { error: inspect(error) });
+    logger.error('error processing blocks', { error: inspect(error, { depth: null }) });
     process.exit(1);
   });
 };
