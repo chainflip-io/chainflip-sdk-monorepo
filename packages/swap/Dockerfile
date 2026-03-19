@@ -32,6 +32,10 @@ COPY --from=builder /app/pnpm-workspace.yaml /app/pnpm-workspace.yaml
 COPY --from=builder /app/packages/swap /app/packages/swap
 COPY --from=builder /app/packages/swap/.env.* /app
 
+RUN apt update && apt install -y wget
+RUN mkdir /ca-certs
+RUN wget -q -O /ca-certs/rds.pem https://truststore.pki.rds.amazonaws.com/eu-central-1/eu-central-1-bundle.pem
+
 WORKDIR /app/packages/swap
 
 # using ENTRYPOINT causes signals (SIGINT) to be passed onto the node process
