@@ -124,6 +124,10 @@ export default class Quoter {
         socket.disconnect();
       });
 
+      socket.on('error', () => {
+        logger.warn('error in market maker socket', { marketMaker: socket.data.marketMaker });
+      });
+
       socket.on('disconnect', () => {
         logger.info('market maker disconnected', { marketMaker: socket.data.marketMaker });
         this.balanceTracker.remove(socket.data.marketMaker);
