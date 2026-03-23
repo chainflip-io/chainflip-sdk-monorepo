@@ -124,8 +124,13 @@ export default class Quoter {
         socket.disconnect();
       });
 
-      socket.on('error', () => {
-        logger.warn('error in market maker socket', { marketMaker: socket.data.marketMaker });
+      socket.on('error', (err) => {
+        logger.warn('error in market maker socket', {
+          marketMaker: socket.data.marketMaker,
+          error: err,
+          errorMessage: err?.message,
+          errorStack: err?.stack,
+        });
       });
 
       socket.on('disconnect', () => {
