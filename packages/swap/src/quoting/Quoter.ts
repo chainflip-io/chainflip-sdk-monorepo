@@ -127,7 +127,7 @@ export default class Quoter {
       socket.on('error', (err) => {
         logger.warn('error in market maker socket', {
           marketMaker: socket.data.marketMaker,
-          error: err,
+          errorName: err?.name,
           errorMessage: err?.message,
           errorStack: err?.stack,
         });
