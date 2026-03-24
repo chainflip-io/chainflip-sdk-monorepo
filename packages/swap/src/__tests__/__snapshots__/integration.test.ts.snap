@@ -56,7 +56,7 @@ exports[`python integration test > replies to a quote request with v2 endpoint 1
       },
     ],
     "recommendedRetryDurationMinutes": 5,
-    "recommendedSlippageTolerancePercent": 5,
+    "recommendedSlippageTolerancePercent": 10,
     "srcAsset": {
       "asset": "FLIP",
       "chain": "Ethereum",

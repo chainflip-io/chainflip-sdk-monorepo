@@ -183,7 +183,7 @@ exports[`server > GET /v2/quote > does not return recommendedLivePriceSlippageTo
       },
     ],
     "recommendedRetryDurationMinutes": 5,
-    "recommendedSlippageTolerancePercent": 1,
+    "recommendedSlippageTolerancePercent": 10,
     "srcAsset": {
       "asset": "FLIP",
       "chain": "Ethereum",
