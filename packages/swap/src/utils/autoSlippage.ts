@@ -103,13 +103,15 @@ export const calculateRecommendedSlippage = async ({
     );
   }
 
+  if (srcAsset === 'Flip' || destAsset === 'Flip') {
+    return 10;
+  }
+
   const baseSlippage =
     env.QUOTING_BASE_SLIPPAGE[srcAsset] ?? env.QUOTING_BASE_SLIPPAGE[destAsset] ?? 1;
 
-  // use different limits for flip swaps because chainflip is the primary market for the flip token
-  // because of this, lps cannot easily source liquidity from other markets (cex, dex) when filling a flip swap
-  const MIN_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 1 : 0.5;
-  const MAX_SLIPPAGE = srcAsset === 'Flip' || destAsset === 'Flip' ? 5 : 2.5;
+  const MIN_SLIPPAGE = 0.5;
+  const MAX_SLIPPAGE = 2.5;
 
   let recommendedSlippage = baseSlippage;
   recommendedSlippage += isOnChain
