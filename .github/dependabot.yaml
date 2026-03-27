@@ -4,8 +4,6 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
-    assignees:
-      - 'acdibble'
     commit-message:
       prefix: 'chore'
       include: 'scope'
