@@ -145,6 +145,7 @@ export default z
     QUOTER_USE_MEV_FACTOR: optionalBoolean,
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
+    ENABLE_QUOTE_TIMING_LOGS: optionalBoolean.default('false'),
     DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE: optionalBoolean,
     DEFAULT_TIGHT_LPP_SLIPPAGE_BPS: optionalNumber(50),
     DEFAULT_LPP_SLIPPAGE_BPS: number().optional(),
