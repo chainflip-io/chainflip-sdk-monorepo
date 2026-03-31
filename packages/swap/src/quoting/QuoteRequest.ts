@@ -51,6 +51,7 @@ import { estimateSwapDuration, getSwapPrice } from '../utils/swap.js';
 const logger = baseLogger.child({ module: 'quoting' });
 
 async function timed<T>(label: string, fn: () => T | Promise<T>): Promise<T> {
+  if (!env.ENABLE_QUOTE_TIMING_LOGS) return fn();
   const start = performance.now();
   try {
     return await fn();
