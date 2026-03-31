@@ -50,6 +50,15 @@ import { estimateSwapDuration, getSwapPrice } from '../utils/swap.js';
 
 const logger = baseLogger.child({ module: 'quoting' });
 
+async function timed<T>(label: string, fn: () => T | Promise<T>): Promise<T> {
+  const start = performance.now();
+  try {
+    return await fn();
+  } finally {
+    logger.info(label, { durationMs: (performance.now() - start).toFixed(2) });
+  }
+}
+
 const MAX_DCA_DURATION_SECONDS = 24 * 60 * 60;
 export const MAX_NUMBER_OF_CHUNKS = Math.ceil(
   MAX_DCA_DURATION_SECONDS /
@@ -277,20 +286,22 @@ export default class QuoteRequest {
       excludeFees.push('IngressVaultSwap');
     }
 
-    let swapRateResult = await getSwapRateV3({
-      srcAsset: this.srcAsset,
-      destAsset: this.destAsset,
-      depositAmount: cfRateInputAmount,
-      limitOrders: ensure(
-        dcaParams ? this.dcaLimitOrders : this.regularLimitOrders,
-        'Limit orders must be fetched before calling getPoolQuote',
-      ),
-      brokerCommissionBps: this.brokerCommissionBps,
-      ccmParams: this.ccmParams,
-      dcaParams,
-      excludeFees,
-      isInternal: this.isOnChain,
-    });
+    let swapRateResult = await timed('getSwapRateV3', () =>
+      getSwapRateV3({
+        srcAsset: this.srcAsset,
+        destAsset: this.destAsset,
+        depositAmount: cfRateInputAmount,
+        limitOrders: ensure(
+          dcaParams ? this.dcaLimitOrders : this.regularLimitOrders,
+          'Limit orders must be fetched before calling getPoolQuote',
+        ),
+        brokerCommissionBps: this.brokerCommissionBps,
+        ccmParams: this.ccmParams,
+        dcaParams,
+        excludeFees,
+        isInternal: this.isOnChain,
+      }),
+    );
     if (dcaParams && dcaParams?.numberOfChunks > 1) {
       // the dca quote assumes that all chunks of the swap will be executed at the same price
       // this assumption is wrong for assets with limited global liquidity like the flip token
@@ -322,12 +333,14 @@ export default class QuoteRequest {
       );
     }
 
-    const lowLiquidityWarning = await checkPriceWarning({
-      srcAsset: this.srcAsset,
-      destAsset: this.destAsset,
-      srcAmount: swapInputAmount,
-      destAmount: swapOutputAmount,
-    });
+    const lowLiquidityWarning = await timed('checkPriceWarning', () =>
+      checkPriceWarning({
+        srcAsset: this.srcAsset,
+        destAsset: this.destAsset,
+        srcAmount: swapInputAmount,
+        destAmount: swapOutputAmount,
+      }),
+    );
 
     includedFees.push({ ...ingressFee, type: 'INGRESS' });
     includedFees.push({ ...networkFee, type: 'NETWORK' });
@@ -338,18 +351,22 @@ export default class QuoteRequest {
 
     includedFees.push({ ...egressFee, type: 'EGRESS' });
 
-    const poolInfo = getPoolFees(this.srcAsset, this.destAsset).map(({ type, ...fee }, i) => ({
-      baseAsset: internalAssetToRpcAsset[this.pools[i].baseAsset as ChainflipAsset],
-      quoteAsset: internalAssetToRpcAsset[this.pools[i].quoteAsset as ChainflipAsset],
-      fee,
-    }));
+    const poolInfo = await timed('getPoolFees', () =>
+      getPoolFees(this.srcAsset, this.destAsset).map(({ type, ...fee }, i) => ({
+        baseAsset: internalAssetToRpcAsset[this.pools[i].baseAsset as ChainflipAsset],
+        quoteAsset: internalAssetToRpcAsset[this.pools[i].quoteAsset as ChainflipAsset],
+        fee,
+      })),
+    );
 
-    const estimatedDurations = await estimateSwapDuration({
-      srcAsset: this.srcAsset,
-      destAsset: this.destAsset,
-      boosted: Boolean(boostFeeBps),
-      isExternal: !this.isOnChain,
-    });
+    const estimatedDurations = await timed('estimateSwapDuration', () =>
+      estimateSwapDuration({
+        srcAsset: this.srcAsset,
+        destAsset: this.destAsset,
+        boosted: Boolean(boostFeeBps),
+        isExternal: !this.isOnChain,
+      }),
+    );
 
     const dcaChunks = dcaParams?.numberOfChunks ?? 1;
     const quoteType = dcaChunks > 1 ? 'DCA' : 'REGULAR';
@@ -361,22 +378,27 @@ export default class QuoteRequest {
       String(swapOutputAmount),
     );
 
-    const recommendedSlippageTolerancePercent = await calculateRecommendedSlippage({
-      srcAsset: this.srcAsset,
-      destAsset: this.destAsset,
-      boostFeeBps,
-      intermediateAmount,
-      egressAmount,
-      dcaChunks,
-      estimatedPrice,
-      isOnChain: this.isOnChain,
-    });
-
-    const recommendedLivePriceSlippageTolerancePercent =
-      await calculateRecommendedLivePriceSlippage({
+    const recommendedSlippageTolerancePercent = await timed('calculateRecommendedSlippage', () =>
+      calculateRecommendedSlippage({
         srcAsset: this.srcAsset,
         destAsset: this.destAsset,
-      });
+        boostFeeBps,
+        intermediateAmount,
+        egressAmount,
+        dcaChunks,
+        estimatedPrice,
+        isOnChain: this.isOnChain,
+      }),
+    );
+
+    const recommendedLivePriceSlippageTolerancePercent = await timed(
+      'calculateRecommendedLivePriceSlippage',
+      () =>
+        calculateRecommendedLivePriceSlippage({
+          srcAsset: this.srcAsset,
+          destAsset: this.destAsset,
+        }),
+    );
 
     return {
       intermediateAmount: intermediateAmount?.toString(),
