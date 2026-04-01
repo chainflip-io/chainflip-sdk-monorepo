@@ -43,6 +43,7 @@ describe('env', () => {
         "DISABLE_DCA_QUOTING": false,
         "DISABLE_QUOTING": false,
         "DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE": false,
+        "ENABLE_POOL_CACHE_WARMING": false,
         "ENABLE_QUOTE_TIMING_LOGS": false,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
@@ -115,6 +116,7 @@ describe('env', () => {
         "DISABLE_DCA_QUOTING": false,
         "DISABLE_QUOTING": false,
         "DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE": false,
+        "ENABLE_POOL_CACHE_WARMING": false,
         "ENABLE_QUOTE_TIMING_LOGS": false,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",

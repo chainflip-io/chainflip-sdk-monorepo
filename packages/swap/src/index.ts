@@ -26,19 +26,23 @@ if (env.START_PROCESSOR) {
 }
 
 if (env.START_HTTP_SERVICE) {
-  if (env.ENABLE_POOL_CACHE_WARMING) handleExit(startPoolCacheWarming());
+  const startHttpService = async () => {
+    if (env.ENABLE_POOL_CACHE_WARMING) handleExit(await startPoolCacheWarming());
 
-  server.listen(
-    env.SWAPPING_APP_PORT,
-    // eslint-disable-next-line func-names
-    function (this: Server) {
-      logger.info(`server listening on ${env.SWAPPING_APP_PORT}`, {
-        address: this.address(),
-      });
+    server.listen(
+      env.SWAPPING_APP_PORT,
+      // eslint-disable-next-line func-names
+      function (this: Server) {
+        logger.info(`server listening on ${env.SWAPPING_APP_PORT}`, {
+          address: this.address(),
+        });
 
-      handleExit(() => this.close());
-    },
-  );
+        handleExit(() => this.close());
+      },
+    );
+  };
+
+  void startHttpService();
 }
 
 if (!env.START_HTTP_SERVICE && !env.START_PROCESSOR) {

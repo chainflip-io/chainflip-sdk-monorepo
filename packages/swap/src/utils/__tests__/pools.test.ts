@@ -1,7 +1,7 @@
 import { describe, it, beforeAll, expect, vi } from 'vitest';
 import prisma from '../../client.js';
-import { getPoolDepth } from '../rpc.js';
 import { getPools, getDeployedLiquidity, warmCaches } from '../pools.js';
+import { getPoolDepth } from '../rpc.js';
 
 vi.mock('../rpc.js', () => ({
   getPoolDepth: vi.fn().mockResolvedValue({

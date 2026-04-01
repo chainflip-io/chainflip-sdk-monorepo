@@ -2,8 +2,8 @@ import { ChainflipAsset, readAssetValue } from '@chainflip/utils/chainflip';
 import { FULL_TICK_RANGE } from '@/shared/consts.js';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { assert } from '@/shared/guards.js';
-import { getLpAccounts } from './lp.js';
 import baseLogger from './logger.js';
+import { getLpAccounts } from './lp.js';
 import { getPoolDepth } from './rpc.js';
 import prisma, { Pool } from '../client.js';
 
@@ -70,18 +70,22 @@ const getActiveBaseAssets = async (): Promise<ChainflipAsset[]> => {
 };
 
 export const warmCaches = async () => {
-  const baseAssets = await getActiveBaseAssets();
-  await Promise.all(
-    baseAssets.flatMap((asset) => [
-      deployedLiquidityCache.load(asset),
-      undeployedLiquidityCache.load(asset),
-    ]),
-  );
-  logger.info('pool caches warmed', { assets: baseAssets });
+  try {
+    const baseAssets = await getActiveBaseAssets();
+    await Promise.all(
+      baseAssets.flatMap((asset) => [
+        deployedLiquidityCache.load(asset),
+        undeployedLiquidityCache.load(asset),
+      ]),
+    );
+    logger.info('pool caches warmed', { assets: baseAssets });
+  } catch (err) {
+    logger.error('failed to warm pool caches', { err });
+  }
 };
 
-export const startPoolCacheWarming = () => {
-  void warmCaches();
+export const startPoolCacheWarming = async () => {
+  await warmCaches();
   const interval = setInterval(() => void warmCaches(), 30_000);
   return () => clearInterval(interval);
 };
