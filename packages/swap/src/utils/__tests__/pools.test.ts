@@ -1,8 +1,14 @@
 import { describe, it, beforeAll, expect, vi } from 'vitest';
 import prisma from '../../client.js';
-import { getPools } from '../pools.js';
+import { getPoolDepth } from '../rpc.js';
+import { getPools, getDeployedLiquidity, warmCaches } from '../pools.js';
 
-vi.mock('../rpc.js');
+vi.mock('../rpc.js', () => ({
+  getPoolDepth: vi.fn().mockResolvedValue({
+    baseLiquidityAmount: 1000n,
+    quoteLiquidityAmount: 2000n,
+  }),
+}));
 vi.mock('../lp.js', () => ({
   getLpAccounts: vi.fn().mockResolvedValue([]),
 }));
@@ -58,5 +64,35 @@ describe(getPools, () => {
       baseAsset: 'Flip',
       quoteAsset: 'Usdc',
     });
+  });
+});
+
+describe(warmCaches, () => {
+  beforeAll(async () => {
+    await prisma.$queryRaw`TRUNCATE TABLE public."Pool" CASCADE`;
+    await prisma.pool.createMany({
+      data: [
+        { baseAsset: 'Eth', quoteAsset: 'Usdc', liquidityFeeHundredthPips: 2000 },
+        { baseAsset: 'Btc', quoteAsset: 'Usdc', liquidityFeeHundredthPips: 2000 },
+      ],
+    });
+  });
+
+  it('pre-populates the cache so subsequent reads do not call getPoolDepth again', async () => {
+    const getPoolDepthSpy = vi.mocked(getPoolDepth);
+    getPoolDepthSpy.mockClear();
+
+    await warmCaches();
+
+    // one call per active pool asset
+    expect(getPoolDepthSpy).toHaveBeenCalledTimes(2);
+
+    getPoolDepthSpy.mockClear();
+
+    // subsequent reads must hit the cache, not the RPC
+    await getDeployedLiquidity('Eth', 'Usdc');
+    await getDeployedLiquidity('Btc', 'Usdc');
+
+    expect(getPoolDepthSpy).not.toHaveBeenCalled();
   });
 });

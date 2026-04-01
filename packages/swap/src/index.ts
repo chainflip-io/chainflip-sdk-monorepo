@@ -6,6 +6,7 @@ import * as solanaTxRefsQueue from './queues/solanaTxRefs.js';
 import server from './server.js';
 import { handleExit } from './utils/function.js';
 import logger from './utils/logger.js';
+import { startPoolCacheWarming } from './utils/pools.js';
 
 if (env.START_PROCESSOR) {
   start();
@@ -25,6 +26,8 @@ if (env.START_PROCESSOR) {
 }
 
 if (env.START_HTTP_SERVICE) {
+  if (env.ENABLE_POOL_CACHE_WARMING) handleExit(startPoolCacheWarming());
+
   server.listen(
     env.SWAPPING_APP_PORT,
     // eslint-disable-next-line func-names

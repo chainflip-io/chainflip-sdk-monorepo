@@ -3,8 +3,11 @@ import { FULL_TICK_RANGE } from '@/shared/consts.js';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { assert } from '@/shared/guards.js';
 import { getLpAccounts } from './lp.js';
+import baseLogger from './logger.js';
 import { getPoolDepth } from './rpc.js';
 import prisma, { Pool } from '../client.js';
+
+const logger = baseLogger.child({ module: 'pools' });
 
 const poolCache = new AsyncCacheMap({
   fetch: async (baseAsset: ChainflipAsset) =>
@@ -59,4 +62,26 @@ export const getDeployedLiquidity = async (fromAsset: ChainflipAsset, toAsset: C
 export const getTotalLiquidity = async (fromAsset: ChainflipAsset, toAsset: ChainflipAsset) => {
   const undeployedLiquidity = await getUndeployedLiquidity(toAsset);
   return (await getDeployedLiquidity(fromAsset, toAsset)) + undeployedLiquidity;
+};
+
+const getActiveBaseAssets = async (): Promise<ChainflipAsset[]> => {
+  const pools = await prisma.pool.findMany({ select: { baseAsset: true } });
+  return pools.map((p) => p.baseAsset as ChainflipAsset);
+};
+
+export const warmCaches = async () => {
+  const baseAssets = await getActiveBaseAssets();
+  await Promise.all(
+    baseAssets.flatMap((asset) => [
+      deployedLiquidityCache.load(asset),
+      undeployedLiquidityCache.load(asset),
+    ]),
+  );
+  logger.info('pool caches warmed', { assets: baseAssets });
+};
+
+export const startPoolCacheWarming = () => {
+  void warmCaches();
+  const interval = setInterval(() => void warmCaches(), 30_000);
+  return () => clearInterval(interval);
 };
