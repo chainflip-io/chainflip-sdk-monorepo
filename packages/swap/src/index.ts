@@ -42,7 +42,7 @@ if (env.START_HTTP_SERVICE) {
     );
   };
 
-  void startHttpService();
+  startHttpService();
 }
 
 if (!env.START_HTTP_SERVICE && !env.START_PROCESSOR) {

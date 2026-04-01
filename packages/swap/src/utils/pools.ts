@@ -86,6 +86,8 @@ export const warmCaches = async () => {
 
 export const startPoolCacheWarming = async () => {
   await warmCaches();
-  const interval = setInterval(() => void warmCaches(), 30_000);
+  const interval = setInterval(() => {
+    warmCaches();
+  }, 30_000);
   return () => clearInterval(interval);
 };

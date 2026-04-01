@@ -9,6 +9,7 @@ vi.mock('../rpc.js', () => ({
     quoteLiquidityAmount: 2000n,
   }),
 }));
+
 vi.mock('../lp.js', () => ({
   getLpAccounts: vi.fn().mockResolvedValue([]),
 }));
