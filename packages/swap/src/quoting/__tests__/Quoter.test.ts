@@ -580,6 +580,7 @@ describe(Quoter, () => {
       // ignores non-quoted assets
       chainflipAssets.forEach((asset) => {
         if (asset !== 'Btc') {
+          // eslint-disable-next-line @vitest/no-conditional-expect
           expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
         }
       });
@@ -593,6 +594,7 @@ describe(Quoter, () => {
       expect(quoter.getReplenishmentFactor('Flip')).toStrictEqual([10n, 1n]);
       chainflipAssets.forEach((asset) => {
         if (asset !== 'Btc' && asset !== 'Flip') {
+          // eslint-disable-next-line @vitest/no-conditional-expect
           expect(quoter.getReplenishmentFactor(asset)).toStrictEqual([1n, 1n]);
         }
       });
