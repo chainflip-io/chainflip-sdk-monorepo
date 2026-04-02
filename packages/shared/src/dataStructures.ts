@@ -96,7 +96,7 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
 
   refresh(key: K): Promise<V> {
     const promise = this.fetch(key).catch((err) => {
-      this.delete(key);
+      if (super.get(key) === promise) this.delete(key);
       throw err;
     });
 
