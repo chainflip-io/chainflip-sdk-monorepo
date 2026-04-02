@@ -80,7 +80,7 @@ export const warmCaches = async () => {
     );
     logger.info('pool caches warmed', { assets: baseAssets });
   } catch (err) {
-    logger.error('failed to warm pool caches', { err });
+    logger.error('failed to warm pool caches', { err: err instanceof Error ? err.message : err });
   }
 };
 
