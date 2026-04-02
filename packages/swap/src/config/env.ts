@@ -150,6 +150,7 @@ export default z
     ENABLE_POOL_CACHE_WARMING: optionalBoolean.default('false'),
     DEFAULT_TIGHT_LPP_SLIPPAGE_BPS: optionalNumber(50),
     DEFAULT_LPP_SLIPPAGE_BPS: number().optional(),
+    GET_ENVIRONMENT_CACHE_TTL: optionalNumber(6_000),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
