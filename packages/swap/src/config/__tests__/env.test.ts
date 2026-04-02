@@ -48,6 +48,7 @@ describe('env', () => {
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
         },
+        "GET_ENVIRONMENT_CACHE_TTL": 6000,
         "INGEST_GATEWAY_URL": "https://ingest.gateway",
         "LIQUIDITY_WARNING_THRESHOLD": -5,
         "MAINTENANCE_MODE": false,
@@ -121,6 +122,7 @@ describe('env', () => {
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
         },
+        "GET_ENVIRONMENT_CACHE_TTL": 6000,
         "INGEST_GATEWAY_URL": "https://ingest.gateway",
         "LIQUIDITY_WARNING_THRESHOLD": -5,
         "MAINTENANCE_MODE": false,
