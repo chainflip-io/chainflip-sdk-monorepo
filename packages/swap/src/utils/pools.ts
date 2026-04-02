@@ -74,8 +74,8 @@ export const warmCaches = async () => {
     const baseAssets = await getActiveBaseAssets();
     await Promise.all(
       baseAssets.flatMap((asset) => [
-        deployedLiquidityCache.load(asset),
-        undeployedLiquidityCache.load(asset),
+        deployedLiquidityCache.refresh(asset),
+        undeployedLiquidityCache.refresh(asset),
       ]),
     );
     logger.info('pool caches warmed', { assets: baseAssets });
