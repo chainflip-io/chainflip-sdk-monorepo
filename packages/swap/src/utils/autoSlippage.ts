@@ -114,35 +114,40 @@ export const calculateRecommendedSlippage = async ({
   const MAX_SLIPPAGE = 2.5;
 
   let recommendedSlippage = baseSlippage;
-  recommendedSlippage += isOnChain
+
+  const depositTimeAdjustmentPromise = isOnChain
     ? 0
-    : await getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps));
+    : getDepositTimeAdjustment(srcAsset, Boolean(boostFeeBps));
 
-  if (srcAsset === 'Usdc' || destAsset === 'Usdc') {
-    recommendedSlippage += await getLiquidityAdjustment({
-      srcAsset,
-      destAsset,
-      amount: egressAmount,
-      dcaChunks,
-    });
-  } else {
-    const [leg1Adjustment, leg2Adjustment] = await Promise.all([
-      getLiquidityAdjustment({
-        srcAsset,
-        destAsset: 'Usdc',
-        amount: intermediateAmount!,
-        dcaChunks,
-      }),
-      getLiquidityAdjustment({
-        srcAsset: 'Usdc',
-        destAsset,
-        amount: egressAmount,
-        dcaChunks,
-      }),
-    ]);
+  const liquidityAdjustmentPromise =
+    srcAsset === 'Usdc' || destAsset === 'Usdc'
+      ? getLiquidityAdjustment({
+          srcAsset,
+          destAsset,
+          amount: egressAmount,
+          dcaChunks,
+        })
+      : Promise.all([
+          getLiquidityAdjustment({
+            srcAsset,
+            destAsset: 'Usdc',
+            amount: intermediateAmount!,
+            dcaChunks,
+          }),
+          getLiquidityAdjustment({
+            srcAsset: 'Usdc',
+            destAsset,
+            amount: egressAmount,
+            dcaChunks,
+          }),
+        ]).then(([leg1, leg2]) => Math.max(leg1, leg2));
 
-    recommendedSlippage += Math.max(leg1Adjustment, leg2Adjustment);
-  }
+  const [depositTimeAdjustment, liquidityAdjustment] = await Promise.all([
+    depositTimeAdjustmentPromise,
+    liquidityAdjustmentPromise,
+  ]);
+
+  recommendedSlippage += depositTimeAdjustment + liquidityAdjustment;
 
   // rounding to 0.25 steps
   recommendedSlippage = Math.round(recommendedSlippage * 4) / 4;
