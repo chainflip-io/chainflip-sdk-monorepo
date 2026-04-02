@@ -25,7 +25,7 @@ import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils.js';
 import { memoize } from './function.js';
 import env from '../config/env.js';
 
-const cachedGetEnvironment = memoize(getEnvironment, 6_000);
+const cachedGetEnvironment = memoize(getEnvironment, env.GET_ENVIRONMENT_CACHE_TTL);
 
 type Result = { success: true } | { success: false; reason: string };
 
