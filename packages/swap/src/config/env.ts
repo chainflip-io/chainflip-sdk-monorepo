@@ -147,6 +147,7 @@ export default z
     RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
     ENABLE_QUOTE_TIMING_LOGS: optionalBoolean.default('false'),
     DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE: optionalBoolean,
+    ENABLE_POOL_CACHE_WARMING: optionalBoolean.default('false'),
     DEFAULT_TIGHT_LPP_SLIPPAGE_BPS: optionalNumber(50),
     DEFAULT_LPP_SLIPPAGE_BPS: number().optional(),
   })

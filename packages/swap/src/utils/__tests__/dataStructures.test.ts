@@ -105,6 +105,67 @@ describe(AsyncCacheMap, () => {
     expect(hello2).toBe('hello2');
   });
 
+  it('refreshes cached value by re-fetching', async () => {
+    let id = 0;
+
+    // eslint-disable-next-line no-plusplus
+    const fetch = vi.fn(async (key: string) => `${key}${id++}`);
+
+    const map = new AsyncCacheMap({ ttl: 10, fetch });
+
+    expect(await map.get('hello')).toBe('hello0');
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    expect(await map.refresh('hello')).toBe('hello1');
+    expect(fetch).toHaveBeenCalledTimes(2);
+
+    expect(await map.get('hello')).toBe('hello1');
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('refresh resets the TTL so cache stays fresh', async () => {
+    let id = 0;
+
+    // eslint-disable-next-line no-plusplus
+    const fetch = vi.fn(async (key: string) => `${key}${id++}`);
+
+    const map = new AsyncCacheMap({ ttl: 60_000, fetch, resetExpiryOnLookup: false });
+
+    expect(await map.get('hello')).toBe('hello0');
+
+    // advance to just before expiry and refresh
+    vi.advanceTimersByTime(59_999);
+    expect(await map.refresh('hello')).toBe('hello1');
+
+    // after another 60s the refreshed value is still cached
+    vi.advanceTimersByTime(59_999);
+    expect(await map.get('hello')).toBe('hello1');
+    expect(fetch).toHaveBeenCalledTimes(2);
+
+    // once the full TTL passes from the refresh, it expires
+    vi.advanceTimersByTime(1);
+    expect(await map.get('hello')).toBe('hello2');
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('refresh cleans up on fetch failure', async () => {
+    let count = 0;
+
+    const fetch = vi.fn(async (key: string) => {
+      // eslint-disable-next-line no-plusplus
+      if (count++ === 1) throw new Error('refresh failed');
+      return `${key}${count}`;
+    });
+
+    const map = new AsyncCacheMap({ ttl: 10, fetch });
+
+    expect(await map.get('hello')).toBe('hello1');
+
+    await expect(() => map.refresh('hello')).rejects.toThrow('refresh failed');
+
+    expect(await map.get('hello')).toBe('hello3');
+  });
+
   it('removes rejected promises', async () => {
     let count = 0;
 

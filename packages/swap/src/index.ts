@@ -6,6 +6,7 @@ import * as solanaTxRefsQueue from './queues/solanaTxRefs.js';
 import server from './server.js';
 import { handleExit } from './utils/function.js';
 import logger from './utils/logger.js';
+import { startPoolCacheWarming } from './utils/pools.js';
 
 if (env.START_PROCESSOR) {
   start();
@@ -25,17 +26,23 @@ if (env.START_PROCESSOR) {
 }
 
 if (env.START_HTTP_SERVICE) {
-  server.listen(
-    env.SWAPPING_APP_PORT,
-    // eslint-disable-next-line func-names
-    function (this: Server) {
-      logger.info(`server listening on ${env.SWAPPING_APP_PORT}`, {
-        address: this.address(),
-      });
+  const startHttpService = async () => {
+    if (env.ENABLE_POOL_CACHE_WARMING) handleExit(await startPoolCacheWarming());
 
-      handleExit(() => this.close());
-    },
-  );
+    server.listen(
+      env.SWAPPING_APP_PORT,
+      // eslint-disable-next-line func-names
+      function (this: Server) {
+        logger.info(`server listening on ${env.SWAPPING_APP_PORT}`, {
+          address: this.address(),
+        });
+
+        handleExit(() => this.close());
+      },
+    );
+  };
+
+  startHttpService();
 }
 
 if (!env.START_HTTP_SERVICE && !env.START_PROCESSOR) {
