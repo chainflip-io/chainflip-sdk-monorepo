@@ -114,7 +114,10 @@ describe(memoize, () => {
     env.NODE_ENV = 'production';
     try {
       let callCount = 0;
-      const fn = vi.fn(async () => ++callCount);
+      const fn = vi.fn(async () => {
+        callCount += 1;
+        return callCount;
+      });
       const memoized = memoize(fn, 60_000);
 
       expect(await memoized()).toBe(1);
