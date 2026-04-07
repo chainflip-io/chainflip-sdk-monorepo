@@ -148,7 +148,7 @@ describe(AsyncCacheMap, () => {
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 
-  it('refresh cleans up on fetch failure', async () => {
+  it('refresh keeps stale data on fetch failure', async () => {
     let count = 0;
 
     const fetch = vi.fn(async (key: string) => {
@@ -163,7 +163,42 @@ describe(AsyncCacheMap, () => {
 
     await expect(() => map.refresh('hello')).rejects.toThrow('refresh failed');
 
-    expect(await map.get('hello')).toBe('hello3');
+    // stale data is preserved on refresh failure
+    expect(await map.get('hello')).toBe('hello1');
+  });
+
+  it('serves stale data during refresh (stale-while-revalidate)', async () => {
+    let resolveRefresh!: (value: string) => void;
+
+    let id = 0;
+    const fetch = vi.fn(
+      (key: string) =>
+        // eslint-disable-next-line no-plusplus
+        id++ === 0
+          ? Promise.resolve(`${key}0`)
+          : new Promise<string>((resolve) => {
+              resolveRefresh = resolve;
+            }),
+    );
+
+    const map = new AsyncCacheMap({ ttl: 10, fetch });
+
+    // initial fetch
+    expect(await map.get('hello')).toBe('hello0');
+
+    // start a refresh — the new fetch is pending
+    const refreshPromise = map.refresh('hello');
+
+    // concurrent get() calls should still return the stale data
+    expect(await map.get('hello')).toBe('hello0');
+
+    // resolve the refresh
+    resolveRefresh('hello1');
+    expect(await refreshPromise).toBe('hello1');
+
+    // now get() returns the fresh data
+    expect(await map.get('hello')).toBe('hello1');
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 
   it('removes rejected promises', async () => {

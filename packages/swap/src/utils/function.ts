@@ -14,25 +14,50 @@ export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): Memoized<T>
   let initialized = false;
   let value: ReturnType<T> | undefined;
   let setAt = 0;
+  let revalidating = false;
+
+  const revalidate = (newValue: ReturnType<T>) => {
+    revalidating = true;
+    Promise.resolve(newValue).then(
+      () => {
+        value = newValue;
+        setAt = Date.now();
+        revalidating = false;
+      },
+      () => {
+        revalidating = false;
+      },
+    );
+  };
 
   const memoized = ((...args: Parameters<T>) => {
     if (
       !initialized ||
-      (ttl && Date.now() - setAt > ttl) ||
+      (!revalidating && ttl && Date.now() - setAt > ttl) ||
       env.NODE_ENV === 'test' // TODO: remove this when we have a better solution for testing
     ) {
-      initialized = true;
-      value = fn(...args);
-      setAt = Date.now();
+      const newValue = fn(...args);
+      if (!initialized || env.NODE_ENV === 'test') {
+        initialized = true;
+        value = newValue;
+        setAt = Date.now();
+      } else {
+        revalidate(newValue);
+      }
     }
     return value;
   }) as Memoized<T>;
 
   memoized.refresh = ((...args: Parameters<T>) => {
-    initialized = true;
-    value = fn(...args);
-    setAt = Date.now();
-    return value;
+    const newValue = fn(...args);
+    if (!initialized) {
+      initialized = true;
+      value = newValue;
+      setAt = Date.now();
+    } else {
+      revalidate(newValue);
+    }
+    return newValue;
   }) as T;
 
   return memoized;
