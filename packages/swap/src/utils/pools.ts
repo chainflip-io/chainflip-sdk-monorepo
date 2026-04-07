@@ -4,7 +4,7 @@ import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { assert } from '@/shared/guards.js';
 import baseLogger from './logger.js';
 import { getLpAccounts } from './lp.js';
-import { getPoolDepth } from './rpc.js';
+import { getPoolDepth, refreshEnvironmentCache } from './rpc.js';
 import prisma, { Pool } from '../client.js';
 
 const logger = baseLogger.child({ module: 'pools' });
@@ -72,12 +72,13 @@ const getActiveBaseAssets = async (): Promise<ChainflipAsset[]> => {
 export const warmCaches = async () => {
   try {
     const baseAssets = await getActiveBaseAssets();
-    await Promise.all(
-      baseAssets.flatMap((asset) => [
+    await Promise.all([
+      refreshEnvironmentCache(),
+      ...baseAssets.flatMap((asset) => [
         deployedLiquidityCache.refresh(asset),
         undeployedLiquidityCache.refresh(asset),
       ]),
-    );
+    ]);
     logger.info('pool caches warmed', { assets: baseAssets });
   } catch (err) {
     logger.error('failed to warm pool caches', { err: err instanceof Error ? err.message : err });
