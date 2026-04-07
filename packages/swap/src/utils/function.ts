@@ -17,7 +17,7 @@ export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): Memoized<T>
   let revalidating = false;
 
   const revalidate = (newValue: ReturnType<T>) => {
-    if (newValue instanceof Promise) {
+    if ((newValue as unknown) instanceof Promise) {
       revalidating = true;
       newValue.then(
         () => {
