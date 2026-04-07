@@ -74,6 +74,11 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
     this.fetch = fetch;
   }
 
+  override delete(key: K): boolean {
+    this.refreshTokens.delete(key);
+    return super.delete(key);
+  }
+
   override get(key: K): Promise<V> {
     let promise = super.get(key);
 
