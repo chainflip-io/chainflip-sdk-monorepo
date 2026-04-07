@@ -59,6 +59,8 @@ export class CacheMap<K, V> {
 export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
   private readonly fetch;
 
+  private readonly refreshTokens = new Map<K, number>();
+
   constructor({
     fetch,
     ttl,
@@ -70,6 +72,11 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
   }) {
     super(ttl, resetExpiryOnLookup);
     this.fetch = fetch;
+  }
+
+  override delete(key: K): boolean {
+    this.refreshTokens.delete(key);
+    return super.delete(key);
   }
 
   override get(key: K): Promise<V> {
@@ -95,14 +102,34 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
   }
 
   refresh(key: K): Promise<V> {
-    const promise = this.fetch(key).catch((err) => {
-      if (super.get(key) === promise) this.delete(key);
-      throw err;
-    });
+    const existing = super.get(key);
 
-    this.set(key, promise);
+    if (!existing) {
+      // No stale data — store pending promise to prevent thundering herd
+      const promise = this.fetch(key).catch((err) => {
+        if (super.get(key) === promise) this.delete(key);
+        throw err;
+      });
+      this.set(key, promise);
+      return promise;
+    }
 
-    return promise;
+    // Stale-while-revalidate: keep existing entry available while fetching
+    const token = (this.refreshTokens.get(key) ?? 0) + 1;
+    this.refreshTokens.set(key, token);
+
+    return this.fetch(key).then(
+      (value) => {
+        if (this.refreshTokens.get(key) === token) {
+          this.set(key, Promise.resolve(value));
+        }
+        return value;
+      },
+      (err) => {
+        // On failure, keep stale data available
+        throw err;
+      },
+    );
   }
 }
 

@@ -148,7 +148,7 @@ describe(AsyncCacheMap, () => {
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 
-  it('refresh cleans up on fetch failure', async () => {
+  it('refresh keeps stale data on fetch failure', async () => {
     let count = 0;
 
     const fetch = vi.fn(async (key: string) => {
@@ -163,7 +163,110 @@ describe(AsyncCacheMap, () => {
 
     await expect(() => map.refresh('hello')).rejects.toThrow('refresh failed');
 
-    expect(await map.get('hello')).toBe('hello3');
+    // stale data is preserved on refresh failure
+    expect(await map.get('hello')).toBe('hello1');
+  });
+
+  it('serves stale data during refresh (stale-while-revalidate)', async () => {
+    let resolveRefresh!: (value: string) => void;
+
+    let id = 0;
+    const fetch = vi.fn((key: string) =>
+      // eslint-disable-next-line no-plusplus
+      id++ === 0
+        ? Promise.resolve(`${key}0`)
+        : new Promise<string>((resolve) => {
+            resolveRefresh = resolve;
+          }),
+    );
+
+    const map = new AsyncCacheMap({ ttl: 10, fetch });
+
+    // initial fetch
+    expect(await map.get('hello')).toBe('hello0');
+
+    // start a refresh — the new fetch is pending
+    const refreshPromise = map.refresh('hello');
+
+    // concurrent get() calls should still return the stale data
+    expect(await map.get('hello')).toBe('hello0');
+
+    // resolve the refresh
+    resolveRefresh('hello1');
+    expect(await refreshPromise).toBe('hello1');
+
+    // now get() returns the fresh data
+    expect(await map.get('hello')).toBe('hello1');
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('concurrent refresh uses latest result (no out-of-order overwrite)', async () => {
+    let resolveFirst!: (value: string) => void;
+    let resolveSecond!: (value: string) => void;
+
+    let id = 0;
+    const fetch = vi.fn(
+      () =>
+        new Promise<string>((resolve) => {
+          id += 1;
+          if (id === 1)
+            resolve('v0'); // seed
+          else if (id === 2) resolveFirst = resolve;
+          else resolveSecond = resolve;
+        }),
+    );
+
+    const map = new AsyncCacheMap({ ttl: 10, fetch });
+
+    // seed the cache
+    expect(await map.get('k')).toBe('v0');
+
+    // two concurrent refreshes
+    const refresh1 = map.refresh('k');
+    const refresh2 = map.refresh('k');
+
+    // resolve in reverse order: second finishes first
+    resolveSecond('v2');
+    expect(await refresh2).toBe('v2');
+
+    resolveFirst('v1');
+    expect(await refresh1).toBe('v1');
+
+    // cache should have v2 (latest refresh), not v1
+    expect(await map.get('k')).toBe('v2');
+  });
+
+  it('refresh without existing entry does not delete newer cache on failure', async () => {
+    let rejectFirst!: (err: Error) => void;
+
+    let id = 0;
+    const fetch = vi.fn(
+      () =>
+        new Promise<string>((resolve, reject) => {
+          id += 1;
+          if (id === 1) rejectFirst = reject;
+          else resolve(`v${id}`);
+        }),
+    );
+
+    const map = new AsyncCacheMap({ ttl: 60_000, fetch });
+
+    // refresh with no existing entry — goes through the !existing path
+    const failingRefresh = map.refresh('k');
+
+    // TTL expires, evicting the pending entry
+    vi.advanceTimersByTime(60_000);
+
+    // new get() creates a fresh entry
+    expect(await map.get('k')).toBe('v2');
+
+    // now the first refresh rejects — should NOT delete the v2 entry
+    rejectFirst(new Error('late failure'));
+    await expect(failingRefresh).rejects.toThrow('late failure');
+
+    // cache still has v2
+    expect(await map.get('k')).toBe('v2');
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 
   it('removes rejected promises', async () => {
