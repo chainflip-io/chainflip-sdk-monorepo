@@ -8,6 +8,7 @@ vi.mock('../rpc.js', () => ({
     baseLiquidityAmount: 1000n,
     quoteLiquidityAmount: 2000n,
   }),
+  refreshEnvironmentCache: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('../lp.js', () => ({

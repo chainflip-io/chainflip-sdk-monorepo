@@ -31,6 +31,8 @@ type Result = { success: true } | { success: false; reason: string };
 
 const rpcConfig = { rpcUrl: env.RPC_NODE_HTTP_URL };
 
+export const refreshEnvironmentCache = () => cachedGetEnvironment.refresh(rpcConfig);
+
 export const validateSwapAmount = async (
   asset: ChainflipAsset,
   amount: bigint,

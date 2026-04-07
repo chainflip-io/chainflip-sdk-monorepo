@@ -6,12 +6,16 @@ import env from '../config/env.js';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any[]) => any;
 
-export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): T => {
+type Memoized<T extends AnyFunction> = T & {
+  refresh: (...args: Parameters<T>) => ReturnType<T>;
+};
+
+export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): Memoized<T> => {
   let initialized = false;
   let value: ReturnType<T> | undefined;
   let setAt = 0;
 
-  return ((...args) => {
+  const memoized = ((...args: Parameters<T>) => {
     if (
       !initialized ||
       (ttl && Date.now() - setAt > ttl) ||
@@ -22,7 +26,16 @@ export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): T => {
       setAt = Date.now();
     }
     return value;
+  }) as Memoized<T>;
+
+  memoized.refresh = ((...args: Parameters<T>) => {
+    initialized = true;
+    value = fn(...args);
+    setAt = Date.now();
+    return value;
   }) as T;
+
+  return memoized;
 };
 
 const exitHandlers = new Set<AnyFunction>();
