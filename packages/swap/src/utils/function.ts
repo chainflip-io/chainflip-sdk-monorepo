@@ -15,18 +15,28 @@ export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): Memoized<T>
   let value: ReturnType<T> | undefined;
   let setAt = 0;
   let revalidating = false;
+  let revision = 0;
+  let pending = 0;
 
   const revalidate = (newValue: ReturnType<T>) => {
+    revision += 1;
+    const expected = revision;
+
     if ((newValue as unknown) instanceof Promise) {
+      pending += 1;
       revalidating = true;
       newValue.then(
         () => {
-          value = newValue;
-          setAt = Date.now();
-          revalidating = false;
+          if (expected === revision) {
+            value = newValue;
+            setAt = Date.now();
+          }
+          pending -= 1;
+          revalidating = pending > 0;
         },
         () => {
-          revalidating = false;
+          pending -= 1;
+          revalidating = pending > 0;
         },
       );
     } else {

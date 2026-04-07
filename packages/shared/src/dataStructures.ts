@@ -59,6 +59,8 @@ export class CacheMap<K, V> {
 export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
   private readonly fetch;
 
+  private readonly refreshTokens = new Map<K, number>();
+
   constructor({
     fetch,
     ttl,
@@ -100,7 +102,7 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
     if (!existing) {
       // No stale data — store pending promise to prevent thundering herd
       const promise = this.fetch(key).catch((err) => {
-        this.delete(key);
+        if (super.get(key) === promise) this.delete(key);
         throw err;
       });
       this.set(key, promise);
@@ -108,9 +110,14 @@ export class AsyncCacheMap<K, V> extends CacheMap<K, Promise<V>> {
     }
 
     // Stale-while-revalidate: keep existing entry available while fetching
+    const token = (this.refreshTokens.get(key) ?? 0) + 1;
+    this.refreshTokens.set(key, token);
+
     return this.fetch(key).then(
       (value) => {
-        this.set(key, Promise.resolve(value));
+        if (this.refreshTokens.get(key) === token) {
+          this.set(key, Promise.resolve(value));
+        }
         return value;
       },
       (err) => {

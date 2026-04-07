@@ -110,6 +110,125 @@ describe(memoize, () => {
     }
   });
 
+  it('serves stale value during async revalidation on ttl expiry', async () => {
+    env.NODE_ENV = 'production';
+    vi.useFakeTimers();
+    try {
+      let resolveRevalidation!: (value: number) => void;
+      let callCount = 0;
+      const fn = vi.fn(
+        () =>
+          new Promise<number>((resolve) => {
+            callCount += 1;
+            if (callCount === 1) {
+              resolve(1);
+            } else {
+              resolveRevalidation = resolve;
+            }
+          }),
+      );
+      const memoized = memoize(fn, 1000);
+
+      // initial call
+      expect(await memoized()).toBe(1);
+      expect(fn).toHaveBeenCalledTimes(1);
+
+      // expire ttl — triggers background revalidation
+      vi.advanceTimersByTime(1001);
+      const staleResult = memoized();
+
+      // should return the old (stale) promise while revalidation is in-flight
+      expect(await staleResult).toBe(1);
+      expect(fn).toHaveBeenCalledTimes(2);
+
+      // resolve the revalidation
+      resolveRevalidation(2);
+
+      // allow microtask to flush
+      await Promise.resolve();
+
+      // now returns the fresh value
+      expect(await memoized()).toBe(2);
+    } finally {
+      vi.useRealTimers();
+      env.NODE_ENV = originalNodeEnv;
+    }
+  });
+
+  it('async revalidation failure keeps stale value', async () => {
+    env.NODE_ENV = 'production';
+    vi.useFakeTimers();
+    try {
+      let callCount = 0;
+      const fn = vi.fn(async () => {
+        callCount += 1;
+        if (callCount === 2) throw new Error('revalidation failed');
+        return callCount;
+      });
+      const memoized = memoize(fn, 1000);
+
+      expect(await memoized()).toBe(1);
+
+      vi.advanceTimersByTime(1001);
+
+      // triggers revalidation which will fail
+      const stale = memoized();
+      expect(await stale).toBe(1);
+
+      // allow rejection microtask to flush
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // stale value preserved after failed revalidation
+      expect(await memoized()).toBe(1);
+    } finally {
+      vi.useRealTimers();
+      env.NODE_ENV = originalNodeEnv;
+    }
+  });
+
+  it('concurrent async refresh uses latest result', async () => {
+    env.NODE_ENV = 'production';
+    try {
+      let resolveFirst!: (value: number) => void;
+      let resolveSecond!: (value: number) => void;
+      let callCount = 0;
+      const fn = vi.fn(
+        () =>
+          new Promise<number>((resolve) => {
+            callCount += 1;
+            if (callCount === 1)
+              resolve(1); // initial
+            else if (callCount === 2) resolveFirst = resolve;
+            else resolveSecond = resolve;
+          }),
+      );
+      const memoized = memoize(fn, 60_000);
+
+      // seed
+      expect(await memoized()).toBe(1);
+
+      // two concurrent refreshes
+      const r1 = memoized.refresh();
+      const r2 = memoized.refresh();
+
+      // resolve in reverse order
+      resolveSecond(3);
+      await Promise.resolve();
+
+      resolveFirst(2);
+      await Promise.resolve();
+
+      expect(await r1).toBe(2);
+      expect(await r2).toBe(3);
+
+      // cache should have value from the latest refresh (3), not the older one (2)
+      expect(await memoized()).toBe(3);
+    } finally {
+      env.NODE_ENV = originalNodeEnv;
+    }
+  });
+
   it('refresh works with async functions', async () => {
     env.NODE_ENV = 'production';
     try {
