@@ -171,14 +171,13 @@ describe(AsyncCacheMap, () => {
     let resolveRefresh!: (value: string) => void;
 
     let id = 0;
-    const fetch = vi.fn(
-      (key: string) =>
-        // eslint-disable-next-line no-plusplus
-        id++ === 0
-          ? Promise.resolve(`${key}0`)
-          : new Promise<string>((resolve) => {
-              resolveRefresh = resolve;
-            }),
+    const fetch = vi.fn((key: string) =>
+      // eslint-disable-next-line no-plusplus
+      id++ === 0
+        ? Promise.resolve(`${key}0`)
+        : new Promise<string>((resolve) => {
+            resolveRefresh = resolve;
+          }),
     );
 
     const map = new AsyncCacheMap({ ttl: 10, fetch });

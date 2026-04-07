@@ -17,17 +17,22 @@ export const memoize = <T extends AnyFunction>(fn: T, ttl?: number): Memoized<T>
   let revalidating = false;
 
   const revalidate = (newValue: ReturnType<T>) => {
-    revalidating = true;
-    Promise.resolve(newValue).then(
-      () => {
-        value = newValue;
-        setAt = Date.now();
-        revalidating = false;
-      },
-      () => {
-        revalidating = false;
-      },
-    );
+    if (newValue instanceof Promise) {
+      revalidating = true;
+      newValue.then(
+        () => {
+          value = newValue;
+          setAt = Date.now();
+          revalidating = false;
+        },
+        () => {
+          revalidating = false;
+        },
+      );
+    } else {
+      value = newValue;
+      setAt = Date.now();
+    }
   };
 
   const memoized = ((...args: Parameters<T>) => {
