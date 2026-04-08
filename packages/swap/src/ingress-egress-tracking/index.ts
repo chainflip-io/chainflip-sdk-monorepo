@@ -99,7 +99,9 @@ export const getPendingDeposit = async (
       txRef: deposits[0].tx_refs?.[0],
     };
   } catch (error) {
-    logger.error('error while looking up deposit in redis', { error: inspect(error) });
+    logger.error('error while looking up deposit in redis', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 };
