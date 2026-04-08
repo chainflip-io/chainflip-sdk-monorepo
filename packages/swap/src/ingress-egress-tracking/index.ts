@@ -100,7 +100,7 @@ export const getPendingDeposit = async (
     };
   } catch (error) {
     logger.error('error while looking up deposit in redis', {
-      error: error instanceof Error ? error.message : String(error),
+      error: error instanceof Error ? error.message : (JSON.stringify(error) ?? String(error)),
     });
     return null;
   }
