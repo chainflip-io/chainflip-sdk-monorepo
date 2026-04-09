@@ -20,16 +20,19 @@ export const getJITLpAccounts = async () => {
     cache.read('marketMakers'),
   ]);
 
-  const jitAccounts = accounts.filter((account) =>
-    jitMarketMakers.some((marketMaker) => marketMaker.name === account.idSs58),
-  );
+  const marketMakers = new Set(jitMarketMakers.map((mm) => mm.name));
+  const jitAccounts = accounts.filter((account) => marketMakers.has(account.idSs58));
 
   const accountsWithInfo = await Promise.all(
     jitAccounts.map(async (account) => accountInfo.get(account.idSs58)),
   );
 
-  if (!accountsWithInfo.length) {
-    logger.warn('Did not find any JIT accounts found');
+  const jitLpAccounts = accountsWithInfo.filter(
+    (account) => account?.role === 'liquidity_provider',
+  );
+
+  if (!jitLpAccounts.length) {
+    logger.warn('Did not find any JIT accounts');
   }
-  return accountsWithInfo;
+  return jitLpAccounts;
 };
