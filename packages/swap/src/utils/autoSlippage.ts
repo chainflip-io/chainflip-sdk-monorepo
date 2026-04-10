@@ -21,12 +21,8 @@ const getDeployedLiquidityAdjustment = async (
     .div(deployedLiquidity.toString())
     .toNumber();
 
-  // if swap will use more than 50% of deployed liquidity, increase recommended tolerance
-  if (liquidityRatio > 0.5) {
-    return liquidityRatio / 2;
-  }
-
-  return 0;
+  // Increase recommended tolerance proportionally if swap uses more than 50% of deployed liquidity
+  return liquidityRatio > 0.5 ? liquidityRatio / 2 : 0;
 };
 
 const getDepositTimeAdjustment = async (srcAsset: ChainflipAsset, isBoosted: boolean) => {
@@ -41,12 +37,8 @@ const getDepositTimeAdjustment = async (srcAsset: ChainflipAsset, isBoosted: boo
 const getUndeployedLiquidityAdjustment = async (asset: ChainflipAsset, amount: bigint) => {
   const undeployedLiquidity = await getUndeployedLiquidity(asset);
 
-  // if swap can be filled with jit liquidity only, decrease recommended tolerance
-  if (amount < undeployedLiquidity / 2n) {
-    return -0.5;
-  }
-
-  return 0;
+  // Reduce recommended tolerance if swap can be covered with only JIT liquidity
+  return amount < undeployedLiquidity / 2n ? -0.5 : 0;
 };
 
 const getLiquidityAdjustment = async ({

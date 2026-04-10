@@ -28,6 +28,7 @@ describe('env', () => {
       {
         "BROKER_COMMISSION_BPS": 0,
         "CHAINFLIP_NETWORK": "mainnet",
+        "CHECK_ALL_LPS_FOR_LIQUIDITY": false,
         "DCA_100K_USD_PRICE_IMPACT_PERCENT": {
           "Flip": 0.1,
         },
@@ -102,6 +103,7 @@ describe('env', () => {
       {
         "BROKER_COMMISSION_BPS": 0,
         "CHAINFLIP_NETWORK": "perseverance",
+        "CHECK_ALL_LPS_FOR_LIQUIDITY": false,
         "DCA_100K_USD_PRICE_IMPACT_PERCENT": {
           "Flip": 0.1,
         },
