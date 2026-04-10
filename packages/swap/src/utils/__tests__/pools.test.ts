@@ -12,7 +12,7 @@ vi.mock('../rpc.js', () => ({
 }));
 
 vi.mock('../lp.js', () => ({
-  getJITLpAccounts: vi.fn().mockResolvedValue([]),
+  getLpAccounts: vi.fn().mockResolvedValue([]),
 }));
 
 describe(getPools, () => {

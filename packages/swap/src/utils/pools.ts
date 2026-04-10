@@ -3,7 +3,7 @@ import { FULL_TICK_RANGE } from '@/shared/consts.js';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { assert } from '@/shared/guards.js';
 import baseLogger from './logger.js';
-import { getJITLpAccounts } from './lp.js';
+import { getLpAccounts } from './lp.js';
 import { getPoolDepth, refreshEnvironmentCache } from './rpc.js';
 import prisma, { Pool } from '../client.js';
 
@@ -30,7 +30,7 @@ export const getPools = async (
 
 const undeployedLiquidityCache = new AsyncCacheMap({
   fetch: async (asset: ChainflipAsset) => {
-    const jitLpAccounts = await getJITLpAccounts();
+    const jitLpAccounts = await getLpAccounts();
     return jitLpAccounts.reduce(
       (sum, account) => sum + readAssetValue(account.assetBalances, asset),
       0n,

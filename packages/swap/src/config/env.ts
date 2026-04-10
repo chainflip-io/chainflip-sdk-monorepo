@@ -148,6 +148,7 @@ export default z
     ENABLE_QUOTE_TIMING_LOGS: optionalBoolean.default('false'),
     DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE: optionalBoolean,
     ENABLE_POOL_CACHE_WARMING: optionalBoolean.default('false'),
+    CHECK_ALL_LPS_FOR_LIQUIDITY: optionalBoolean,
     DEFAULT_TIGHT_LPP_SLIPPAGE_BPS: optionalNumber(50),
     DEFAULT_LPP_SLIPPAGE_BPS: number().optional(),
     GET_ENVIRONMENT_CACHE_TTL: optionalNumber(6_000),
