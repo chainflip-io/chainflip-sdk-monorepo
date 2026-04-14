@@ -89,23 +89,7 @@ export const getOriginInfo = async (
   prisma: Prisma.TransactionClient,
   srcAsset: ChainflipAsset,
   origin: Origin,
-  requestInfo: ReturnType<typeof getRequestInfo>,
 ) => {
-  // TODO(2.1): remove this branch once all networks are upgraded
-  if (requestInfo.type === 'ACCOUNT_CREATION') {
-    const channel = await prisma.accountCreationDepositChannel.findFirstOrThrow({
-      where: { chain: assetConstants[srcAsset].chain, lpAccountId: requestInfo.lpAccountId },
-      orderBy: { issuedBlock: 'desc' },
-      include: { swapBeneficiaries: true },
-    });
-
-    return {
-      originType: 'DEPOSIT_CHANNEL' as const,
-      accountCreationDepositChannelId: channel.id,
-      brokerId: channel.swapBeneficiaries[0].account,
-    };
-  }
-
   if (origin.__kind === 'DepositChannel') {
     const depositChannel = await prisma.swapDepositChannel.findFirst({
       where: { srcChain: assetConstants[srcAsset].chain, channelId: origin.channelId },
@@ -263,7 +247,7 @@ export default async function swapRequested({
     'legacy assets are not supported in swap requests',
   );
 
-  const originInfo = await getOriginInfo(prisma, inputAsset, origin, requestInfo);
+  const originInfo = await getOriginInfo(prisma, inputAsset, origin);
 
   const {
     originType,
