@@ -47,8 +47,8 @@ const createRequest = (amount: bigint) =>
     isOnChain: false,
     isVaultSwap: false,
     pools: [],
-    integrator: "li.fi",
-    brokerIdSs58: "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+    integrator: 'li.fi',
+    brokerIdSs58: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
   });
 
 describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
