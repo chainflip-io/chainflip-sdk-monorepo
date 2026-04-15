@@ -51,7 +51,8 @@ export const quoteQuerySchema = z
       .min(1)
       .max(64)
       .regex(/^[a-zA-Z0-9_.-]+(?: [a-zA-Z0-9_.-]+)*$/, {
-        message: 'integrator may only contain letters, numbers, single spaces, dots, hyphens, underscores',
+        message:
+          'integrator may only contain letters, numbers, single spaces, dots, hyphens, underscores',
       })
       .optional(),
     brokerIdSs58: chainflipAddress.optional(),
