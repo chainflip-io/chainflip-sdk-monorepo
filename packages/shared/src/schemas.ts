@@ -53,7 +53,7 @@ export const quoteQuerySchema = z
         message: 'integrator may only contain letters, numbers, spaces, dots, hyphens, underscores',
       })
       .optional(),
-    broker: chainflipAddress.optional(),
+    brokerIdSs58: chainflipAddress.optional(),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
@@ -141,7 +141,7 @@ export const quoteQuerySchema = z
       isVaultSwap: args.isVaultSwap,
       isOnChain: args.isOnChain,
       integrator: args.integrator,
-      broker: args.broker,
+      brokerIdSs58: args.brokerIdSs58,
     };
   });
 

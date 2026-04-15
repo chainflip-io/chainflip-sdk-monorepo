@@ -47,6 +47,8 @@ const createRequest = (amount: bigint) =>
     isOnChain: false,
     isVaultSwap: false,
     pools: [],
+    integrator: "li.fi",
+    brokerIdSs58: "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
   });
 
 describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
@@ -173,8 +175,8 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
 
     expect(req.toLogInfo()).toMatchInlineSnapshot(`
       {
-        "broker": null,
         "brokerCommissionBps": 0,
+        "brokerIdSs58": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
         "dcaLimitOrders": null,
         "dcaQuote": null,
         "dcaQuoteParams": null,
@@ -185,7 +187,7 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "estimatedBoostFeeBps": undefined,
         "inputAmount": "0.01",
         "inputValueUsd": "1051.23",
-        "integrator": null,
+        "integrator": "li.fi",
         "isInternalSwap": false,
         "isVaultSwap": false,
         "maxBoostFeeBps": undefined,

@@ -268,7 +268,7 @@ exports[`ApiService > getQuoteV2 > gets a quote with integrator and broker accou
     },
     "params": {
       "amount": "10000",
-      "broker": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+      "brokerIdSs58": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
       "dcaEnabled": "false",
       "dcaV2Enabled": "false",
       "destAsset": "ETH",

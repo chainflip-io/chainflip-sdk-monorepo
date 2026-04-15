@@ -145,7 +145,7 @@ export default class QuoteRequest {
   private readonly ccmParams: ParsedQuoteParams['ccmParams'] | undefined;
   private readonly brokerCommissionBps: number | undefined;
   private readonly integrator: string | undefined;
-  private readonly broker: string | undefined;
+  private readonly brokerIdSs58: string | undefined;
   private readonly userAgent: string | undefined;
   private readonly sdkVersion: string | undefined;
   private dcaQuoteParams:
@@ -182,7 +182,7 @@ export default class QuoteRequest {
     this.ccmParams = params.ccmParams;
     this.brokerCommissionBps = params.brokerCommissionBps;
     this.integrator = params.integrator;
-    this.broker = params.broker;
+    this.brokerIdSs58 = params.brokerIdSs58;
     this.userAgent = params.userAgent;
     this.sdkVersion = params.sdkVersion;
   }
@@ -683,7 +683,7 @@ export default class QuoteRequest {
       isInternalSwap: this.isOnChain,
       isVaultSwap: this.isVaultSwap,
       integrator: this.integrator ?? null,
-      broker: this.broker ?? null,
+      brokerIdSs58: this.brokerIdSs58 ?? null,
       userAgent: this.userAgent ?? null,
       sdkVersion: this.sdkVersion ?? null,
       error: this.error?.message ?? null,
