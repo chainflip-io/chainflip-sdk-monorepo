@@ -67,6 +67,16 @@ export type SwapSDKOptions = {
     dca?: boolean;
     dcaV2?: boolean;
   };
+  /**
+   * Free-form label identifying the integrator (e.g. "li.fi"). Max 64 chars.
+   * Sent on every /v2/quote request unless overridden per-call.
+   */
+  integrator?: string;
+  /**
+   * Chainflip broker SS58 address attributed to quote requests.
+   * Sent on every /v2/quote request unless overridden per-call.
+   */
+  brokerAccount?: `cF${string}`;
 };
 
 const assertQuoteValid = (quote: Quote | BoostQuote) => {
@@ -221,6 +231,8 @@ export class SwapSDK {
         brokerCommissionBps: submitterBrokerCommissionBps,
         dcaEnabled: this.dcaEnabled,
         dcaV2Enabled: this.dcaV2Enabled,
+        integrator: quoteRequest.integrator ?? this.options.integrator,
+        brokerAccount: quoteRequest.brokerAccount ?? this.options.brokerAccount,
       },
       options,
     );

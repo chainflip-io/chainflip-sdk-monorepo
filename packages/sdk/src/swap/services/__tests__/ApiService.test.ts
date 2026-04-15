@@ -126,6 +126,23 @@ describe('ApiService', () => {
       expect(mockedGet.mock.lastCall).toMatchSnapshot();
     });
 
+    it('gets a quote with integrator and broker account', async () => {
+      const route = await getQuoteV2(
+        'https://swapperoo.org',
+        {
+          ...mockRoute,
+          integrator: 'li.fi',
+          brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+          dcaEnabled: false,
+          dcaV2Enabled: false,
+        },
+        {},
+      );
+
+      expect(route).toMatchSnapshot();
+      expect(mockedGet.mock.lastCall).toMatchSnapshot();
+    });
+
     it('passes the signal to fetch', async () => {
       await getQuoteV2(
         'https://swapperoo.org',

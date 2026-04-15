@@ -173,6 +173,7 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
 
     expect(req.toLogInfo()).toMatchInlineSnapshot(`
       {
+        "broker": null,
         "brokerCommissionBps": 0,
         "dcaLimitOrders": null,
         "dcaQuote": null,
@@ -184,14 +185,17 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "estimatedBoostFeeBps": undefined,
         "inputAmount": "0.01",
         "inputValueUsd": "1051.23",
+        "integrator": null,
         "isInternalSwap": false,
         "isVaultSwap": false,
         "maxBoostFeeBps": undefined,
         "regularLimitOrders": null,
         "regularQuote": null,
+        "sdkVersion": null,
         "srcAsset": "Btc",
         "srcAssetIndexPrice": 105123.1234,
         "success": false,
+        "userAgent": null,
       }
     `);
   });

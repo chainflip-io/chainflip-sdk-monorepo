@@ -45,6 +45,15 @@ export const quoteQuerySchema = z
     dcaV2Enabled: booleanString.default('false'),
     isVaultSwap: booleanString.optional(),
     isOnChain: booleanString.optional(),
+    integrator: z
+      .string()
+      .min(1)
+      .max(64)
+      .regex(/^[a-zA-Z0-9 _.-]+$/, {
+        message: 'integrator may only contain letters, numbers, spaces, dots, hyphens, underscores',
+      })
+      .optional(),
+    broker: chainflipAddress.optional(),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
@@ -131,6 +140,8 @@ export const quoteQuerySchema = z
       dcaV2Enabled: args.dcaV2Enabled,
       isVaultSwap: args.isVaultSwap,
       isOnChain: args.isOnChain,
+      integrator: args.integrator,
+      broker: args.broker,
     };
   });
 

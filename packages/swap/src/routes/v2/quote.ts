@@ -10,7 +10,7 @@ const quoteRouter = (quoter: Quoter) => {
   router.get(
     '/',
     asyncHandler(async (req, res) => {
-      const request = await QuoteRequest.create(quoter, req.query);
+      const request = await QuoteRequest.create(quoter, req.query, req.headers);
 
       try {
         const result = await request.tryGenerateQuotes();
