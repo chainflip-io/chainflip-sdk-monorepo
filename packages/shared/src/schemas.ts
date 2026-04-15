@@ -47,10 +47,11 @@ export const quoteQuerySchema = z
     isOnChain: booleanString.optional(),
     integrator: z
       .string()
+      .trim()
       .min(1)
       .max(64)
-      .regex(/^[a-zA-Z0-9 _.-]+$/, {
-        message: 'integrator may only contain letters, numbers, spaces, dots, hyphens, underscores',
+      .regex(/^[a-zA-Z0-9_.-]+(?: [a-zA-Z0-9_.-]+)*$/, {
+        message: 'integrator may only contain letters, numbers, single spaces, dots, hyphens, underscores',
       })
       .optional(),
     brokerIdSs58: chainflipAddress.optional(),
