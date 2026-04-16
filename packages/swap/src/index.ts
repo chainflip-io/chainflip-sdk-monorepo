@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { Server, createServer } from 'http';
 import env from './config/env.js';
+import { initializeQueues } from './messageQueues/initialize.js';
 import start from './processor.js';
 import * as solanaTxRefsQueue from './queues/solanaTxRefs.js';
 import server from './server.js';
@@ -26,6 +27,8 @@ if (env.START_PROCESSOR) {
 }
 
 if (env.START_HTTP_SERVICE) {
+  initializeQueues();
+
   const startHttpService = async () => {
     if (env.ENABLE_POOL_CACHE_WARMING) handleExit(await startPoolCacheWarming());
 
