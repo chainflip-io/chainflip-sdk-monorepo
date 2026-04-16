@@ -42,7 +42,11 @@ export function publishQuoteRequestReceived(data: Record<string, unknown>): void
       },
       { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: true },
     )
-    .catch((err) => logger.error('failed to publish quote request received', { error: err }));
+    .catch((err) =>
+      logger.error('failed to publish quote request received', {
+        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+      }),
+    );
 }
 
 export function publishQuoteRequestFailed(data: Record<string, unknown>, error: unknown): void {
@@ -87,5 +91,9 @@ export function publishQuoteResponseSent(data: Record<string, unknown>): void {
       },
       { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: true },
     )
-    .catch((err) => logger.error('failed to publish quote response sent', { error: err }));
+    .catch((err) =>
+      logger.error('failed to publish quote response sent', {
+        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+      }),
+    );
 }
