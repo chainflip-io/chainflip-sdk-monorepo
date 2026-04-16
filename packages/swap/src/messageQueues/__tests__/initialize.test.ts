@@ -55,20 +55,6 @@ describe('initialize', () => {
     expect(queues.quoteEvents).toBeUndefined();
   });
 
-  it('does not create quoteEvents queue when REDIS_URL is not set', async () => {
-    vi.doMock('../../config/env.js', () => ({
-      default: {
-        ENABLE_QUOTE_MESSAGE_QUEUE: true,
-        REDIS_URL: undefined,
-      },
-    }));
-
-    const { queues, initializeQueues } = await import('../initialize.js');
-    initializeQueues();
-
-    expect(queues.quoteEvents).toBeUndefined();
-  });
-
   it('does not create quoteEvents queue when initializeQueues is not called', async () => {
     vi.doMock('../../config/env.js', () => ({
       default: {
@@ -82,18 +68,18 @@ describe('initialize', () => {
     expect(queues.quoteEvents).toBeUndefined();
   });
 
-  it('throws when createQueue is called without REDIS_URL', async () => {
+  it('throws when initializeQueues is called without REDIS_URL', async () => {
     vi.doMock('../../config/env.js', () => ({
       default: {
-        ENABLE_QUOTE_MESSAGE_QUEUE: false,
+        ENABLE_QUOTE_MESSAGE_QUEUE: true,
         REDIS_URL: undefined,
       },
     }));
 
-    const { createQueue } = await import('../initialize.js');
+    const { initializeQueues } = await import('../initialize.js');
 
-    expect(() => createQueue({ name: 'test-queue' })).toThrow(
-      'cannot create queue "test-queue" without REDIS_URL',
+    expect(() => initializeQueues()).toThrow(
+      'cannot create queue "quote-events" without REDIS_URL',
     );
   });
 });

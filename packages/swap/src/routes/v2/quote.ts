@@ -23,6 +23,7 @@ const quoteRouter = (quoter: Quoter) => {
 
         if (result.status === 'fulfilled') {
           res.json(result.value);
+          publishQuoteResponseSent(request.toLogInfo());
         } else {
           throw result.reason;
         }
@@ -30,7 +31,6 @@ const quoteRouter = (quoter: Quoter) => {
         publishQuoteRequestFailed(request.toLogInfo(), err);
         handleQuotingError(res, err);
       } finally {
-        publishQuoteResponseSent(request.toLogInfo());
         logger.info('quote request completed', request.toLogInfo());
       }
     }),

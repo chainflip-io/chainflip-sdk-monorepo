@@ -6,20 +6,25 @@ import baseLogger from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'message-queues' });
 
-const redis = env.REDIS_URL ? new Redis(env.REDIS_URL, { maxRetriesPerRequest: null }) : undefined;
+let redis: Redis | undefined;
 
-if (redis) {
-  handleExit(async () => {
-    await redis.quit();
-  });
-}
+const getRedis = () => {
+  if (!redis && env.REDIS_URL) {
+    redis = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null });
+    handleExit(async () => {
+      await redis?.quit();
+    });
+  }
+  return redis;
+};
 
-export const createQueue = ({ name }: { name: string }) => {
-  if (!redis) {
+const createQueue = ({ name }: { name: string }) => {
+  const connection = getRedis();
+  if (!connection) {
     throw new Error(`cannot create queue "${name}" without REDIS_URL`);
   }
 
-  const queue = new Queue(name, { connection: redis });
+  const queue = new Queue(name, { connection });
 
   handleExit(async () => {
     await Promise.allSettled([queue.close()]);
@@ -37,7 +42,7 @@ export const queues: {
 };
 
 export const initializeQueues = () => {
-  if (env.ENABLE_QUOTE_MESSAGE_QUEUE && redis) {
+  if (env.ENABLE_QUOTE_MESSAGE_QUEUE) {
     queues.quoteEvents = createQueue({ name: 'quote-events' });
   }
 };

@@ -62,7 +62,11 @@ export function publishQuoteRequestFailed(data: Record<string, unknown>, error: 
       },
       { delay: env.MESSAGE_QUEUE_DELAY_MS },
     )
-    .catch((err) => logger.error('failed to publish quote request failed', { error: err }));
+    .catch((err) =>
+      logger.error('failed to publish quote request failed', {
+        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+      }),
+    );
 }
 
 export function publishQuoteResponseSent(data: Record<string, unknown>): void {
