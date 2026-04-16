@@ -12,11 +12,12 @@ function serializeBigInts(obj: Record<string, unknown>): Record<string, unknown>
       if (Array.isArray(v))
         return [
           k,
-          v.map((item) =>
-            typeof item === 'object' && item !== null
-              ? serializeBigInts(item as Record<string, unknown>)
-              : item,
-          ),
+          v.map((item) => {
+            if (typeof item === 'bigint') return item.toString();
+            if (typeof item === 'object' && item !== null)
+              return serializeBigInts(item as Record<string, unknown>);
+            return item;
+          }),
         ];
       if (typeof v === 'object') return [k, serializeBigInts(v as Record<string, unknown>)];
       return [k, v];
@@ -39,7 +40,7 @@ export function publishQuoteRequestReceived(data: Record<string, unknown>): void
         timestamp: new Date().toISOString(),
         event: 'quote.request.received',
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS },
+      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: true },
     )
     .catch((err) => logger.error('failed to publish quote request received', { error: err }));
 }
@@ -60,7 +61,7 @@ export function publishQuoteRequestFailed(data: Record<string, unknown>, error: 
         event: 'quote.request.failed',
         error: error instanceof Error ? error.message : String(error),
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS },
+      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: true },
     )
     .catch((err) =>
       logger.error('failed to publish quote request failed', {
@@ -84,7 +85,7 @@ export function publishQuoteResponseSent(data: Record<string, unknown>): void {
         timestamp: new Date().toISOString(),
         event: 'quote.response.sent',
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS },
+      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: true },
     )
     .catch((err) => logger.error('failed to publish quote response sent', { error: err }));
 }
