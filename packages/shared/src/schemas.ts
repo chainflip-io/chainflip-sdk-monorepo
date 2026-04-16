@@ -4,7 +4,6 @@ import {
   AssetAndChain,
   ChainflipAsset,
 } from '@chainflip/utils/chainflip';
-import { brokerAliasMap } from '@chainflip/utils/consts';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { z } from 'zod';
 import {
@@ -110,15 +109,6 @@ export const quoteQuerySchema = z
     if (args.isOnChain && args.brokerCommissionBps !== undefined && args.brokerCommissionBps > 0) {
       ctx.addIssue({
         message: 'isOnChain cannot be set with a non-zero broker commission',
-        code: z.ZodIssueCode.custom,
-      });
-
-      hadError = true;
-    }
-
-    if (args.brokerIdSs58 !== undefined && !(args.brokerIdSs58 in brokerAliasMap)) {
-      ctx.addIssue({
-        message: `unknown broker account: ${args.brokerIdSs58}`,
         code: z.ZodIssueCode.custom,
       });
 

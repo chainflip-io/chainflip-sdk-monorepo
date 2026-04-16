@@ -126,7 +126,7 @@ describe('ApiService', () => {
       expect(mockedGet.mock.lastCall).toMatchSnapshot();
     });
 
-    it('gets a quote with integrator and broker account', async () => {
+    it('gets a quote with broker account', async () => {
       const route = await getQuoteV2(
         'https://swapperoo.org',
         {
