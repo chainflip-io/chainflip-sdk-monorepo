@@ -44,10 +44,7 @@ export function publishQuoteRequestReceived(data: Record<string, unknown>): void
     .catch((err) => logger.error('failed to publish quote request received', { error: err }));
 }
 
-export function publishQuoteRequestFailed(
-  data: Record<string, unknown>,
-  error: unknown,
-): void {
+export function publishQuoteRequestFailed(data: Record<string, unknown>, error: unknown): void {
   const queue = queues.quoteEvents;
   if (!queue) return;
 

@@ -147,11 +147,9 @@ describe('quoteEvents', () => {
 
       publishQuoteRequestReceived({ srcAsset: 'Btc' });
 
-      expect(mockAdd).toHaveBeenCalledWith(
-        'quote.request.received',
-        expect.any(Object),
-        { delay: 5000 },
-      );
+      expect(mockAdd).toHaveBeenCalledWith('quote.request.received', expect.any(Object), {
+        delay: 5000,
+      });
     });
 
     it('catches and logs errors from queue.add', async () => {
