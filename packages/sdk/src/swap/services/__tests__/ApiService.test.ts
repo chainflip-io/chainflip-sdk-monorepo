@@ -131,7 +131,6 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          integrator: 'li.fi',
           brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
           dcaEnabled: false,
           dcaV2Enabled: false,

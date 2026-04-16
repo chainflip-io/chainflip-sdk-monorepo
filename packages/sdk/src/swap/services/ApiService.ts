@@ -39,7 +39,6 @@ export const getQuoteV2: BackendQuery<
     }),
     dcaEnabled: String(Boolean(quoteRequest.dcaEnabled)),
     dcaV2Enabled: String(Boolean(quoteRequest.dcaV2Enabled)),
-    ...(quoteRequest.integrator && { integrator: quoteRequest.integrator }),
     ...(quoteRequest.brokerAccount && { brokerIdSs58: quoteRequest.brokerAccount }),
   };
 

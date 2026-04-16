@@ -245,7 +245,6 @@ exports[`ApiService > getQuoteV2 > gets a quote with integrator and broker accou
   "dcaV2Enabled": false,
   "destAsset": "ETH",
   "destChain": "Ethereum",
-  "integrator": "li.fi",
   "quotes": [
     {
       "egressAmount": "2",
@@ -273,7 +272,6 @@ exports[`ApiService > getQuoteV2 > gets a quote with integrator and broker accou
       "dcaV2Enabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
-      "integrator": "li.fi",
       "isOnChain": "false",
       "isVaultSwap": "false",
       "srcAsset": "BTC",

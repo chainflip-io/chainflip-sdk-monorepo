@@ -49,11 +49,6 @@ export interface QuoteRequest extends ChainsAndAssets {
     messageLengthBytes: number;
   };
   /**
-   * Free-form label identifying the integrator (e.g. "li.fi"). Max 64 chars.
-   * Overrides the SDK-level `integrator` option for this request.
-   */
-  integrator?: string;
-  /**
    * Chainflip broker SS58 address attributed to this quote.
    * Overrides the SDK-level `brokerAccount` option for this request.
    */

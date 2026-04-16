@@ -47,7 +47,6 @@ const createRequest = (amount: bigint) =>
     isOnChain: false,
     isVaultSwap: false,
     pools: [],
-    integrator: 'li.fi',
     brokerIdSs58: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
   });
 
@@ -187,17 +186,14 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "estimatedBoostFeeBps": undefined,
         "inputAmount": "0.01",
         "inputValueUsd": "1051.23",
-        "integrator": "li.fi",
         "isInternalSwap": false,
         "isVaultSwap": false,
         "maxBoostFeeBps": undefined,
         "regularLimitOrders": null,
         "regularQuote": null,
-        "sdkVersion": null,
         "srcAsset": "Btc",
         "srcAssetIndexPrice": 105123.1234,
         "success": false,
-        "userAgent": null,
       }
     `);
   });

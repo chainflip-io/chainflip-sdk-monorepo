@@ -7,7 +7,6 @@ import {
 import assert from 'assert';
 import BigNumber from 'bignumber.js';
 import { Query } from 'express-serve-static-core';
-import { IncomingHttpHeaders } from 'http';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { getPipAmountFromAmount, ONE_IN_PIP } from '@/shared/functions.js';
 import { ensure } from '@/shared/guards.js';
@@ -75,35 +74,19 @@ const isDcaV2Available = ({ srcAsset, destAsset, dcaV2Enabled }: ParsedQuotePara
   (srcAsset === 'Usdc' || env.QUOTER_DCA_V2_DEPOSIT_ASSETS.has(srcAsset)) &&
   (destAsset === 'Usdc' || env.QUOTER_DCA_V2_DESTINATION_ASSETS.has(destAsset));
 
-type RequestMetadata = {
-  userAgent?: string;
-  sdkVersion?: string;
-};
-
-const extractRequestMetadata = (headers: IncomingHttpHeaders | undefined): RequestMetadata => {
-  if (!headers) return {};
-  const sdkVersion = headers['x-chainflip-sdk-version'];
-  return {
-    userAgent: typeof headers['user-agent'] === 'string' ? headers['user-agent'] : undefined,
-    sdkVersion: typeof sdkVersion === 'string' ? sdkVersion : undefined,
-  };
-};
-
 export default class QuoteRequest {
-  static async create(quoter: Quoter, query: Query, headers?: IncomingHttpHeaders) {
+  static async create(quoter: Quoter, query: Query) {
     const queryResult = quoteQuerySchema.safeParse(query);
-    const requestMetadata = extractRequestMetadata(headers);
 
     if (!queryResult.success) {
       logger.info('received invalid quote request', {
         query,
         error: queryResult.error.message,
-        ...requestMetadata,
       });
       throw ServiceError.badRequest('invalid request');
     }
 
-    logger.info('received a quote request', { query, ...requestMetadata });
+    logger.info('received a quote request', { query });
     const parsedQuery = queryResult.data;
 
     const { srcAsset, destAsset, amount } = queryResult.data;
@@ -131,7 +114,7 @@ export default class QuoteRequest {
       throw ServiceError.badRequest('Requested assets cannot be swapped');
     }
 
-    return new QuoteRequest(quoter, { pools, ...queryResult.data, ...requestMetadata });
+    return new QuoteRequest(quoter, { pools, ...queryResult.data });
   }
 
   private readonly srcAsset: ChainflipAsset;
@@ -144,10 +127,7 @@ export default class QuoteRequest {
   private readonly pools: Pool[];
   private readonly ccmParams: ParsedQuoteParams['ccmParams'] | undefined;
   private readonly brokerCommissionBps: number | undefined;
-  private readonly integrator: string | undefined;
   private readonly brokerIdSs58: string | undefined;
-  private readonly userAgent: string | undefined;
-  private readonly sdkVersion: string | undefined;
   private dcaQuoteParams:
     | (DcaParams & { chunkSize: bigint; additionalSwapDurationSeconds: number })
     | null = null;
@@ -169,7 +149,7 @@ export default class QuoteRequest {
 
   constructor(
     private readonly quoter: Quoter,
-    params: ParsedQuoteParams & { pools: Pool[] } & RequestMetadata,
+    params: ParsedQuoteParams & { pools: Pool[] },
   ) {
     this.srcAsset = params.srcAsset;
     this.destAsset = params.destAsset;
@@ -181,10 +161,7 @@ export default class QuoteRequest {
     this.pools = params.pools;
     this.ccmParams = params.ccmParams;
     this.brokerCommissionBps = params.brokerCommissionBps;
-    this.integrator = params.integrator;
     this.brokerIdSs58 = params.brokerIdSs58;
-    this.userAgent = params.userAgent;
-    this.sdkVersion = params.sdkVersion;
   }
 
   private async setDcaQuoteParams() {
@@ -682,10 +659,7 @@ export default class QuoteRequest {
       dcaQuote: this.dcaQuote,
       isInternalSwap: this.isOnChain,
       isVaultSwap: this.isVaultSwap,
-      integrator: this.integrator ?? null,
       brokerIdSs58: this.brokerIdSs58 ?? null,
-      userAgent: this.userAgent ?? null,
-      sdkVersion: this.sdkVersion ?? null,
       error: this.error?.message ?? null,
     };
   }
