@@ -67,7 +67,7 @@ describe('quoteEvents', () => {
           event: 'quote.request.received',
           timestamp: expect.any(String),
         }),
-        { delay: 0 },
+        { delay: 0, removeOnComplete: true },
       );
     });
 
@@ -91,7 +91,7 @@ describe('quoteEvents', () => {
           event: 'quote.response.sent',
           timestamp: expect.any(String),
         }),
-        { delay: 0 },
+        { delay: 0, removeOnComplete: true },
       );
     });
 
@@ -111,7 +111,7 @@ describe('quoteEvents', () => {
           error: 'insufficient liquidity',
           timestamp: expect.any(String),
         }),
-        { delay: 0 },
+        { delay: 0, removeOnComplete: true },
       );
     });
 
@@ -123,7 +123,7 @@ describe('quoteEvents', () => {
         expect.objectContaining({
           error: 'string error',
         }),
-        { delay: 0 },
+        { delay: 0, removeOnComplete: true },
       );
     });
 
@@ -149,6 +149,7 @@ describe('quoteEvents', () => {
 
       expect(mockAdd).toHaveBeenCalledWith('quote.request.received', expect.any(Object), {
         delay: 5000,
+        removeOnComplete: true,
       });
     });
 
