@@ -1,0 +1,310 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --- Enums ---
+
+enum LoanStatus {
+  WAITING_FOR_DEPOSIT
+  ACTIVE
+  SOFT_LIQUIDATION
+  HARD_LIQUIDATION
+  SOFT_VOLUNTARY_LIQUIDATION
+  REPAID
+}
+
+enum LoanEventType {
+  CREATED
+  INCREASED
+  REPAID_PARTIAL
+  REPAID_FULL
+  SETTLED
+  LIQUIDATED
+}
+
+enum CollateralEventType {
+  ADDED
+  REMOVED
+  SYSTEM_TOP_UP
+  LIQUIDATION_EXCESS_RETURN
+  SWAPPED
+}
+
+enum SupplyEventType {
+  SUPPLIED
+  WITHDRAWN
+  INTEREST_EARNED
+}
+
+enum FeeType {
+  ORIGINATION
+  INTEREST
+  LIQUIDATION
+  LOW_LTV_PENALTY
+}
+
+enum LiquidationType {
+  SOFT
+  HARD
+  SOFT_VOLUNTARY
+  AUTO_TRIGGERED
+}
+
+enum LiquidationReason {
+  LTV_THRESHOLD_SOFT
+  LTV_THRESHOLD_HARD
+  USER_INITIATED
+  AUTO_TRIGGER
+}
+
+// --- Configuration ---
+
+model OraclePrice {
+  id                     Int       @id @default(autoincrement())
+  baseAsset              String
+  quoteAsset             String
+  price                  String
+  priceValidFromBlock    Int
+  priceValidToBlock      Int?
+  createdAtEventId       String
+  updatedAtOracleTimestamp DateTime?
+  executedBlockIndex     String
+
+  @@map("oracle_price")
+  @@index([baseAsset, quoteAsset])
+  @@index([executedBlockIndex])
+}
+
+model AssetConfig {
+  id              Int     @id @default(autoincrement())
+  asset           String  @unique
+  canBorrow       Boolean @default(false)
+  canSupply       Boolean @default(false)
+  canCollateralize Boolean @default(false)
+
+  @@map("asset_config")
+}
+
+// --- Current State ---
+
+model LendingPool {
+  id                   Int              @id @default(autoincrement())
+  asset                String           @unique
+  totalSuppliedAmount  String
+  totalBorrowedAmount  String
+  totalAvailableAmount String
+  supplyApyBps         Int
+  borrowApyBps         Int
+  utilizationRateBps   Int
+  originationFeeBps    Int
+  liquidationFeeBps    Int
+  updatedAtBlock       Int
+  loans                Loan[]
+  supplyPositions      SupplyPosition[]
+  poolSnapshots        PoolSnapshot[]
+
+  @@map("lending_pool")
+}
+
+model Loan {
+  id                 Int               @id @default(autoincrement())
+  loanId             Int               @unique
+  lpAccount          String
+  asset              String
+  principalAmount    String
+  accruedInterest    String            @default("0")
+  status             LoanStatus        @default(ACTIVE)
+  poolId             Int
+  pool               LendingPool       @relation(fields: [poolId], references: [id])
+  executedBlockIndex String
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  loanEvents         LoanEvent[]
+  feeEvents          FeeEvent[]
+  liquidationEvents  LiquidationEvent[]
+
+  @@map("loan")
+  @@index([lpAccount])
+  @@index([status])
+  @@index([executedBlockIndex])
+}
+
+model SupplyPosition {
+  id                  Int         @id @default(autoincrement())
+  lpAccount           String
+  asset               String
+  suppliedAmount      String
+  totalInterestEarned String      @default("0")
+  poolShareBps        Int         @default(0)
+  poolId              Int
+  pool                LendingPool @relation(fields: [poolId], references: [id])
+  updatedAt           DateTime    @updatedAt
+
+  @@map("supply_position")
+  @@unique([lpAccount, asset])
+  @@index([lpAccount])
+}
+
+// --- Historical Events ---
+
+model LoanEvent {
+  id                 Int           @id @default(autoincrement())
+  loanId             Int
+  loan               Loan          @relation(fields: [loanId], references: [loanId])
+  lpAccount          String
+  type               LoanEventType
+  amount             String?
+  executedBlockIndex String
+  timestamp          DateTime
+
+  @@map("loan_event")
+  @@index([lpAccount])
+  @@index([loanId])
+  @@index([executedBlockIndex])
+}
+
+model CollateralEvent {
+  id                 Int                 @id @default(autoincrement())
+  lpAccount          String
+  asset              String
+  amount             String
+  type               CollateralEventType
+  executedBlockIndex String
+  timestamp          DateTime
+
+  @@map("collateral_event")
+  @@index([lpAccount])
+  @@index([executedBlockIndex])
+}
+
+model SupplyEvent {
+  id                 Int             @id @default(autoincrement())
+  lpAccount          String
+  asset              String
+  amount             String
+  type               SupplyEventType
+  executedBlockIndex String
+  timestamp          DateTime
+
+  @@map("supply_event")
+  @@index([lpAccount])
+  @@index([executedBlockIndex])
+}
+
+model FeeEvent {
+  id                 Int      @id @default(autoincrement())
+  loanId             Int?
+  loan               Loan?    @relation(fields: [loanId], references: [loanId])
+  lpAccount          String
+  type               FeeType
+  totalAmount        String
+  networkShare       String?
+  lenderShare        String?
+  brokerShare        String?
+  executedBlockIndex String
+  timestamp          DateTime
+
+  @@map("fee_event")
+  @@index([lpAccount])
+  @@index([loanId])
+  @@index([executedBlockIndex])
+}
+
+model LiquidationEvent {
+  id                   Int              @id @default(autoincrement())
+  lpAccount            String
+  loanId               Int?
+  loan                 Loan?            @relation(fields: [loanId], references: [loanId])
+  type                 LiquidationType
+  reason               LiquidationReason?
+  collateralLiquidated String?
+  debtRepaid           String?
+  excessReturned       String?
+  swapRequestId        Int?
+  executedBlockIndex   String
+  timestamp            DateTime
+
+  @@map("liquidation_event")
+  @@index([lpAccount])
+  @@index([loanId])
+  @@index([swapRequestId])
+  @@index([executedBlockIndex])
+}
+
+// --- Deposit Channel ---
+
+model DepositChannel {
+  id                Int       @id @default(autoincrement())
+  lpAccount         String
+  asset             String
+  chain             String
+  channelId         String
+  depositAddress    String
+  totalDeposited    String    @default("0")
+  createdBlockIndex String
+  createdAt         DateTime  @default(now())
+
+  @@map("deposit_channel")
+  @@unique([chain, channelId])
+  @@index([lpAccount])
+}
+
+// --- Analytics ---
+
+model PoolSnapshot {
+  id                 Int         @id @default(autoincrement())
+  asset              String
+  poolId             Int
+  pool               LendingPool @relation(fields: [poolId], references: [id])
+  totalSupplied      String
+  totalBorrowed      String
+  totalAvailable     String
+  supplyApyBps       Int
+  borrowApyBps       Int
+  utilizationBps     Int
+  executedBlockIndex String
+  timestamp          DateTime
+
+  @@map("pool_snapshot")
+  @@index([asset, timestamp])
+  @@index([executedBlockIndex])
+}
+
+model PoolStat {
+  id               Int    @id @default(autoincrement())
+  asset            String
+  intervalBlocks   Int
+  totalFeesEarned  String @default("0")
+  totalLiquidations Int   @default(0)
+  avgUtilizationBps Int   @default(0)
+  updatedAt        DateTime @updatedAt
+
+  @@map("pool_stat")
+  @@unique([asset, intervalBlocks])
+}
+
+model UserStat {
+  id              Int      @id @default(autoincrement())
+  lpAccount       String   @unique
+  totalBorrowed   String   @default("0")
+  totalRepaid     String   @default("0")
+  totalSupplied   String   @default("0")
+  totalWithdrawn  String   @default("0")
+  avgHealthFactor String?
+  updatedAt       DateTime @updatedAt
+
+  @@map("user_stat")
+}
+
+// --- Infrastructure ---
+
+model ProcessorState {
+  id                 Int @id @default(1)
+  lastProcessedBlock Int @default(0)
+
+  @@map("processor_state")
+}

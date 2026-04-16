@@ -1,0 +1,33 @@
+{
+  "name": "@chainflip/lending-sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "tsx scripts/rpc-smoke.ts",
+    "eslint:check": "pnpm eslint --max-warnings 0 './**/*.ts'"
+  },
+  "dependencies": {
+    "@chainflip/rpc": "^2.1.4",
+    "@chainflip/utils": "*",
+    "@polkadot/api": "^14.0.0",
+    "@polkadot/types": "^14.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
