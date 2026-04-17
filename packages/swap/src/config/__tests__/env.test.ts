@@ -45,6 +45,7 @@ describe('env', () => {
         "DISABLE_QUOTING": false,
         "DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE": false,
         "ENABLE_POOL_CACHE_WARMING": false,
+        "ENABLE_QUOTE_MESSAGE_QUEUE": false,
         "ENABLE_QUOTE_TIMING_LOGS": false,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
@@ -54,6 +55,7 @@ describe('env', () => {
         "LIQUIDITY_WARNING_THRESHOLD": -5,
         "MAINTENANCE_MODE": false,
         "MAX_CHANNELS_OPEN_PER_ADDRESS": 25,
+        "MESSAGE_QUEUE_DELAY_MS": 0,
         "NODE_ENV": "production",
         "PROCESSOR_BATCH_SIZE": 50,
         "PROCESSOR_TRANSACTION_TIMEOUT": 10000,
@@ -120,6 +122,7 @@ describe('env', () => {
         "DISABLE_QUOTING": false,
         "DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE": false,
         "ENABLE_POOL_CACHE_WARMING": false,
+        "ENABLE_QUOTE_MESSAGE_QUEUE": false,
         "ENABLE_QUOTE_TIMING_LOGS": false,
         "FULLY_DISABLED_INTERNAL_ASSETS": Set {
           "HubDot",
@@ -129,6 +132,7 @@ describe('env', () => {
         "LIQUIDITY_WARNING_THRESHOLD": -5,
         "MAINTENANCE_MODE": false,
         "MAX_CHANNELS_OPEN_PER_ADDRESS": 25,
+        "MESSAGE_QUEUE_DELAY_MS": 0,
         "NODE_ENV": "production",
         "PROCESSOR_BATCH_SIZE": 50,
         "PROCESSOR_TRANSACTION_TIMEOUT": 10000,

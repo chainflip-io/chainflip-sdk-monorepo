@@ -1,4 +1,9 @@
 import express from 'express';
+import {
+  publishQuoteRequestFailed,
+  publishQuoteRequestReceived,
+  publishQuoteResponseSent,
+} from '../../messageQueues/quoteEvents.js';
 import Quoter from '../../quoting/Quoter.js';
 import QuoteRequest from '../../quoting/QuoteRequest.js';
 import logger from '../../utils/logger.js';
@@ -11,16 +16,19 @@ const quoteRouter = (quoter: Quoter) => {
     '/',
     asyncHandler(async (req, res) => {
       const request = await QuoteRequest.create(quoter, req.query);
+      publishQuoteRequestReceived(request.toLogInfo());
 
       try {
         const result = await request.tryGenerateQuotes();
 
         if (result.status === 'fulfilled') {
           res.json(result.value);
+          publishQuoteResponseSent(request.toLogInfo());
         } else {
           throw result.reason;
         }
       } catch (err) {
+        publishQuoteRequestFailed(request.toLogInfo(), err);
         handleQuotingError(res, err);
       } finally {
         logger.info('quote request completed', request.toLogInfo());
