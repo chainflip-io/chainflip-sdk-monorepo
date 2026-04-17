@@ -1,0 +1,169 @@
+classDiagram
+
+%% =========================
+%% CONFIGURATION LAYER
+%% =========================
+
+class AssetConfig {
+  +asset
+  +canBorrow
+  +canSupply
+  +canCollateralize
+}
+
+%% =========================
+%% CURRENT STATE LAYER
+%% =========================
+
+class LendingPool {
+  +asset
+  +totalSuppliedAmount:
+  +totalSuppliedAmountUsd
+  +totalBorrowedAmount
+  +totalBorrowedAmountUsd
+  +totalAvailableAmount
+  +totalAvailableAmountUsd
+  +utilisation
+  +supplyApy
+  +borrowApy
+  +maxLtv
+  +liquidationThreshold
+  +liquidationFeeBps
+  +originationFeeBps
+}
+
+class Loan {
+  +lpAccount
+  +principal
+  +interest
+  +status
+  +status (totalFee, originationFeeRate, interestFeeRate)
+  +createdAtEvent
+  +depositChannelId
+  +lastUpdatedAtTimestamp
+}
+
+class LiquidityDepositChannel {
+  +lpAccount
+  +asset
+  +chain 
+  +channelId
+  +depositAddress
+  +totalDeposited
+  +timestamp
+  +executedBlockIndex
+}
+
+class LiquidityDeposit {
+  +id
+  +depositAmount
+  +depositAmountUsd 
+  +liquidityDepositChannel
+  +fee
+  +feeUsd
+  +timestamp
+  +executedBlockIndex
+}
+
+LiquidityDepositChannel "1" *-- "*" LiquidityDeposit
+
+
+class SupplyPosition {
+  +lpAccount
+  +suppliedAmount
+  +interestEarned
+  +poolShareBps
+}
+
+
+class OraclePrice {
+  +price
+  +baseAsset
+  +quoteAsset
+  +priceValidFromBlock
+  +priceValidToBlock
+  +createdAtEventId
+  +updatedAtOracleTimestamp
+  +executedBlockIndex
+}
+
+%% Relationships - Current State
+
+LendingPool "1" --> "*" Loan
+SupplyPosition "*" --> "1" LendingPool
+
+%% =========================
+%% HISTORICAL EVENTS LAYER
+%% =========================
+
+class LoanEvent {
+  +lpAccount
+  +loanId
+  +type
+  +amount
+  +executedBlockIndex
+  +timestamp
+}
+
+class CollateralEvent {
+  +lpAccount
+  +type
+  +asset
+  +amount
+  +executedBlockIndex
+  +timestamp
+}
+
+class SupplyEvent {
+  +lpAccount
+  +type
+  +amount
+  +executedBlockIndex 
+  +timestamp
+}
+
+class FeeEvent {
+  +lpAccount
+  +loanId
+  +type
+  +amount
+  +feeSplits
+  +executedBlockIndex
+  +timestamp
+}
+
+class LiquidationEvent {
+  +lpAccount
+  +loanId
+  +type
+  +collateralLiquidated
+  +debtRepaid
+  +excessReturned
+  +executedBlockIndex
+  +timestamp
+}
+
+%% =========================
+%% ANALYTICS LAYER
+%% =========================
+
+class PoolSnapshot {
+  +asset
+  +amountsAtBlock
+  +ratesAtBlock
+  +executedBlockIndex 
+  +feesEarned
+  +liquidations
+  +avgMetrics
+}
+
+
+class LpStat {
+  +lpAccount
+  +borrowTotals
+  +supplyTotals
+  +avgHealthFactor
+}
+
+LendingPool "1" --> "*" PoolSnapshot
+OraclePrice "*" --> "1" PoolSnapshot
