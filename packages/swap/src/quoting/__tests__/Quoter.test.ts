@@ -17,12 +17,22 @@ import { AddressInfo } from 'ws';
 import { MAX_TICK, MIN_TICK } from '@/shared/consts.js';
 import prisma, { InternalAsset } from '../../client.js';
 import env from '../../config/env.js';
+import {
+  publishQuoteOrderError,
+  publishQuoteOrderReceived,
+  publishQuoteOrderTimeout,
+} from '../../messageQueues/quoteEvents.js';
 import { getLpBalances } from '../../utils/rpc.js';
 import authenticate from '../authenticate.js';
 import Quoter, { approximateIntermediateOutput, type RpcLimitOrder } from '../Quoter.js';
 import { LegJson, MarketMakerQuoteRequest, MarketMakerRawQuote } from '../schemas.js';
 
 vi.mock('../../utils/rpc', () => ({ getLpBalances: vi.fn().mockResolvedValue([]) }));
+vi.mock('../../messageQueues/quoteEvents.js', () => ({
+  publishQuoteOrderReceived: vi.fn(),
+  publishQuoteOrderTimeout: vi.fn(),
+  publishQuoteOrderError: vi.fn(),
+}));
 
 const generateKeyPairAsync = promisify(crypto.generateKeyPair);
 
@@ -228,7 +238,10 @@ describe(Quoter, () => {
       const fakeServer = { on: vi.fn() };
 
       const mockQuoter = new Quoter(fakeServer as unknown as Server);
-      mockQuoter['inflightRequests'].add('string');
+      mockQuoter['inflightRequests'].set('string', {
+        quoteRequestId: undefined,
+        responded: new Set(),
+      });
 
       expect(fakeServer.on).toHaveBeenCalledWith('connection', expect.any(Function));
 
@@ -618,6 +631,131 @@ describe(Quoter, () => {
       await sleep(10);
       expect(mm2.socket.connected).toBe(false);
       expect(mm.socket.connected).toBe(true);
+    });
+  });
+
+  describe('order event publishing', () => {
+    const ONE_BTC = toAtomicUnits(1, 'Btc', 'bigint');
+
+    beforeEach(() => {
+      vi.mocked(publishQuoteOrderReceived).mockClear();
+      vi.mocked(publishQuoteOrderTimeout).mockClear();
+      vi.mocked(publishQuoteOrderError).mockClear();
+    });
+
+    it('publishes quote.order.received when a valid quote is received', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const { sendQuote, waitForRequest } = await connectClient({
+        name: 'marketMaker',
+        quotedAssets: ['Btc'],
+      });
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await waitForRequest();
+      sendQuote({ ...request, legs: [[[0, '100']]] });
+      await limitOrders;
+
+      expect(publishQuoteOrderReceived).toHaveBeenCalledTimes(1);
+      expect(publishQuoteOrderReceived).toHaveBeenCalledWith({
+        quoteRequestId: undefined,
+        marketMaker: 'marketMaker',
+        marketMakerRequestId: request.request_id,
+        legs: [[[0, 100n]]],
+        beta: false,
+      });
+      expect(publishQuoteOrderTimeout).not.toHaveBeenCalled();
+      expect(publishQuoteOrderError).not.toHaveBeenCalled();
+    });
+
+    it('publishes quote.order.timeout for market makers that did not respond', async () => {
+      env.QUOTE_TIMEOUT = 10;
+      const mm1 = await connectClient({ name: 'marketMaker', quotedAssets: ['Btc'] });
+      const mm2 = await connectClient({ name: 'marketMaker2', quotedAssets: ['Btc'] });
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await mm1.waitForRequest();
+      mm1.sendQuote({ ...request, legs: [[[0, '100']]] });
+      await limitOrders;
+
+      expect(publishQuoteOrderReceived).toHaveBeenCalledTimes(1);
+      expect(publishQuoteOrderTimeout).toHaveBeenCalledTimes(1);
+      expect(publishQuoteOrderTimeout).toHaveBeenCalledWith({
+        quoteRequestId: undefined,
+        marketMaker: 'marketMaker2',
+        marketMakerRequestId: request.request_id,
+      });
+      mm2.socket.disconnect();
+    });
+
+    it('does not publish quote.order.timeout when all expected quotes arrive before timeout', async () => {
+      env.QUOTE_TIMEOUT = 10_000;
+      const mm1 = await connectClient({ name: 'marketMaker', quotedAssets: ['Btc'] });
+      const mm2 = await connectClient({ name: 'marketMaker2', quotedAssets: ['Btc'] });
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await mm1.waitForRequest();
+      mm1.sendQuote({ ...request, legs: [[[0, '100']]] });
+      mm2.sendQuote({ ...request, legs: [[[0, '200']]] });
+      await limitOrders;
+
+      expect(publishQuoteOrderTimeout).not.toHaveBeenCalled();
+      expect(publishQuoteOrderReceived).toHaveBeenCalledTimes(2);
+    });
+
+    it('publishes quote.order.error when a response fails schema validation', async () => {
+      env.QUOTE_TIMEOUT = 10;
+      const mm = await connectClient({ name: 'marketMaker', quotedAssets: ['Btc'] });
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await mm.waitForRequest();
+      mm.socket.emit('quote_response', {
+        request_id: request.request_id,
+        legs: [[[MIN_TICK - 1, '100']]],
+      });
+      await limitOrders;
+
+      expect(publishQuoteOrderError).toHaveBeenCalledTimes(1);
+      expect(publishQuoteOrderError).toHaveBeenCalledWith({
+        quoteRequestId: undefined,
+        marketMaker: 'marketMaker',
+        marketMakerRequestId: request.request_id,
+        error: 'tick provided is too small',
+      });
+    });
+
+    it('publishes quote.order.error for an unknown request_id', async () => {
+      const mm = await connectClient({ name: 'marketMaker', quotedAssets: ['Btc'] });
+      mm.socket.emit('quote_response', {
+        request_id: 'never-seen-request',
+        legs: [[[0, '100']]],
+      });
+      await sleep(20);
+
+      expect(publishQuoteOrderError).toHaveBeenCalledWith({
+        quoteRequestId: undefined,
+        marketMaker: 'marketMaker',
+        marketMakerRequestId: 'never-seen-request',
+        error: 'unknown request_id',
+      });
+    });
+
+    it('publishes quote.order.error when an order is rejected for insufficient balance', async () => {
+      env.QUOTER_BALANCE_TOLERANCE_PERCENT = 10;
+      vi.mocked(getLpBalances).mockResolvedValue([
+        ['marketMaker', { Usdc: 99n } as InternalAssetMap<bigint>],
+      ]);
+      const mm = await connectClient({ name: 'marketMaker', quotedAssets: ['Btc'] });
+      const limitOrders = quoter.getLimitOrders('Btc', 'Usdc', ONE_BTC);
+      const request = await mm.waitForRequest();
+      mm.sendQuote({ ...request, legs: [[[0, '300']]] });
+      await limitOrders;
+
+      expect(publishQuoteOrderError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          marketMaker: 'marketMaker',
+          marketMakerRequestId: request.request_id,
+          error: 'insufficient balance',
+          balance: 99n,
+          amount: 300n,
+          sellAsset: 'Usdc',
+        }),
+      );
     });
   });
 });
