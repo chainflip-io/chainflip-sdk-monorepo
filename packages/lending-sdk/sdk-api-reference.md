@@ -1141,12 +1141,6 @@ The Lending SDK database is designed as a **self-contained, event-driven system*
 
 ### Design Principles
 
-**Data Source Analysis:** [data-sources.md](data-sources.md) — Detailed overview of data sources (RPC vs DB) for all read methods
-
-**Database Class Diagram:** [database-class-diagram.mmd](database-class-diagram.mmd)
-
-**Database Design Details:** [sdk-db-design.md](sdk-db-design.md) — Comprehensive database schema, table definitions, and event processing
-
 **1. Unified service approach**
 - The Lending SDK combines functionality from three existing Chainflip services:
   - **Cache service** — Real-time current state (pool metrics, balances, rates)
