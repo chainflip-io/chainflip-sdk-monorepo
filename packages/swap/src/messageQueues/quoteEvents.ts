@@ -5,24 +5,18 @@ import baseLogger, { logStorage } from '../utils/logger.js';
 const logger = baseLogger.child({ module: 'quote-events' });
 
 function serializeBigInts(obj: Record<string, unknown>): Record<string, unknown> {
-  return Object.fromEntries(
-    Object.entries(obj).map(([k, v]) => {
-      if (typeof v === 'bigint') return [k, v.toString()];
-      if (v === null || v === undefined) return [k, v];
-      if (Array.isArray(v))
-        return [
-          k,
-          v.map((item) => {
-            if (typeof item === 'bigint') return item.toString();
-            if (typeof item === 'object' && item !== null)
-              return serializeBigInts(item as Record<string, unknown>);
-            return item;
-          }),
-        ];
-      if (typeof v === 'object') return [k, serializeBigInts(v as Record<string, unknown>)];
-      return [k, v];
-    }),
-  );
+  const serialize = (v: unknown): unknown => {
+    if (typeof v === 'bigint') return v.toString();
+    if (v === null || v === undefined) return v;
+    if (Array.isArray(v)) return v.map(serialize);
+    if (typeof v === 'object') {
+      return Object.fromEntries(
+        Object.entries(v as Record<string, unknown>).map(([k, val]) => [k, serialize(val)]),
+      );
+    }
+    return v;
+  };
+  return serialize(obj) as Record<string, unknown>;
 }
 
 export function publishQuoteRequestReceived(data: Record<string, unknown>): void {
@@ -93,6 +87,69 @@ export function publishQuoteResponseSent(data: Record<string, unknown>): void {
     )
     .catch((err) =>
       logger.error('failed to publish quote response sent', {
+        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+      }),
+    );
+}
+
+export function publishQuoteOrderReceived(data: Record<string, unknown>): void {
+  const queue = queues.quoteEvents;
+  if (!queue) return;
+
+  queue
+    .add(
+      'quote.order.received',
+      {
+        ...serializeBigInts(data),
+        timestamp: new Date().toISOString(),
+        event: 'quote.order.received',
+      },
+      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: true },
+    )
+    .catch((err) =>
+      logger.error('failed to publish quote order received', {
+        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+      }),
+    );
+}
+
+export function publishQuoteOrderTimeout(data: Record<string, unknown>): void {
+  const queue = queues.quoteEvents;
+  if (!queue) return;
+
+  queue
+    .add(
+      'quote.order.timeout',
+      {
+        ...serializeBigInts(data),
+        timestamp: new Date().toISOString(),
+        event: 'quote.order.timeout',
+      },
+      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: true },
+    )
+    .catch((err) =>
+      logger.error('failed to publish quote order timeout', {
+        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+      }),
+    );
+}
+
+export function publishQuoteOrderError(data: Record<string, unknown>): void {
+  const queue = queues.quoteEvents;
+  if (!queue) return;
+
+  queue
+    .add(
+      'quote.order.error',
+      {
+        ...serializeBigInts(data),
+        timestamp: new Date().toISOString(),
+        event: 'quote.order.error',
+      },
+      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: true },
+    )
+    .catch((err) =>
+      logger.error('failed to publish quote order error', {
         error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
       }),
     );

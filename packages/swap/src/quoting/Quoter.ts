@@ -23,10 +23,15 @@ import {
   requestIdObj,
 } from './schemas.js';
 import env from '../config/env.js';
+import {
+  publishQuoteOrderError,
+  publishQuoteOrderReceived,
+  publishQuoteOrderTimeout,
+} from '../messageQueues/quoteEvents.js';
 import { getAssetPrice } from '../pricing/index.js';
 import { Brand } from '../utils/brands.js';
 import { handleExit } from '../utils/function.js';
-import baseLogger from '../utils/logger.js';
+import baseLogger, { logStorage } from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'quoter' });
 
@@ -96,7 +101,10 @@ export type QuotingSocket = Socket<ReceivedEventMap, SentEventMap, any, SocketDa
 export default class Quoter {
   private readonly quotes$ = new Subject<Quote>();
 
-  private readonly inflightRequests = new Set<string>();
+  private readonly inflightRequests = new Map<
+    string,
+    { quoteRequestId: string | undefined; responded: Set<AccountId> }
+  >();
 
   private balanceTracker = new BalanceTracker(env.QUOTER_BALANCE_TRACKER_ACTIVE);
 
@@ -161,6 +169,16 @@ export default class Quoter {
             error = result.error.message;
           }
           socket.emit('quote_error', { error, request_id: requestId });
+
+          const inflight =
+            requestId !== 'unknown' ? this.inflightRequests.get(requestId) : undefined;
+          inflight?.responded.add(socket.data.marketMaker);
+          publishQuoteOrderError({
+            quoteRequestId: inflight?.quoteRequestId,
+            marketMaker: socket.data.marketMaker,
+            marketMakerRequestId: requestId,
+            error,
+          });
         }
 
         if (result.success && !this.inflightRequests.has(result.data.request_id)) {
@@ -169,7 +187,25 @@ export default class Quoter {
             requestId: result.data.request_id,
             marketMaker: socket.data.marketMaker,
           });
+          publishQuoteOrderError({
+            quoteRequestId: undefined,
+            marketMaker: socket.data.marketMaker,
+            marketMakerRequestId: result.data.request_id,
+            error: 'unknown request_id',
+          });
           return;
+        }
+
+        if (result.success) {
+          const inflight = this.inflightRequests.get(result.data.request_id);
+          inflight?.responded.add(socket.data.marketMaker);
+          publishQuoteOrderReceived({
+            quoteRequestId: inflight?.quoteRequestId,
+            marketMaker: socket.data.marketMaker,
+            marketMakerRequestId: result.data.request_id,
+            legs: result.data.legs,
+            beta: socket.data.beta,
+          });
         }
 
         this.quotes$.next({
@@ -187,7 +223,11 @@ export default class Quoter {
     const connectedClients = this.io.sockets.sockets.size;
     if (connectedClients === 0) return [];
 
-    this.inflightRequests.add(request.request_id);
+    const quoteRequestId = logStorage.getStore();
+    this.inflightRequests.set(request.request_id, {
+      quoteRequestId,
+      responded: new Set<AccountId>(),
+    });
 
     let expectedResponses = 0;
 
@@ -231,7 +271,19 @@ export default class Quoter {
 
       let timer: ReturnType<typeof setTimeout>;
 
-      const complete = () => {
+      const complete = (reason: 'timeout' | 'all-received') => {
+        if (reason === 'timeout') {
+          const entry = this.inflightRequests.get(request.request_id);
+          for (const marketMaker of quotedLegsMap.keys()) {
+            if (!entry?.responded.has(marketMaker)) {
+              publishQuoteOrderTimeout({
+                quoteRequestId: entry?.quoteRequestId,
+                marketMaker,
+                marketMakerRequestId: request.request_id,
+              });
+            }
+          }
+        }
         resolve(clientsReceivedQuotes.entries().toArray());
         sub.unsubscribe();
         clearTimeout(timer);
@@ -251,10 +303,10 @@ export default class Quoter {
           logger.error('unexpected missing format function');
           expectedResponses -= 1;
         }
-        if (clientsReceivedQuotes.size === expectedResponses) complete();
+        if (clientsReceivedQuotes.size === expectedResponses) complete('all-received');
       });
 
-      timer = setTimeout(complete, env.QUOTE_TIMEOUT);
+      timer = setTimeout(() => complete('timeout'), env.QUOTE_TIMEOUT);
     });
   }
 
@@ -305,6 +357,15 @@ export default class Quoter {
             this.accountIdToSocket.get(accountId)?.emit('quote_error', {
               error: 'insufficient balance',
               request_id: requestId,
+            });
+            publishQuoteOrderError({
+              quoteRequestId: logStorage.getStore(),
+              marketMaker: accountId,
+              marketMakerRequestId: requestId,
+              error: 'insufficient balance',
+              balance,
+              amount,
+              sellAsset,
             });
           }
         }

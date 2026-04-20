@@ -4,6 +4,9 @@ import env from '../../config/env.js';
 import { logStorage } from '../../utils/logger.js';
 import { queues } from '../initialize.js';
 import {
+  publishQuoteOrderError,
+  publishQuoteOrderReceived,
+  publishQuoteOrderTimeout,
   publishQuoteRequestFailed,
   publishQuoteRequestReceived,
   publishQuoteResponseSent,
@@ -37,6 +40,21 @@ describe('quoteEvents', () => {
 
     it('publishQuoteRequestFailed is a no-op', () => {
       publishQuoteRequestFailed({ srcAsset: 'Btc' }, new Error('test'));
+      expect(mockAdd).not.toHaveBeenCalled();
+    });
+
+    it('publishQuoteOrderReceived is a no-op', () => {
+      publishQuoteOrderReceived({ marketMaker: 'mm1' });
+      expect(mockAdd).not.toHaveBeenCalled();
+    });
+
+    it('publishQuoteOrderTimeout is a no-op', () => {
+      publishQuoteOrderTimeout({ marketMaker: 'mm1' });
+      expect(mockAdd).not.toHaveBeenCalled();
+    });
+
+    it('publishQuoteOrderError is a no-op', () => {
+      publishQuoteOrderError({ marketMaker: 'mm1', error: 'bad' });
       expect(mockAdd).not.toHaveBeenCalled();
     });
   });
@@ -177,6 +195,72 @@ describe('quoteEvents', () => {
       const publishedData = mockAdd.mock.calls[0][1];
       expect(publishedData.ccmParams).toBeNull();
       expect(publishedData.brokerCommissionBps).toBeUndefined();
+    });
+
+    it('publishes quote.order.received with caller-supplied quoteRequestId and serialized legs', () => {
+      publishQuoteOrderReceived({
+        quoteRequestId: mockRequestId,
+        marketMaker: 'mm1',
+        marketMakerRequestId: 'req-123',
+        legs: [[[10, 500n]]],
+        beta: false,
+      });
+
+      expect(mockAdd).toHaveBeenCalledWith(
+        'quote.order.received',
+        expect.objectContaining({
+          quoteRequestId: mockRequestId,
+          marketMaker: 'mm1',
+          marketMakerRequestId: 'req-123',
+          legs: [[[10, '500']]],
+          beta: false,
+          event: 'quote.order.received',
+          timestamp: expect.any(String),
+        }),
+        { delay: 0, removeOnComplete: true },
+      );
+    });
+
+    it('publishes quote.order.timeout with caller-supplied quoteRequestId', () => {
+      publishQuoteOrderTimeout({
+        quoteRequestId: mockRequestId,
+        marketMaker: 'mm1',
+        marketMakerRequestId: 'req-123',
+      });
+
+      expect(mockAdd).toHaveBeenCalledWith(
+        'quote.order.timeout',
+        expect.objectContaining({
+          quoteRequestId: mockRequestId,
+          marketMaker: 'mm1',
+          marketMakerRequestId: 'req-123',
+          event: 'quote.order.timeout',
+          timestamp: expect.any(String),
+        }),
+        { delay: 0, removeOnComplete: true },
+      );
+    });
+
+    it('publishes quote.order.error with error and optional context', () => {
+      publishQuoteOrderError({
+        quoteRequestId: undefined,
+        marketMaker: 'mm1',
+        marketMakerRequestId: 'unknown',
+        error: 'bad schema',
+      });
+
+      expect(mockAdd).toHaveBeenCalledWith(
+        'quote.order.error',
+        expect.objectContaining({
+          marketMaker: 'mm1',
+          marketMakerRequestId: 'unknown',
+          error: 'bad schema',
+          event: 'quote.order.error',
+          timestamp: expect.any(String),
+        }),
+        { delay: 0, removeOnComplete: true },
+      );
+      expect(mockAdd.mock.calls[0][1].quoteRequestId).toBeUndefined();
     });
   });
 });
