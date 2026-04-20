@@ -67,6 +67,11 @@ export type SwapSDKOptions = {
     dca?: boolean;
     dcaV2?: boolean;
   };
+  /**
+   * Chainflip broker SS58 address attributed to quote requests.
+   * Sent on every /v2/quote request unless overridden per-call.
+   */
+  brokerAccount?: `cF${string}`;
 };
 
 const assertQuoteValid = (quote: Quote | BoostQuote) => {
@@ -221,6 +226,7 @@ export class SwapSDK {
         brokerCommissionBps: submitterBrokerCommissionBps,
         dcaEnabled: this.dcaEnabled,
         dcaV2Enabled: this.dcaV2Enabled,
+        brokerAccount: quoteRequest.brokerAccount ?? this.options.brokerAccount,
       },
       options,
     );

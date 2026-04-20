@@ -48,6 +48,11 @@ export interface QuoteRequest extends ChainsAndAssets {
     gasBudget: string;
     messageLengthBytes: number;
   };
+  /**
+   * Chainflip broker SS58 address attributed to this quote.
+   * Overrides the SDK-level `brokerAccount` option for this request.
+   */
+  brokerAccount?: `cF${string}`;
 }
 
 export interface QuoteResponseV2 extends QuoteRequest {

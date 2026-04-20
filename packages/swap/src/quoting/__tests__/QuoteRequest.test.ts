@@ -47,6 +47,7 @@ const createRequest = (amount: bigint) =>
     isOnChain: false,
     isVaultSwap: false,
     pools: [],
+    brokerIdSs58: 'cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7',
   });
 
 describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
@@ -174,6 +175,7 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
     expect(req.toLogInfo()).toMatchInlineSnapshot(`
       {
         "brokerCommissionBps": 0,
+        "brokerIdSs58": "cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7",
         "dcaLimitOrders": null,
         "dcaQuote": null,
         "dcaQuoteParams": null,

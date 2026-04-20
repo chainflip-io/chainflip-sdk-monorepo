@@ -188,6 +188,51 @@ exports[`ApiService > getQuoteV2 > gets a quote with a broker commission and aff
 ]
 `;
 
+exports[`ApiService > getQuoteV2 > gets a quote with broker account 1`] = `
+{
+  "amount": "10000",
+  "brokerAccount": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+  "dcaEnabled": false,
+  "dcaV2Enabled": false,
+  "destAsset": "ETH",
+  "destChain": "Ethereum",
+  "quotes": [
+    {
+      "egressAmount": "2",
+      "id": "string",
+      "intermediateAmount": "1",
+    },
+  ],
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+}
+`;
+
+exports[`ApiService > getQuoteV2 > gets a quote with broker account 2`] = `
+[
+  "/v2/quote",
+  {
+    "baseURL": "https://swapperoo.org",
+    "headers": {
+      "X-Chainflip-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "brokerIdSs58": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+      "dcaEnabled": "false",
+      "dcaV2Enabled": "false",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "isOnChain": "false",
+      "isVaultSwap": "false",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
+    },
+    "signal": undefined,
+  },
+]
+`;
+
 exports[`ApiService > getQuoteV2 > gets a quote with ccm params 1`] = `
 {
   "amount": "10000",
@@ -224,6 +269,51 @@ exports[`ApiService > getQuoteV2 > gets a quote with ccm params 2`] = `
       "ccmGasBudget": "12345",
       "ccmMessageLengthBytes": "100",
       "dcaEnabled": "true",
+      "dcaV2Enabled": "false",
+      "destAsset": "ETH",
+      "destChain": "Ethereum",
+      "isOnChain": "false",
+      "isVaultSwap": "false",
+      "srcAsset": "BTC",
+      "srcChain": "Bitcoin",
+    },
+    "signal": undefined,
+  },
+]
+`;
+
+exports[`ApiService > getQuoteV2 > gets a quote with integrator and broker account 1`] = `
+{
+  "amount": "10000",
+  "brokerAccount": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+  "dcaEnabled": false,
+  "dcaV2Enabled": false,
+  "destAsset": "ETH",
+  "destChain": "Ethereum",
+  "quotes": [
+    {
+      "egressAmount": "2",
+      "id": "string",
+      "intermediateAmount": "1",
+    },
+  ],
+  "srcAsset": "BTC",
+  "srcChain": "Bitcoin",
+}
+`;
+
+exports[`ApiService > getQuoteV2 > gets a quote with integrator and broker account 2`] = `
+[
+  "/v2/quote",
+  {
+    "baseURL": "https://swapperoo.org",
+    "headers": {
+      "X-Chainflip-Sdk-Version": "1.0-test",
+    },
+    "params": {
+      "amount": "10000",
+      "brokerIdSs58": "cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa",
+      "dcaEnabled": "false",
       "dcaV2Enabled": "false",
       "destAsset": "ETH",
       "destChain": "Ethereum",
