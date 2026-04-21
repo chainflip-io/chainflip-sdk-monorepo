@@ -1,5 +1,5 @@
 {
-  "package": ["shared", "sdk", "swap", "examples", "cli"],
+  "package": ["shared", "sdk", "swap", "examples"],
   "include": [
     { "node_version": 20, "package": "sdk" },
     { "node_version": 22, "package": "sdk" }
