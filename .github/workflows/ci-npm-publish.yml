@@ -9,7 +9,6 @@ on:
     branches:
       - main
     paths:
-      - 'packages/cli/package.json'
       - 'packages/sdk/package.json'
   workflow_dispatch:
     inputs:
@@ -23,7 +22,6 @@ on:
         type: choice
         options:
           - sdk
-          - cli
 
 permissions:
   contents: write
@@ -66,7 +64,7 @@ jobs:
 
   get-node-version-main:
     needs: [determine-mode, get-release-context]
-    if: needs.determine-mode.outputs.is_main_push == 'true' && (needs.get-release-context.outputs.publish-cli == 'true' || needs.get-release-context.outputs.publish-sdk == 'true')
+    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-sdk == 'true'
     uses: ./.github/workflows/_node_context.yml
 
   debug-main:
@@ -75,39 +73,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "publish-cli: ${{ needs.get-release-context.outputs.publish-cli }}"
           echo "publish-sdk: ${{ needs.get-release-context.outputs.publish-sdk }}"
           echo "publish-tag: ${{ needs.get-release-context.outputs.publish-tag }}"
-
-  pre-checks-cli:
-    needs: [determine-mode, get-release-context]
-    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-cli == 'true'
-    uses: ./.github/workflows/_01_pre_checks.yml
-    with:
-      package: cli
-    secrets: inherit
-
-  checks-cli:
-    needs: [determine-mode, get-release-context, pre-checks-cli]
-    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-cli == 'true'
-    uses: ./.github/workflows/_02_checks.yml
-    with:
-      package: cli
-    secrets: inherit
-
-  publish-cli:
-    needs: [determine-mode, get-node-version-main, get-release-context, checks-cli]
-    if: needs.determine-mode.outputs.is_main_push == 'true' && needs.get-release-context.outputs.publish-cli == 'true'
-    uses: ./.github/workflows/_npm_publish.yml
-    with:
-      node_version: ${{ needs.get-node-version-main.outputs.node_version }}
-      package_registry: 'https://registry.npmjs.org'
-      package_scope: '@chainflip-io'
-      build_cmd: pnpm --filter @chainflip/cli build
-      publish_cmd: pnpm --filter @chainflip/cli publish --tag ${{ needs.get-release-context.outputs.publish-tag }} --provenance
-      git_tag: "@chainflip/cli/${{ needs.get-release-context.outputs.git-tag }}"
-    secrets:
-      ssh_private_key: ${{ secrets.CF_GITHUB_BOT_SSH_PRIVATE_KEY }}
 
   pre-checks-sdk:
     needs: [determine-mode, get-release-context]

@@ -44,7 +44,6 @@ packages/
 ├── sdk/        # @chainflip/sdk - Public npm package for integrators
 ├── swap/       # Private backend service (Express + Prisma + WebSocket)
 ├── shared/     # @chainflip-io/shared - Shared types, schemas, utilities
-├── cli/        # @chainflip/cli - Command-line tool
 ├── examples/   # Usage examples
 └── indexer/    # GraphQL gateway (postgraphile)
 ```
