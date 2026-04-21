@@ -240,7 +240,7 @@ describe(Quoter, () => {
       const mockQuoter = new Quoter(fakeServer as unknown as Server);
       mockQuoter['inflightRequests'].set('string', {
         quoteRequestId: undefined,
-        responded: new Set(),
+        responders: new Set(),
       });
 
       expect(fakeServer.on).toHaveBeenCalledWith('connection', expect.any(Function));
