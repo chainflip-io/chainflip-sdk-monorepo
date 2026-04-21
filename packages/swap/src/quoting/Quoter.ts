@@ -103,7 +103,7 @@ export default class Quoter {
 
   private readonly inflightRequests = new Map<
     string,
-    { quoteRequestId: string | undefined; responded: Set<AccountId> }
+    { quoteRequestId: string | undefined; responders: Set<AccountId> }
   >();
 
   private balanceTracker = new BalanceTracker(env.QUOTER_BALANCE_TRACKER_ACTIVE);
@@ -172,7 +172,7 @@ export default class Quoter {
 
           const inflight =
             requestId !== 'unknown' ? this.inflightRequests.get(requestId) : undefined;
-          inflight?.responded.add(socket.data.marketMaker);
+          inflight?.responders.add(socket.data.marketMaker);
           publishQuoteOrderError({
             quoteRequestId: inflight?.quoteRequestId,
             marketMaker: socket.data.marketMaker,
@@ -198,7 +198,7 @@ export default class Quoter {
 
         if (result.success) {
           const inflight = this.inflightRequests.get(result.data.request_id);
-          inflight?.responded.add(socket.data.marketMaker);
+          inflight?.responders.add(socket.data.marketMaker);
           publishQuoteOrderReceived({
             quoteRequestId: inflight?.quoteRequestId,
             marketMaker: socket.data.marketMaker,
@@ -226,7 +226,7 @@ export default class Quoter {
     const quoteRequestId = logStorage.getStore();
     this.inflightRequests.set(request.request_id, {
       quoteRequestId,
-      responded: new Set<AccountId>(),
+      responders: new Set<AccountId>(),
     });
 
     let expectedResponses = 0;
@@ -275,7 +275,7 @@ export default class Quoter {
         if (reason === 'timeout') {
           const entry = this.inflightRequests.get(request.request_id);
           for (const marketMaker of quotedLegsMap.keys()) {
-            if (!entry?.responded.has(marketMaker)) {
+            if (!entry?.responders.has(marketMaker)) {
               publishQuoteOrderTimeout({
                 quoteRequestId: entry?.quoteRequestId,
                 marketMaker,
