@@ -18,12 +18,11 @@ const ARBITRUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   mainnet: 42161, // mainnet
 };
 
-// TODO(TRON): Update this
 const TRON_CHAIN_ID: Record<ChainflipNetwork, number> = {
-  backspin: 10997, // backspin tron
-  sisyphos: 11155111, // sepolia
-  perseverance: 11155111, // sepolia
-  mainnet: 1, // mainnet
+  backspin: 4271970548, // backspin tron
+  sisyphos: 3448148188, // nile
+  perseverance: 3448148188, // nile
+  mainnet: 728126428, // mainnet
 };
 
 export const getEvmChainId = (chain: ChainflipChain, network: ChainflipNetwork) => {
