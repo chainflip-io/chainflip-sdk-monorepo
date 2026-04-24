@@ -3,6 +3,7 @@ import { isValidSolanaAddress } from '@chainflip/solana';
 import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
+import { isValidTronAddress } from '@chainflip/utils/tron';
 import * as ethers from 'ethers';
 import { assert } from '../guards.js';
 
@@ -32,6 +33,8 @@ export const validateBitcoinRegtestAddress: AddressValidator = (address: string)
 
 export const validateSolanaAddress = isValidSolanaAddress;
 
+export const validateTronAddress: AddressValidator = isValidTronAddress;
+
 const validators: Record<
   ChainflipNetwork | 'localnet',
   Record<ChainflipChain, AddressValidator>
@@ -42,6 +45,7 @@ const validators: Record<
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
+    Tron: validateTronAddress,
   },
   perseverance: {
     Bitcoin: validateBitcoinTestnetAddress,
@@ -49,6 +53,7 @@ const validators: Record<
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
+    Tron: validateTronAddress,
   },
   sisyphos: {
     Bitcoin: validateBitcoinTestnetAddress,
@@ -56,6 +61,7 @@ const validators: Record<
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
+    Tron: validateTronAddress,
   },
   backspin: {
     Bitcoin: validateBitcoinRegtestAddress,
@@ -63,6 +69,7 @@ const validators: Record<
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
+    Tron: validateTronAddress,
   },
   localnet: {
     Bitcoin: validateBitcoinRegtestAddress,
@@ -70,6 +77,7 @@ const validators: Record<
     Arbitrum: validateEvmAddress,
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
+    Tron: validateTronAddress,
   },
 };
 

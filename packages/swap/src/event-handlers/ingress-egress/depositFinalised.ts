@@ -1,11 +1,9 @@
-import { arbitrumIngressEgressDepositFinalised as arbitrumSchema11200 } from '@chainflip/processor/11200/arbitrumIngressEgress/depositFinalised';
 import { assethubIngressEgressDepositFinalised as assethubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
-import { ethereumIngressEgressDepositFinalised as ethereumSchema11200 } from '@chainflip/processor/11200/ethereumIngressEgress/depositFinalised';
-import { solanaIngressEgressDepositFinalised as solanaSchema11200 } from '@chainflip/processor/11200/solanaIngressEgress/depositFinalised';
 import { arbitrumIngressEgressDepositFinalised as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/depositFinalised';
+import { tronIngressEgressDepositFinalised as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/depositFinalised';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import z from 'zod';
 import { assertUnreachable } from '@/shared/functions.js';
@@ -14,44 +12,42 @@ import logger from '../../utils/logger.js';
 import { formatForeignChainAddress, getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
-const arbitrumSchema = z
-  .union([arbitrumSchema210.strict(), arbitrumSchema11200.strict()])
-  .transform((args) => ({
-    ...args,
-    depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
-    depositAddress:
-      args.depositAddress &&
-      formatForeignChainAddress({ __kind: 'Arb', value: args.depositAddress }),
-  }));
+const arbitrumSchema = arbitrumSchema210.strict().transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
+  depositAddress:
+    args.depositAddress && formatForeignChainAddress({ __kind: 'Arb', value: args.depositAddress }),
+}));
 const bitcoinSchema = bitcoinSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Btc', value: args.depositAddress }),
 }));
-const ethereumSchema = z
-  .union([ethereumSchema210.strict(), ethereumSchema11200.strict()])
-  .transform((args) => ({
-    ...args,
-    depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
-    depositAddress:
-      args.depositAddress &&
-      formatForeignChainAddress({ __kind: 'Eth', value: args.depositAddress }),
-  }));
-const solanaSchema = z
-  .union([solanaSchema210.strict(), solanaSchema11200.strict()])
-  .transform((args) => ({
-    ...args,
-    depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
-    depositAddress:
-      args.depositAddress &&
-      formatForeignChainAddress({ __kind: 'Sol', value: args.depositAddress }),
-  }));
+const ethereumSchema = ethereumSchema210.strict().transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
+  depositAddress:
+    args.depositAddress && formatForeignChainAddress({ __kind: 'Eth', value: args.depositAddress }),
+}));
+const solanaSchema = solanaSchema210.strict().transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
+  depositAddress:
+    args.depositAddress && formatForeignChainAddress({ __kind: 'Sol', value: args.depositAddress }),
+}));
 const assethubSchema = assethubSchema11200.transform((args) => ({
   ...args,
   depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress && formatForeignChainAddress({ __kind: 'Hub', value: args.depositAddress }),
+}));
+const tronSchema = tronSchema220.transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Tron' as const, data: args.depositDetails },
+  depositAddress:
+    args.depositAddress &&
+    formatForeignChainAddress({ __kind: 'Tron', value: args.depositAddress }),
 }));
 
 const depositFinalisedSchema = {
@@ -60,6 +56,7 @@ const depositFinalisedSchema = {
   Bitcoin: bitcoinSchema,
   Ethereum: ethereumSchema,
   Assethub: assethubSchema,
+  Tron: tronSchema,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type DepositFinalisedArgsMap = {
@@ -202,31 +199,30 @@ export const depositFinalised =
         },
       });
 
-      if (depositDetails.chain === 'Solana')
-        if (chain === 'Solana' && depositAddress && blockHeight) {
-          if (originType === 'Vault') {
-            await prisma.solanaPendingTxRef.create({
-              data: {
-                failedVaultSwapId: fs.id,
-                slot: blockHeight,
-                address: depositAddress,
-              },
-            });
-          } else if (originType === 'DepositChannel') {
-            if (swapDepositChannel) {
-              await prisma.solanaPendingTxRef.create({ data: { swapDepositChannel } });
-            } else if (accountCreationDepositChannel) {
-              await prisma.solanaPendingTxRef.create({ data: { accountCreationDepositChannel } });
-            }
-          } else {
-            assertUnreachable(originType, 'unexpected origin type for unrefundable deposit');
+      if (chain === 'Solana' && depositAddress && blockHeight) {
+        if (originType === 'Vault') {
+          await prisma.solanaPendingTxRef.create({
+            data: {
+              failedVaultSwapId: fs.id,
+              slot: blockHeight,
+              address: depositAddress,
+            },
+          });
+        } else if (originType === 'DepositChannel') {
+          if (swapDepositChannel) {
+            await prisma.solanaPendingTxRef.create({ data: { swapDepositChannel } });
+          } else if (accountCreationDepositChannel) {
+            await prisma.solanaPendingTxRef.create({ data: { accountCreationDepositChannel } });
           }
         } else {
-          logger.warn('Solana pending tx ref missing deposit address or block height', {
-            depositAddress,
-            blockHeight,
-          });
+          assertUnreachable(originType, 'unexpected origin type for unrefundable deposit');
         }
+      } else {
+        logger.warn('Solana pending tx ref missing deposit address or block height', {
+          depositAddress,
+          blockHeight,
+        });
+      }
     } else if (action.__kind === 'LiquidityProvision') {
       assert(depositAddress, 'missing deposit address for liquidity provision deposit finalised');
 

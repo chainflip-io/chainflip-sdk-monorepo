@@ -1,15 +1,8 @@
-import { swappingSwapExecuted as schema11100 } from '@chainflip/processor/11100/swapping/swapExecuted';
-import { swappingSwapExecuted as schema210 } from '@chainflip/processor/210/swapping/swapExecuted';
+import { swappingSwapExecuted as schema220 } from '@chainflip/processor/220/swapping/swapExecuted';
 import { z } from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-const swapExecutedArgs = z.union([
-  schema210.strict(),
-  schema11100.strict().transform((args) => ({
-    ...args,
-    oracleDeltaExFees: 'oracleDelta' in args ? args.oracleDelta : null,
-  })),
-]);
+const swapExecutedArgs = schema220.strict();
 
 export type SwapExecutedArgs = z.input<typeof swapExecutedArgs>;
 

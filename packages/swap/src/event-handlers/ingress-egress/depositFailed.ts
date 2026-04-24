@@ -1,14 +1,10 @@
 import * as bitcoin from '@chainflip/bitcoin';
-import { arbitrumIngressEgressDepositFailed as arbitrumSchema11200 } from '@chainflip/processor/11200/arbitrumIngressEgress/depositFailed';
-import { assethubIngressEgressDepositFailed as assetHubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositFailed';
-import { bitcoinIngressEgressDepositFailed as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFailed';
-import { ethereumIngressEgressDepositFailed as ethereumSchema11200 } from '@chainflip/processor/11200/ethereumIngressEgress/depositFailed';
-import { solanaIngressEgressDepositFailed as solanaSchema11200 } from '@chainflip/processor/11200/solanaIngressEgress/depositFailed';
 import { arbitrumIngressEgressDepositFailed as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/depositFailed';
 import { assethubIngressEgressDepositFailed as assetHubSchema210 } from '@chainflip/processor/210/assethubIngressEgress/depositFailed';
 import { bitcoinIngressEgressDepositFailed as bitcoinSchema210 } from '@chainflip/processor/210/bitcoinIngressEgress/depositFailed';
 import { ethereumIngressEgressDepositFailed as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositFailed';
 import { solanaIngressEgressDepositFailed as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/depositFailed';
+import { tronIngressEgressDepositFailed as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/depositFailed';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
 import { assetConstants, ChainflipChain, isLegacyChainflipAsset } from '@chainflip/utils/chainflip';
@@ -23,18 +19,19 @@ import { DepositDetailsData, getDepositTxRef } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
 const argsMap = {
-  Arbitrum: z.union([arbitrumSchema210.strict(), arbitrumSchema11200.strict()]),
-  Bitcoin: z.union([bitcoinSchema210.strict(), bitcoinSchema11200.strict()]),
-  Ethereum: z.union([ethereumSchema210.strict(), ethereumSchema11200.strict()]),
-  Solana: z.union([solanaSchema210.strict(), solanaSchema11200.strict()]),
-  Assethub: z.union([assetHubSchema210.strict(), assetHubSchema11200.strict()]),
+  Arbitrum: arbitrumSchema210.strict(),
+  Bitcoin: bitcoinSchema210.strict(),
+  Ethereum: ethereumSchema210.strict(),
+  Solana: solanaSchema210.strict(),
+  Assethub: assetHubSchema210.strict(),
+  Tron: tronSchema220,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type DepositFailedArgsMap = {
   [C in ChainflipChain]: z.input<(typeof argsMap)[C]>;
 };
 export type DepositFailedArgs = z.input<(typeof argsMap)[ChainflipChain]>;
-export type BitcoinDepositFailedArgs = z.input<typeof bitcoinSchema11200>;
+export type BitcoinDepositFailedArgs = z.input<typeof bitcoinSchema210>;
 
 type DepositWitness = Extract<
   z.output<(typeof argsMap)[ChainflipChain]>['details'],
@@ -71,6 +68,8 @@ const extractDepositAddress = (depositWitness: DepositWitness) => {
     case 'Sol':
     case 'SolUsdc':
     case 'SolUsdt':
+    case 'Trx':
+    case 'TrxUsdt':
       return base58.encode(hexToBytes(depositWitness.depositAddress));
     default:
       return assertUnreachable(depositWitness, 'unexpected asset');
@@ -105,7 +104,8 @@ const depositFailed =
       case 'DepositFailedDepositChannelVariantBitcoin':
       case 'DepositFailedDepositChannelVariantEthereum':
       case 'DepositFailedDepositChannelVariantSolana':
-      case 'DepositFailedDepositChannelVariantAssethub': {
+      case 'DepositFailedDepositChannelVariantAssethub':
+      case 'DepositFailedDepositChannelVariantTron': {
         const depositAddress = extractDepositAddress(details.depositWitness);
 
         const channel = await prisma.depositChannel.findFirstOrThrow({
@@ -138,12 +138,10 @@ const depositFailed =
 
         assert(!isLegacyChainflipAsset(asset), 'unexpected legacy asset');
 
-        if ('depositDetails' in details.depositWitness) {
-          txRef = getDepositTxRef(
-            { chain, data: details.depositWitness.depositDetails } as DepositDetailsData,
-            blockHeight,
-          );
-        }
+        txRef = getDepositTxRef(
+          { chain, data: details.depositWitness.depositDetails } as DepositDetailsData,
+          blockHeight,
+        );
         amount = details.depositWitness.amount;
 
         if (!txRef && assetConstants[asset].chain === 'Solana') {
@@ -156,6 +154,7 @@ const depositFailed =
       case 'DepositFailedVaultVariantEthereum':
       case 'DepositFailedVaultVariantSolana':
       case 'DepositFailedVaultVariantAssethub':
+      case 'DepositFailedVaultVariantTron':
         if (details.__kind !== 'DepositFailedVaultVariantSolana') {
           txRef = getDepositTxRef(
             { chain, data: details.vaultWitness.depositDetails } as DepositDetailsData,

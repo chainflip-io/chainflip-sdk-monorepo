@@ -1,13 +1,9 @@
-import { swappingAccountCreationDepositAddressReady as schema200 } from '@chainflip/processor/200/swapping/accountCreationDepositAddressReady';
-import { swappingAccountCreationDepositAddressReady as schema210 } from '@chainflip/processor/210/swapping/accountCreationDepositAddressReady';
+import { swappingAccountCreationDepositAddressReady as schema220 } from '@chainflip/processor/220/swapping/accountCreationDepositAddressReady';
 import { z } from 'zod';
 import { calculateExpiryTime } from '../../utils/function.js';
 import { EventHandlerArgs } from '../index.js';
 
-const swappingAccountCreationDepositAddressReady = z.union([
-  schema210.strict(),
-  schema200.strict(),
-]);
+const swappingAccountCreationDepositAddressReady = schema220.strict();
 
 export type AccountCreationDepositAddressReadyArgs = z.input<
   typeof swappingAccountCreationDepositAddressReady

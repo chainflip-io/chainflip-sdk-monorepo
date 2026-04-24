@@ -1,22 +1,21 @@
-import { arbitrumIngressEgressInsufficientBoostLiquidity as arbitrumSchema180 } from '@chainflip/processor/180/arbitrumIngressEgress/insufficientBoostLiquidity';
 import { bitcoinIngressEgressInsufficientBoostLiquidity as bitcoinSchema180 } from '@chainflip/processor/180/bitcoinIngressEgress/insufficientBoostLiquidity';
-import { ethereumIngressEgressInsufficientBoostLiquidity as ethereumSchema180 } from '@chainflip/processor/180/ethereumIngressEgress/insufficientBoostLiquidity';
-import { solanaIngressEgressInsufficientBoostLiquidity as solanaSchema180 } from '@chainflip/processor/180/solanaIngressEgress/insufficientBoostLiquidity';
 import { assethubIngressEgressInsufficientBoostLiquidity as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/insufficientBoostLiquidity';
 import { arbitrumIngressEgressInsufficientBoostLiquidity as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/insufficientBoostLiquidity';
 import { ethereumIngressEgressInsufficientBoostLiquidity as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/insufficientBoostLiquidity';
 import { solanaIngressEgressInsufficientBoostLiquidity as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/insufficientBoostLiquidity';
+import { tronIngressEgressInsufficientBoostLiquidity as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/insufficientBoostLiquidity';
 import { assetConstants, ChainflipChain } from '@chainflip/utils/chainflip';
 import assert from 'assert';
 import z from 'zod';
 import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
-  Arbitrum: z.union([arbitrumSchema210.strict(), arbitrumSchema180.strict()]),
-  Bitcoin: bitcoinSchema180,
-  Ethereum: z.union([ethereumSchema210.strict(), ethereumSchema180.strict()]),
-  Solana: z.union([solanaSchema210.strict(), solanaSchema180.strict()]),
-  Assethub: assethubSchema190,
+  Arbitrum: arbitrumSchema210.strict(),
+  Bitcoin: bitcoinSchema180.strict(),
+  Ethereum: ethereumSchema210.strict(),
+  Solana: solanaSchema210.strict(),
+  Assethub: assethubSchema190.strict(),
+  Tron: tronSchema220.strict(),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type InsufficientBoostLiquidityArgsMap = {

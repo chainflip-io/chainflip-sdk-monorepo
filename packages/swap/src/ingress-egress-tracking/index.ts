@@ -4,6 +4,7 @@ import { findVaultSwapData as findSolanaVaultSwapData } from '@chainflip/solana'
 import {
   AnyChainflipAsset,
   assetConstants,
+  ChainflipAsset,
   ChainflipChain,
   isLegacyChainflipAsset,
   isLegacyChainflipChain,
@@ -15,6 +16,11 @@ import env from '../config/env.js';
 import { handleExit } from '../utils/function.js';
 import logger from '../utils/logger.js';
 import { getTransactionRefChains } from '../utils/transactionRef.js';
+
+// https://linear.app/chainflip/issue/WEB-3369/handle-tron-igress-egress-tracker-and-redis
+// TODO(TRON): remove once Tron is supported in the Redis client
+type NonTronChain = Exclude<ChainflipChain, 'Tron'>;
+type NonTronAsset = Exclude<ChainflipAsset, 'Trx' | 'TrxUsdt'>;
 
 const redis = env.REDIS_URL ? new RedisClient(env.REDIS_URL) : undefined;
 
@@ -77,7 +83,7 @@ export const getPendingDeposit = async (
 
   try {
     const [deposits, tracking] = await Promise.all([
-      redis.getDeposits(internalAsset, address),
+      redis.getDeposits(internalAsset as NonTronAsset, address),
       prisma.chainTracking.findFirst({ where: { chain } }),
     ]);
 
@@ -109,7 +115,7 @@ export const getPendingDeposit = async (
 export const getPendingBroadcast = async (broadcast: Broadcast) => {
   if (!redis || isLegacyChainflipChain(broadcast.chain)) return null;
   try {
-    return await redis.getBroadcast(broadcast.chain, broadcast.nativeId);
+    return await redis.getBroadcast(broadcast.chain as NonTronChain, broadcast.nativeId);
   } catch (error) {
     logger.error('error while looking up broadcast in redis', { error: inspect(error) });
     return null;
@@ -118,7 +124,7 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
 
 export const getPendingVaultSwap = async (txRef: string) => {
   const resultPromises = getTransactionRefChains(txRef).map(async (chain) => {
-    let result = redis ? await redis.getPendingVaultSwap(chain, txRef) : null;
+    let result = redis ? await redis.getPendingVaultSwap(chain as NonTronChain, txRef) : null;
 
     if (!result) {
       let txData = null;

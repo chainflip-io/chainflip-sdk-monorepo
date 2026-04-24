@@ -48,6 +48,10 @@ export const createChainAssetMap = <T>(
     USDC: overrides?.HubUsdc === undefined ? defaultValue : overrides.HubUsdc,
     USDT: overrides?.HubUsdt === undefined ? defaultValue : overrides.HubUsdt,
   },
+  Tron: {
+    TRX: overrides?.Trx === undefined ? defaultValue : overrides.Trx,
+    USDT: overrides?.TrxUsdt === undefined ? defaultValue : overrides.TrxUsdt,
+  },
 });
 
 const createChainMap = <T>(defaultValue: T, overrides?: Partial<ChainMap<T>>): ChainMap<T> => ({
@@ -56,6 +60,7 @@ const createChainMap = <T>(defaultValue: T, overrides?: Partial<ChainMap<T>>): C
   Arbitrum: overrides?.Arbitrum ?? defaultValue,
   Solana: overrides?.Solana ?? defaultValue,
   Assethub: overrides?.Assethub ?? defaultValue,
+  Tron: overrides?.Tron ?? defaultValue,
 });
 
 export const swappingEnvironment = ({
@@ -155,6 +160,7 @@ export const ingressEgressEnvironment = ({
         Bitcoin: 0,
       },
     ),
+    boost_minimum_add_funds_amounts: createChainAssetMap(null),
   },
 });
 

@@ -45,6 +45,7 @@ enum Chain {
   Arbitrum
   Solana
   Assethub
+  Tron
 
   @@schema("public")
 }
@@ -66,6 +67,8 @@ enum InternalAsset {
   HubUsdt
   HubUsdc
   Wbtc
+  Trx
+  TrxUsdt
 
   @@schema("public")
 }

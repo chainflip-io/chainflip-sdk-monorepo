@@ -26,6 +26,8 @@ const mockInternalAssetMap = (
   HubDot: 0n,
   HubUsdc: 0n,
   HubUsdt: 0n,
+  Trx: 0n,
+  TrxUsdt: 0n,
   ...values,
 });
 

@@ -1,9 +1,8 @@
-import { swappingRefundEgressScheduled as schema11000 } from '@chainflip/processor/11000/swapping/refundEgressScheduled';
-import { swappingRefundEgressScheduled as schema210 } from '@chainflip/processor/210/swapping/refundEgressScheduled';
+import { swappingRefundEgressScheduled as schema220 } from '@chainflip/processor/220/swapping/refundEgressScheduled';
 import z from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-const eventArgs = z.union([schema210.strict(), schema11000.strict()]);
+const eventArgs = schema220.strict();
 
 export type RefundEgressScheduledArgs = z.input<typeof eventArgs>;
 
