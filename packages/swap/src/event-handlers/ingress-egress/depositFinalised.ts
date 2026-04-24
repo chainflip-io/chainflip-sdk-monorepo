@@ -199,29 +199,31 @@ export const depositFinalised =
         },
       });
 
-      if (chain === 'Solana' && depositAddress && blockHeight) {
-        if (originType === 'Vault') {
-          await prisma.solanaPendingTxRef.create({
-            data: {
-              failedVaultSwapId: fs.id,
-              slot: blockHeight,
-              address: depositAddress,
-            },
-          });
-        } else if (originType === 'DepositChannel') {
-          if (swapDepositChannel) {
-            await prisma.solanaPendingTxRef.create({ data: { swapDepositChannel } });
-          } else if (accountCreationDepositChannel) {
-            await prisma.solanaPendingTxRef.create({ data: { accountCreationDepositChannel } });
+      if (depositDetails.chain === 'Solana') {
+        if (chain === 'Solana' && depositAddress && blockHeight) {
+          if (originType === 'Vault') {
+            await prisma.solanaPendingTxRef.create({
+              data: {
+                failedVaultSwapId: fs.id,
+                slot: blockHeight,
+                address: depositAddress,
+              },
+            });
+          } else if (originType === 'DepositChannel') {
+            if (swapDepositChannel) {
+              await prisma.solanaPendingTxRef.create({ data: { swapDepositChannel } });
+            } else if (accountCreationDepositChannel) {
+              await prisma.solanaPendingTxRef.create({ data: { accountCreationDepositChannel } });
+            }
+          } else {
+            assertUnreachable(originType, 'unexpected origin type for unrefundable deposit');
           }
         } else {
-          assertUnreachable(originType, 'unexpected origin type for unrefundable deposit');
+          logger.warn('Solana pending tx ref missing deposit address or block height', {
+            depositAddress,
+            blockHeight,
+          });
         }
-      } else {
-        logger.warn('Solana pending tx ref missing deposit address or block height', {
-          depositAddress,
-          blockHeight,
-        });
       }
     } else if (action.__kind === 'LiquidityProvision') {
       assert(depositAddress, 'missing deposit address for liquidity provision deposit finalised');
