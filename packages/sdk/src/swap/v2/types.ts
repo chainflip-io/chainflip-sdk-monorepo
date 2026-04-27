@@ -274,6 +274,14 @@ export type VaultSwapResponse =
       sourceTokenAddress?: string | undefined;
     }
   | {
+      chain: 'Tron';
+      calldata: string;
+      value: bigint;
+      to: string;
+      note: string;
+      sourceTokenAddress?: string;
+    }
+  | {
       chain: 'Solana';
       programId: string;
       accounts: {

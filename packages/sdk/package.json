@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "@chainflip/bitcoin": "2.1.1",
-    "@chainflip/rpc": "2.2.0-tron-dev.3",
+    "@chainflip/rpc": "2.2.0-tron-dev.4",
     "@chainflip/solana": "2.2.2",
     "@chainflip/utils": "2.2.0-tron-dev.3",
     "@ts-rest/core": "^3.52.1",

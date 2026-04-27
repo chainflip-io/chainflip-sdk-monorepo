@@ -63,7 +63,7 @@
     "@chainflip/processor": "2.2.0-tron-dev.1",
     "@chainflip/redis": "2.1.1",
     "@chainflip/solana": "2.2.2",
-    "@chainflip/rpc": "2.2.0-tron-dev.3",
+    "@chainflip/rpc": "2.2.0-tron-dev.4",
     "@chainflip/utils": "2.2.0-tron-dev.3",
     "@polkadot/api": "^15.10.2",
     "@polkadot/types": "^15.10.2",

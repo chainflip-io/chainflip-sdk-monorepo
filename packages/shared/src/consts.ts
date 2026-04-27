@@ -32,7 +32,7 @@ export const getEvmChainId = (chain: ChainflipChain, network: ChainflipNetwork) 
     case 'Arbitrum':
       return ARBITRUM_EVM_CHAIN_ID[network];
     case 'Tron':
-      return TRON_CHAIN_ID[network]; // TODO(TRON): Update this
+      return TRON_CHAIN_ID[network];
     default:
       return undefined;
   }

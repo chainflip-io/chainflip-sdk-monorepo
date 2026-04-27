@@ -121,8 +121,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-tron-dev.3
-        version: 2.2.0-tron-dev.3
+        specifier: 2.2.0-tron-dev.4
+        version: 2.2.0-tron-dev.4
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
@@ -155,8 +155,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-tron-dev.3
-        version: 2.2.0-tron-dev.3
+        specifier: 2.2.0-tron-dev.4
+        version: 2.2.0-tron-dev.4
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -219,8 +219,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       '@chainflip/rpc':
-        specifier: 2.2.0-tron-dev.3
-        version: 2.2.0-tron-dev.3
+        specifier: 2.2.0-tron-dev.4
+        version: 2.2.0-tron-dev.4
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -458,8 +458,8 @@ packages:
   '@chainflip/redis@2.1.1':
     resolution: {integrity: sha512-fRa4wLfSTw66U4SmmECX38Dqm4I2Fn5Z7Dk5H6Inv//6LiC7J7TYAoGjDM3FRoOPaPhVmltY+65cX3jPgzPIzA==}
 
-  '@chainflip/rpc@2.2.0-tron-dev.3':
-    resolution: {integrity: sha512-rUy0V+eRCiqAuGJ2KaGRQT6CNm+EritQBPxecznArsrhEda9t5Gj25OwjfNLdWEvF4QXkxHpbS75GTb11utl3Q==}
+  '@chainflip/rpc@2.2.0-tron-dev.4':
+    resolution: {integrity: sha512-dYYw5WMm0i7Nt5Ef6MCo0sbeCB6CjyeM9bVcm+g7e9HL/DxoPrIfP62nJ8jM1keon+TuW0ZlcDJXw4ThjgTtIw==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -472,9 +472,6 @@ packages:
 
   '@chainflip/utils@2.1.2':
     resolution: {integrity: sha512-ujHjiVRdm5AbN5XotoIlVtN7RMmkR7PnrMW/pGhWg+2Yr6vtKyKas/GSRHrX4VGnm7H1j7xKcSuj9GNag60n5A==}
-
-  '@chainflip/utils@2.1.7-tron-dev.2':
-    resolution: {integrity: sha512-HseLrxVBN/LTpk3CAuTkOOMdI9PX8AQEBMqjGtTz2yuw21ZUN+D51sCHa3+zjsXtKuKb/C8/mmV0Ri330SJVLA==}
 
   '@chainflip/utils@2.2.0-tron-dev.3':
     resolution: {integrity: sha512-O5OTNIdRgF29cscbeTk8t8CaUy52viKJvAvB43mqzTyX24Bbus80ta5WYJgNumneWuet3F7j3VLu6eZWAGkSQg==}
@@ -6092,9 +6089,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.2.0-tron-dev.3':
+  '@chainflip/rpc@2.2.0-tron-dev.4':
     dependencies:
-      '@chainflip/utils': 2.1.7-tron-dev.2
+      '@chainflip/utils': 2.2.0-tron-dev.3
       zod: 3.25.76
 
   '@chainflip/scale@1.11.0':
@@ -6143,13 +6140,6 @@ snapshots:
       '@date-fns/utc': 2.1.1
       '@noble/hashes': 2.0.1
       bignumber.js: 9.3.1
-      date-fns: 4.1.0
-
-  '@chainflip/utils@2.1.7-tron-dev.2':
-    dependencies:
-      '@date-fns/utc': 2.1.1
-      '@noble/hashes': 2.0.1
-      bignumber.js: 10.0.2
       date-fns: 4.1.0
 
   '@chainflip/utils@2.2.0-tron-dev.3':
