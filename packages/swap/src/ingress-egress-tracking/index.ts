@@ -9,7 +9,6 @@ import {
   isLegacyChainflipChain,
 } from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
-import { inspect } from 'util';
 import prisma, { Broadcast } from '../client.js';
 import env from '../config/env.js';
 import { handleExit } from '../utils/function.js';
@@ -111,7 +110,9 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
   try {
     return await redis.getBroadcast(broadcast.chain, broadcast.nativeId);
   } catch (error) {
-    logger.error('error while looking up broadcast in redis', { error: inspect(error) });
+    logger.error('error while looking up broadcast in redis', {
+      error: error instanceof Error ? error.message : (JSON.stringify(error) ?? String(error)),
+    });
     return null;
   }
 };
@@ -168,7 +169,9 @@ export const getPendingVaultSwap = async (txRef: string) => {
       ...remainingData,
     };
   } catch (error) {
-    logger.error('error while looking up vault swap in redis', { error: inspect(error) });
+    logger.error('error while looking up vault swap in redis', {
+      error: error instanceof Error ? error.message : (JSON.stringify(error) ?? String(error)),
+    });
     return null;
   }
 };
