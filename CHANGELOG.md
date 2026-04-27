@@ -9,6 +9,10 @@ which it is deprecated.
 
 ## Unreleased
 
+### Dependencies
+
+- `@chainflip/solana` upgraded to 2.2.3
+
 ## 2.1.0
 
 ### Added
