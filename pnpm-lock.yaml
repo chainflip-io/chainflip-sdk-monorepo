@@ -216,8 +216,8 @@ importers:
         specifier: 2.1.3
         version: 2.1.3
       '@chainflip/redis':
-        specifier: 2.1.1
-        version: 2.1.1
+        specifier: 2.1.2
+        version: 2.1.2
       '@chainflip/rpc':
         specifier: 2.1.3
         version: 2.1.3
@@ -455,8 +455,8 @@ packages:
   '@chainflip/processor@2.1.3':
     resolution: {integrity: sha512-JygBX9kw36KkJG1ZzHTLY5CckZQPJtkvafhuSgUrELnw1QcUVC6+k72yUKPv41Cws/8vQdS+3cEtvKBOv0wKgQ==}
 
-  '@chainflip/redis@2.1.1':
-    resolution: {integrity: sha512-fRa4wLfSTw66U4SmmECX38Dqm4I2Fn5Z7Dk5H6Inv//6LiC7J7TYAoGjDM3FRoOPaPhVmltY+65cX3jPgzPIzA==}
+  '@chainflip/redis@2.1.2':
+    resolution: {integrity: sha512-e7rxsfvL7sSgG0I+eJpkT9d8Q5hnFw+m3FjapvEY/npjURYnV1E8XJXCH2aupZXCWxDzfqYmcNNNgN2T1Cg+VQ==}
 
   '@chainflip/rpc@2.1.3':
     resolution: {integrity: sha512-1Xyq6GFVTBZ79BbwzLclVQrAynquR/UdQ9aHqULbZ+iy3CPsv8qpDxvscyBTy17zpdMHQIIQlTYalTyLDGNDIw==}
@@ -2123,6 +2123,9 @@ packages:
 
   bech32@2.0.0:
     resolution: {integrity: sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==}
+
+  bignumber.js@10.0.2:
+    resolution: {integrity: sha512-E8Wp9O06QA6lneJ4aRUXKYf/1GIomqUEmUMwtIOMtDxf1U52ffJY+y7JBk/8wRafA8qOIqLnXQGqonYXZdBnFQ==}
 
   bignumber.js@9.3.0:
     resolution: {integrity: sha512-EM7aMFTXbptt/wZdMlBv2t8IViwQL+h6SLHosp8Yf0dqJMTnY6iL32opnAB6kAdL0SZPuvcAzFr31o0c/R3/RA==}
@@ -6088,10 +6091,10 @@ snapshots:
       '@chainflip/utils': 2.1.2
       zod: 3.25.76
 
-  '@chainflip/redis@2.1.1':
+  '@chainflip/redis@2.1.2':
     dependencies:
       '@chainflip/utils': 2.1.2
-      bignumber.js: 9.3.1
+      bignumber.js: 10.0.2
       ioredis: 5.10.1
       zod: 3.25.76
     transitivePeerDependencies:
@@ -8381,6 +8384,8 @@ snapshots:
   bech32@1.1.4: {}
 
   bech32@2.0.0: {}
+
+  bignumber.js@10.0.2: {}
 
   bignumber.js@9.3.0: {}
 
