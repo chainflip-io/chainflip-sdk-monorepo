@@ -155,6 +155,9 @@ export const ingressEgressEnvironment = ({
         Bitcoin: 0,
       },
     ),
+    boost_minimum_add_funds_amounts: createChainAssetMap('0x0', {
+      Btc: '0x186a0',
+    }),
   },
 });
 

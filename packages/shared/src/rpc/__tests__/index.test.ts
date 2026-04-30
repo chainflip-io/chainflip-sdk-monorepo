@@ -216,6 +216,33 @@ describe('getIngressEgressEnvironment', () => {
           "Ethereum": 0,
           "Solana": 0,
         },
+        "boostMinimumAddFundsAmounts": {
+          "Arbitrum": {
+            "ETH": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+          },
+          "Assethub": {
+            "DOT": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+          },
+          "Bitcoin": {
+            "BTC": 100000n,
+          },
+          "Ethereum": {
+            "ETH": 0n,
+            "FLIP": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+            "WBTC": 0n,
+          },
+          "Solana": {
+            "SOL": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+          },
+        },
         "channelOpeningFees": {
           "Arbitrum": 0n,
           "Assethub": 0n,

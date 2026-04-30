@@ -12,6 +12,7 @@ which it is deprecated.
 ### Dependencies
 
 - `@chainflip/solana` upgraded to 2.2.3
+- `@chainflip/rpc` upgraded to 2.1.10
 
 ## 2.1.0
 
