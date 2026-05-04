@@ -132,6 +132,9 @@ export default z
     DCA_DISABLED_INTERNAL_ASSETS: internalAssetCsv('DCA_DISABLED_INTERNAL_ASSETS'),
     DISABLED_DEPOSIT_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DEPOSIT_INTERNAL_ASSETS'),
     DISABLED_DESTINATION_INTERNAL_ASSETS: internalAssetCsv('DISABLED_DESTINATION_INTERNAL_ASSETS'),
+    DISABLED_MARKET_MAKERS: optionalString('').transform(
+      (s) => new Set(s.split(',').map((x) => x.trim()).filter(Boolean)),
+    ),
     MAX_CHANNELS_OPEN_PER_ADDRESS: optionalNumber(25),
     DISABLE_DCA_QUOTING: optionalBoolean,
     // in case we want to disable quoting as a part of maintenance mode

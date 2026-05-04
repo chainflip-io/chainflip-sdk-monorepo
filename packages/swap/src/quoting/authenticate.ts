@@ -67,6 +67,8 @@ const authenticate = async (socket: QuotingSocket, next: Next) => {
 
     accountId = result.data.account_id;
 
+    assert(!env.DISABLED_MARKET_MAKERS.has(accountId), 'market maker disabled');
+
     const auth = result.data;
     const timeElapsed = Date.now() - auth.timestamp;
 
