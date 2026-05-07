@@ -12,8 +12,6 @@ import {
   publishQuoteResponseSent,
 } from '../quoteEvents.js';
 
-const ONE_DAY_IN_SECONDS = 3600 * 24;
-
 vi.mock('../initialize.js', () => ({
   queues: { quoteEvents: undefined },
 }));
