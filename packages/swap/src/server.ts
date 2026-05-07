@@ -12,6 +12,7 @@ import Quoter from './quoting/Quoter.js';
 import { createApiRouter } from './routes/api.js';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/common.js';
 import { createIpBlacklist } from './routes/ipBlacklist.js';
+import { createQuoteRateLimit } from './routes/quoteRateLimit.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
 import swapV2 from './routes/v2/swap.js';
@@ -52,7 +53,7 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/v2/quote', quoteMiddleware, quoteRouterV2(quoter));
+app.use('/v2/quote', createQuoteRateLimit(), quoteMiddleware, quoteRouterV2(quoter));
 
 const contract = createApiContract(env.CHAINFLIP_NETWORK);
 createExpressEndpoints(contract, createApiRouter(contract), app, {
