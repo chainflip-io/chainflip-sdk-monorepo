@@ -24,7 +24,13 @@ const createQueue = ({ name }: { name: string }) => {
     throw new Error(`cannot create queue "${name}" without REDIS_URL`);
   }
 
-  const queue = new Queue(name, { connection });
+  const queue = new Queue(name, {
+    connection,
+    defaultJobOptions: {
+      removeOnComplete: { count: 1000 },
+      removeOnFail: { count: 5000 },
+    },
+  });
 
   handleExit(async () => {
     await Promise.allSettled([queue.close()]);

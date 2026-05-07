@@ -3,7 +3,6 @@ import env from '../config/env.js';
 import baseLogger, { logStorage } from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'quote-events' });
-const ONE_DAY_IN_SECONDS = 3600 * 24;
 
 function serializeBigInts(obj: Record<string, unknown>): Record<string, unknown> {
   const serialize = (v: unknown): unknown => {
@@ -35,7 +34,11 @@ export function publishQuoteRequestReceived(data: Record<string, unknown>): void
         timestamp: new Date().toISOString(),
         event: 'quote.request.received',
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+      {
+        delay: env.MESSAGE_QUEUE_DELAY_MS,
+        removeOnComplete: { count: 1000 },
+        removeOnFail: { count: 5000 },
+      },
     )
     .catch((err) =>
       logger.error('failed to publish quote request received', {
@@ -60,7 +63,11 @@ export function publishQuoteRequestFailed(data: Record<string, unknown>, error: 
         event: 'quote.request.failed',
         error: error instanceof Error ? error.message : String(error),
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+      {
+        delay: env.MESSAGE_QUEUE_DELAY_MS,
+        removeOnComplete: { count: 1000 },
+        removeOnFail: { count: 5000 },
+      },
     )
     .catch((err) =>
       logger.error('failed to publish quote request failed', {
@@ -84,7 +91,11 @@ export function publishQuoteResponseSent(data: Record<string, unknown>): void {
         timestamp: new Date().toISOString(),
         event: 'quote.response.sent',
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+      {
+        delay: env.MESSAGE_QUEUE_DELAY_MS,
+        removeOnComplete: { count: 1000 },
+        removeOnFail: { count: 5000 },
+      },
     )
     .catch((err) =>
       logger.error('failed to publish quote response sent', {
@@ -105,7 +116,11 @@ export function publishQuoteOrderReceived(data: Record<string, unknown>): void {
         timestamp: new Date().toISOString(),
         event: 'quote.order.received',
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+      {
+        delay: env.MESSAGE_QUEUE_DELAY_MS,
+        removeOnComplete: { count: 1000 },
+        removeOnFail: { count: 5000 },
+      },
     )
     .catch((err) =>
       logger.error('failed to publish quote order received', {
@@ -126,7 +141,11 @@ export function publishQuoteOrderTimeout(data: Record<string, unknown>): void {
         timestamp: new Date().toISOString(),
         event: 'quote.order.timeout',
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+      {
+        delay: env.MESSAGE_QUEUE_DELAY_MS,
+        removeOnComplete: { count: 1000 },
+        removeOnFail: { count: 5000 },
+      },
     )
     .catch((err) =>
       logger.error('failed to publish quote order timeout', {
@@ -147,7 +166,11 @@ export function publishQuoteOrderError(data: Record<string, unknown>): void {
         timestamp: new Date().toISOString(),
         event: 'quote.order.error',
       },
-      { delay: env.MESSAGE_QUEUE_DELAY_MS, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+      {
+        delay: env.MESSAGE_QUEUE_DELAY_MS,
+        removeOnComplete: { count: 1000 },
+        removeOnFail: { count: 5000 },
+      },
     )
     .catch((err) =>
       logger.error('failed to publish quote order error', {
