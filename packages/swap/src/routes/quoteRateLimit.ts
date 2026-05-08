@@ -49,7 +49,6 @@ export const createQuoteRateLimit = (): RequestHandler => {
     }
 
     if (record.blockedUntil > now) {
-      logger.info('Blocked rate-limited IP', { ip, blockedUntil: record.blockedUntil });
       return next(ServiceError.tooManyRequests());
     }
 
@@ -59,7 +58,9 @@ export const createQuoteRateLimit = (): RequestHandler => {
     }
 
     const cutoff = now - windowMs;
-    record.timestamps = record.timestamps.filter((t) => t >= cutoff);
+    const firstValid = record.timestamps.findIndex((t) => t >= cutoff);
+    if (firstValid === -1) record.timestamps.length = 0;
+    else if (firstValid > 0) record.timestamps.splice(0, firstValid);
     record.timestamps.push(now);
 
     if (record.timestamps.length > maxRequests) {
