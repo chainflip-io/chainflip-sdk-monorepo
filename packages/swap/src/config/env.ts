@@ -154,6 +154,10 @@ export default z
     DEFAULT_TIGHT_LPP_SLIPPAGE_BPS: optionalNumber(50),
     DEFAULT_LPP_SLIPPAGE_BPS: number().optional(),
     GET_ENVIRONMENT_CACHE_TTL: optionalNumber(6_000),
+    ENABLE_QUOTE_RATE_LIMIT: optionalBoolean.default('false'),
+    QUOTE_RATE_LIMIT_WINDOW_MS: optionalNumber(60_000),
+    QUOTE_RATE_LIMIT_MAX_REQUESTS: optionalNumber(100),
+    QUOTE_RATE_LIMIT_BLOCK_DURATION_MS: optionalNumber(300_000),
   })
   // eslint-disable-next-line n/no-process-env
   .parse(process.env);
