@@ -1,7 +1,6 @@
 import { InternalAssetMap } from '@chainflip/utils/chainflip';
-import { inspect } from 'util';
 import type { AccountId } from './Quoter.js';
-import baseLogger from '../utils/logger.js';
+import baseLogger, { inspectError } from '../utils/logger.js';
 import { getLpBalances } from '../utils/rpc.js';
 
 const logger = baseLogger.child({ module: 'balance-tracker' });
@@ -55,7 +54,7 @@ export default class BalanceTracker {
         resolve(balances);
         return;
       } catch (error) {
-        logger.warn('failed to get balances', { error: inspect(error) });
+        logger.warn('failed to get balances', { error: inspectError(error) });
       }
     }
 

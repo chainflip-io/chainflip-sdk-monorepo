@@ -1,17 +1,16 @@
 import { RequestHandler, ErrorRequestHandler } from 'express';
 import * as express from 'express';
 import type { RouteParameters } from 'express-serve-static-core';
-import { inspect } from 'util';
 import env from '../config/env.js';
-import logger from '../utils/logger.js';
+import logger, { inspectError } from '../utils/logger.js';
 import ServiceError from '../utils/ServiceError.js';
 
 export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
   if (error instanceof ServiceError) {
-    logger.info('received error', { error: inspect(error) });
+    logger.info('received error', { error: inspectError(error) });
     res.status(error.code).json(error.toJSON());
   } else {
-    logger.error('unknown error occurred', { error: inspect(error) });
+    logger.error('unknown error occurred', { error: inspectError(error) });
     res.status(500).json({ message: 'unknown error' });
   }
 };
@@ -68,7 +67,7 @@ export const handleQuotingError = (res: express.Response, err: unknown) => {
     throw ServiceError.badRequest('insufficient liquidity for requested amount');
   }
 
-  logger.error('error while collecting quotes:', { error: inspect(err) });
+  logger.error('error while collecting quotes:', { error: inspectError(err) });
 
   res.status(500).json({ message });
 };

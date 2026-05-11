@@ -1,6 +1,6 @@
 import { queues } from './initialize.js';
 import env from '../config/env.js';
-import baseLogger, { logStorage } from '../utils/logger.js';
+import baseLogger, { inspectError, logStorage } from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'quote-events' });
 
@@ -42,7 +42,7 @@ export function publishQuoteRequestReceived(data: Record<string, unknown>): void
     )
     .catch((err) =>
       logger.error('failed to publish quote request received', {
-        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+        error: inspectError(err),
       }),
     );
 }
@@ -71,7 +71,7 @@ export function publishQuoteRequestFailed(data: Record<string, unknown>, error: 
     )
     .catch((err) =>
       logger.error('failed to publish quote request failed', {
-        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+        error: inspectError(err),
       }),
     );
 }
@@ -99,7 +99,7 @@ export function publishQuoteResponseSent(data: Record<string, unknown>): void {
     )
     .catch((err) =>
       logger.error('failed to publish quote response sent', {
-        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+        error: inspectError(err),
       }),
     );
 }
@@ -124,7 +124,7 @@ export function publishQuoteOrderReceived(data: Record<string, unknown>): void {
     )
     .catch((err) =>
       logger.error('failed to publish quote order received', {
-        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+        error: inspectError(err),
       }),
     );
 }
@@ -149,7 +149,7 @@ export function publishQuoteOrderTimeout(data: Record<string, unknown>): void {
     )
     .catch((err) =>
       logger.error('failed to publish quote order timeout', {
-        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+        error: inspectError(err),
       }),
     );
 }
@@ -174,7 +174,7 @@ export function publishQuoteOrderError(data: Record<string, unknown>): void {
     )
     .catch((err) =>
       logger.error('failed to publish quote order error', {
-        error: err instanceof Error ? err.message : (JSON.stringify(err) ?? String(err)),
+        error: inspectError(err),
       }),
     );
 }

@@ -1,11 +1,10 @@
-import { inspect } from 'util';
 import processBlocks from './processBlocks.js';
-import logger from './utils/logger.js';
+import logger, { inspectError } from './utils/logger.js';
 
 // start
 const start = async () => {
   processBlocks().catch((error) => {
-    logger.error('error processing blocks', { error: inspect(error, { depth: null }) });
+    logger.error('error processing blocks', { error: inspectError(error) });
     process.exit(1);
   });
 };

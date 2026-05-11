@@ -7,13 +7,12 @@ import {
 import { sleep } from '@chainflip/utils/async';
 import assert from 'assert';
 import { isAxiosError } from 'axios';
-import * as util from 'util';
 import { z } from 'zod';
 import { assertUnreachable } from '@/shared/functions.js';
 import prisma from '../client.js';
 import env from '../config/env.js';
 import { handleExit } from '../utils/function.js';
-import baseLogger from '../utils/logger.js';
+import baseLogger, { inspectError } from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'solana-queue' });
 
@@ -117,7 +116,7 @@ const updateChannel = async (url: string, data: PendingChannelTxRef, network: So
     txRefs = await findTransactionSignatures(url, channel.depositAddress, asset, deposits, network);
   } catch (error) {
     logger.error('failed to find transaction signatures', {
-      error,
+      error: inspectError(error),
       channel: { address: channel.depositAddress, asset },
       ...(error instanceof TransactionMatchingError
         ? { deposits: error.deposits, transfers: error.transfers }
@@ -237,7 +236,7 @@ export const start = async () => {
         });
       } else {
         logger.error('error processing solana tx ref', {
-          error: util.inspect(error),
+          error: inspectError(error),
           pendingTxRef,
           parsed,
         });

@@ -9,11 +9,10 @@ import {
   isLegacyChainflipChain,
 } from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
-import stringify from 'safe-stable-stringify';
 import prisma, { Broadcast } from '../client.js';
 import env from '../config/env.js';
 import { handleExit } from '../utils/function.js';
-import logger from '../utils/logger.js';
+import logger, { inspectError } from '../utils/logger.js';
 import { getTransactionRefChains } from '../utils/transactionRef.js';
 
 const redis = env.REDIS_URL ? new RedisClient(env.REDIS_URL) : undefined;
@@ -99,10 +98,7 @@ export const getPendingDeposit = async (
       txRef: deposits[0].tx_refs?.[0],
     };
   } catch (error) {
-    logger.error('error while looking up deposit in redis', {
-      error: error instanceof Error ? error.message : (stringify(error) ?? String(error)),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    logger.error('error while looking up deposit in redis', { error: inspectError(error) });
     return null;
   }
 };
@@ -112,10 +108,7 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
   try {
     return await redis.getBroadcast(broadcast.chain, broadcast.nativeId);
   } catch (error) {
-    logger.error('error while looking up broadcast in redis', {
-      error: error instanceof Error ? error.message : (stringify(error) ?? String(error)),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    logger.error('error while looking up broadcast in redis', { error: inspectError(error) });
     return null;
   }
 };
@@ -172,10 +165,7 @@ export const getPendingVaultSwap = async (txRef: string) => {
       ...remainingData,
     };
   } catch (error) {
-    logger.error('error while looking up vault swap in redis', {
-      error: error instanceof Error ? error.message : (stringify(error) ?? String(error)),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    logger.error('error while looking up vault swap in redis', { error: inspectError(error) });
     return null;
   }
 };

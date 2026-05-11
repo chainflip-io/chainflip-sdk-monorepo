@@ -1,7 +1,7 @@
 import { assetConstants, ChainflipAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import env from '../config/env.js';
-import logger from '../utils/logger.js';
+import logger, { inspectError } from '../utils/logger.js';
 import { getAssetPrice } from './index.js';
 
 const toTokenAmount = (amount: bigint, asset: ChainflipAsset) =>
@@ -42,7 +42,7 @@ export const checkPriceWarning = async ({
 
     return delta.lte(env.LIQUIDITY_WARNING_THRESHOLD);
   } catch (err) {
-    logger.error('error querying coingecko for price:', err);
+    logger.error('error querying coingecko for price:', { err: inspectError(err) });
     return undefined;
   }
 };
