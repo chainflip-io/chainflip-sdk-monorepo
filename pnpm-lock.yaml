@@ -124,14 +124,14 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-tron-dev.4
-        version: 2.2.0-tron-dev.4
+        specifier: 2.2.0-alpha.3
+        version: 2.2.0-alpha.3
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
-        specifier: 2.2.0-tron-dev.3
-        version: 2.2.0-tron-dev.3
+        specifier: 2.2.0-alpha.1
+        version: 2.2.0-alpha.1
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -158,14 +158,14 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-tron-dev.4
-        version: 2.2.0-tron-dev.4
+        specifier: 2.2.0-alpha.3
+        version: 2.2.0-alpha.3
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.2.0-tron-dev.3
-        version: 2.2.0-tron-dev.3
+        specifier: 2.2.0-alpha.1
+        version: 2.2.0-alpha.1
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -216,20 +216,20 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/processor':
-        specifier: 2.2.0-tron-dev.1
-        version: 2.2.0-tron-dev.1
+        specifier: 2.2.0-alpha.2
+        version: 2.2.0-alpha.2
       '@chainflip/redis':
         specifier: 2.1.1
         version: 2.1.1
       '@chainflip/rpc':
-        specifier: 2.2.0-tron-dev.4
-        version: 2.2.0-tron-dev.4
+        specifier: 2.2.0-alpha.3
+        version: 2.2.0-alpha.3
       '@chainflip/solana':
         specifier: 2.2.2
         version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.2.0-tron-dev.3
-        version: 2.2.0-tron-dev.3
+        specifier: 2.2.0-alpha.1
+        version: 2.2.0-alpha.1
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -459,14 +459,14 @@ packages:
   '@chainflip/bitcoin@2.1.1':
     resolution: {integrity: sha512-rJRM8es8eiLQhFhferPYmAh+HhF4bALqUgADpEx4BmFuq5mrBVHZjNJijQokeZmOBqp59Q2xJ2hrWQAf2/X6ug==}
 
-  '@chainflip/processor@2.2.0-tron-dev.1':
-    resolution: {integrity: sha512-N9JNrNKjd9hSfWGxp06FRaKVGHmAaah7TD5y8R01YVYpgfodBxGJk1IkBhzjxlntPV5xTmpnbqrIuN33AaOJpA==}
+  '@chainflip/processor@2.2.0-alpha.2':
+    resolution: {integrity: sha512-PcjmY8VbXZZCPJPBnO3wcURN94dqv4NLK/cry2tfPxYOr/74lEEKuJvupjnEX+zpQIp2ed/ecEjTHZ5aBZyqug==}
 
   '@chainflip/redis@2.1.1':
     resolution: {integrity: sha512-fRa4wLfSTw66U4SmmECX38Dqm4I2Fn5Z7Dk5H6Inv//6LiC7J7TYAoGjDM3FRoOPaPhVmltY+65cX3jPgzPIzA==}
 
-  '@chainflip/rpc@2.2.0-tron-dev.4':
-    resolution: {integrity: sha512-dYYw5WMm0i7Nt5Ef6MCo0sbeCB6CjyeM9bVcm+g7e9HL/DxoPrIfP62nJ8jM1keon+TuW0ZlcDJXw4ThjgTtIw==}
+  '@chainflip/rpc@2.2.0-alpha.3':
+    resolution: {integrity: sha512-+pojUf8FMjW0qErOWbgXPq+tb729EgQYAuyEOafA/pN+sxBmxgbWgBvBoorys047lXLKh/Av5RCujEuXNT+Bmg==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -480,8 +480,8 @@ packages:
   '@chainflip/utils@2.1.2':
     resolution: {integrity: sha512-ujHjiVRdm5AbN5XotoIlVtN7RMmkR7PnrMW/pGhWg+2Yr6vtKyKas/GSRHrX4VGnm7H1j7xKcSuj9GNag60n5A==}
 
-  '@chainflip/utils@2.2.0-tron-dev.3':
-    resolution: {integrity: sha512-O5OTNIdRgF29cscbeTk8t8CaUy52viKJvAvB43mqzTyX24Bbus80ta5WYJgNumneWuet3F7j3VLu6eZWAGkSQg==}
+  '@chainflip/utils@2.2.0-alpha.1':
+    resolution: {integrity: sha512-jP3BnsBX+M//G0+qePvugyFOlzyWHBFpxTT60QkIV2NY9IhWL04LgcfX0kyzM7IAk1G3Ynaj77KI3kwx9ItXqQ==}
 
   '@chevrotain/cst-dts-gen@10.5.0':
     resolution: {integrity: sha512-lhmC/FyqQ2o7pGK4Om+hzuDrm9rhFYIJ/AXoQBeongmn870Xeb0L6oGEiuR8nohFNL5sMaQEJWCxr1oIVIVXrw==}
@@ -1155,6 +1155,10 @@ packages:
 
   '@noble/hashes@2.0.1':
     resolution: {integrity: sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==}
+    engines: {node: '>= 20.19.0'}
+
+  '@noble/hashes@2.2.0':
+    resolution: {integrity: sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg==}
     engines: {node: '>= 20.19.0'}
 
   '@nodelib/fs.scandir@2.1.5':
@@ -2136,8 +2140,8 @@ packages:
   bech32@2.0.0:
     resolution: {integrity: sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==}
 
-  bignumber.js@10.0.2:
-    resolution: {integrity: sha512-E8Wp9O06QA6lneJ4aRUXKYf/1GIomqUEmUMwtIOMtDxf1U52ffJY+y7JBk/8wRafA8qOIqLnXQGqonYXZdBnFQ==}
+  bignumber.js@11.1.1:
+    resolution: {integrity: sha512-LNkCYMieJqAts/Sj5094B92c5q+yRPlXWpABJnHMbUjB/F8AUjELmSmYX5mxbNiY/QnGnJvJIrnRuW5gUqbW5Q==}
 
   bignumber.js@9.1.2:
     resolution: {integrity: sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==}
@@ -6130,9 +6134,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@2.2.0-tron-dev.1':
+  '@chainflip/processor@2.2.0-alpha.2':
     dependencies:
-      '@chainflip/utils': 2.1.2
+      '@chainflip/utils': 2.2.0-alpha.1
       zod: 3.25.76
 
   '@chainflip/redis@2.1.1':
@@ -6144,9 +6148,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.2.0-tron-dev.4':
+  '@chainflip/rpc@2.2.0-alpha.3':
     dependencies:
-      '@chainflip/utils': 2.2.0-tron-dev.3
+      '@chainflip/utils': 2.2.0-alpha.1
       zod: 3.25.76
 
   '@chainflip/scale@1.11.0':
@@ -6197,11 +6201,11 @@ snapshots:
       bignumber.js: 9.3.1
       date-fns: 4.1.0
 
-  '@chainflip/utils@2.2.0-tron-dev.3':
+  '@chainflip/utils@2.2.0-alpha.1':
     dependencies:
       '@date-fns/utc': 2.1.1
-      '@noble/hashes': 2.0.1
-      bignumber.js: 10.0.2
+      '@noble/hashes': 2.2.0
+      bignumber.js: 11.1.1
       date-fns: 4.1.0
 
   '@chevrotain/cst-dts-gen@10.5.0':
@@ -7144,6 +7148,8 @@ snapshots:
   '@noble/hashes@1.8.0': {}
 
   '@noble/hashes@2.0.1': {}
+
+  '@noble/hashes@2.2.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -8448,7 +8454,7 @@ snapshots:
 
   bech32@2.0.0: {}
 
-  bignumber.js@10.0.2: {}
+  bignumber.js@11.1.1: {}
 
   bignumber.js@9.1.2: {}
 
