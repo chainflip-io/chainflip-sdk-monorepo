@@ -61,10 +61,10 @@
   "dependencies": {
     "@chainflip/bitcoin": "2.1.1",
     "@chainflip/processor": "2.2.0-alpha.2",
-    "@chainflip/redis": "2.1.1",
-    "@chainflip/solana": "2.2.2",
     "@chainflip/rpc": "2.2.0-alpha.3",
     "@chainflip/utils": "2.2.0-alpha.1",
+    "@chainflip/redis": "2.1.2",
+    "@chainflip/solana": "2.2.3",
     "@polkadot/api": "^15.10.2",
     "@polkadot/types": "^15.10.2",
     "@prisma/adapter-pg": "^7.4.2",

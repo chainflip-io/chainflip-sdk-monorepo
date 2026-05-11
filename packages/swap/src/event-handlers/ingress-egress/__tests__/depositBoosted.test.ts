@@ -1,4 +1,6 @@
+import { bitcoinIngressEgressDepositBoosted as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositBoosted';
 import { describe, it, expect, beforeEach } from 'vitest';
+import { z } from 'zod';
 import prisma from '../../../client.js';
 import { check } from '../../__tests__/utils.js';
 import { depositBoosted, DepositBoostedArgsMap } from '../depositBoosted.js';
@@ -8,11 +10,11 @@ export const depositBoostedBtcMock = async ({
   amounts,
   channelId,
 }: {
-  action?: DepositBoostedArgsMap['Bitcoin']['action'];
+  action?: z.input<typeof bitcoinSchema11200>['action'];
   amounts?: [[number, string]];
   channelId?: string;
 } = {}) => {
-  const args: DepositBoostedArgsMap['Bitcoin'] = {
+  const args: z.input<typeof bitcoinSchema11200> = {
     blockHeight: 120,
     asset: {
       __kind: 'Btc',
@@ -199,5 +201,92 @@ describe('depositBoosted', () => {
     expect(request).toMatchSnapshot({
       id: expect.any(BigInt),
     });
+  });
+
+  it('updates the values for event with 220 schema', async () => {
+    const swapRequest = await prisma.swapRequest.create({
+      data: {
+        nativeId: 159,
+        srcAsset: 'Btc',
+        destAsset: 'Eth',
+        destAddress: '0x41ad2bc63a2059f9b623533d87fe99887d794847',
+        swapInputAmount: '10000000',
+        originType: 'VAULT',
+        requestType: 'REGULAR',
+        swapRequestedAt: new Date('2024-08-06T00:00:00.000Z'),
+        swapRequestedBlockIndex: '1-1',
+        totalBrokerCommissionBps: 0,
+      },
+    });
+
+    await depositBoosted('Bitcoin')({
+      prisma,
+      block: {
+        height: 120,
+        timestamp: 1670337105000,
+        hash: '0x123',
+        specId: 'test@150',
+      },
+      event: {
+        args: check<DepositBoostedArgsMap['Bitcoin']>({
+          originType: { __kind: 'DepositChannel' },
+          maxBoostFeeBps: 30,
+          asset: {
+            __kind: 'Btc',
+          },
+          amounts: [
+            [{ __kind: 'BoostPool' }, '500000'],
+            [{ __kind: 'LendingPool' }, '500000'],
+          ],
+          prewitnessedDepositId: '1',
+          channelId: '1',
+          ingressFee: '1000',
+          boostFee: [
+            [{ __kind: 'BoostPool' }, '250'],
+            [{ __kind: 'LendingPool' }, '250'],
+          ],
+          action: { __kind: 'Swap', swapRequestId: swapRequest.nativeId.toString() },
+          depositAddress: {
+            value: '0x8f9dc1600f69cad6c85688e3f6c56801073c5714396592c2c8e41ccb3dc1f091',
+            __kind: 'Taproot',
+          },
+          depositDetails: {
+            id: {
+              txId: '0xd258a96ab5a7812ae5d2dbf8125fb4a07274c44d039627c124dc5fca111ec5b0',
+              vout: 0,
+            },
+            amount: '1000000',
+            depositAddress: {
+              pubkeyX: '0x8f9dc1600f69cad6c85688e3f6c56801073c5714396592c2c8e41ccb3dc1f091',
+              scriptPath: {
+                salt: 7,
+                tapleafHash: '0x5c2c1bf4030a5249bb8911aa6ee785f4969764ed6f1752adfbf643ffd011808d',
+                unlockScript: {
+                  bytes:
+                    '0x577920d02106f2d8b619bc95b662340f904af6d67bd0efebd1692a839cbc172bbd8a07ac',
+                },
+                tweakedPubkeyBytes:
+                  '0x026637a004f3e8536158ee981490b559d6ea0ae92f086d4911454ab88fdbc2c523',
+              },
+            },
+          },
+          blockHeight: 10,
+        }),
+        name: 'BitcoinIngressEgress.DepositBoosted',
+        indexInBlock: 7,
+      },
+    });
+
+    const request = await prisma.swapRequest.findFirstOrThrow({
+      include: { fees: { select: { asset: true, amount: true, type: true } } },
+    });
+
+    expect(request).toMatchSnapshot({
+      id: expect.any(BigInt),
+    });
+    expect(JSON.stringify(request.fees)).toMatchInlineSnapshot(
+      `"[{"asset":"Btc","amount":"500","type":"BOOST"},{"asset":"Btc","amount":"1000","type":"INGRESS"}]"`,
+    );
+    expect(request.depositAmount?.toString()).toBe('1000000');
   });
 });

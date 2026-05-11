@@ -12,8 +12,6 @@ import {
   publishQuoteResponseSent,
 } from '../quoteEvents.js';
 
-const ONE_DAY_IN_SECONDS = 3600 * 24;
-
 vi.mock('../initialize.js', () => ({
   queues: { quoteEvents: undefined },
 }));
@@ -87,7 +85,7 @@ describe('quoteEvents', () => {
           event: 'quote.request.received',
           timestamp: expect.any(String),
         }),
-        { delay: 0, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+        { delay: 0, removeOnComplete: { count: 1000 }, removeOnFail: { count: 5000 } },
       );
     });
 
@@ -111,7 +109,7 @@ describe('quoteEvents', () => {
           event: 'quote.response.sent',
           timestamp: expect.any(String),
         }),
-        { delay: 0, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+        { delay: 0, removeOnComplete: { count: 1000 }, removeOnFail: { count: 5000 } },
       );
     });
 
@@ -131,7 +129,7 @@ describe('quoteEvents', () => {
           error: 'insufficient liquidity',
           timestamp: expect.any(String),
         }),
-        { delay: 0, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+        { delay: 0, removeOnComplete: { count: 1000 }, removeOnFail: { count: 5000 } },
       );
     });
 
@@ -143,7 +141,7 @@ describe('quoteEvents', () => {
         expect.objectContaining({
           error: 'string error',
         }),
-        { delay: 0, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+        { delay: 0, removeOnComplete: { count: 1000 }, removeOnFail: { count: 5000 } },
       );
     });
 
@@ -169,7 +167,8 @@ describe('quoteEvents', () => {
 
       expect(mockAdd).toHaveBeenCalledWith('quote.request.received', expect.any(Object), {
         delay: 5000,
-        removeOnComplete: { age: ONE_DAY_IN_SECONDS },
+        removeOnComplete: { count: 1000 },
+        removeOnFail: { count: 5000 },
       });
     });
 
@@ -219,7 +218,7 @@ describe('quoteEvents', () => {
           event: 'quote.order.received',
           timestamp: expect.any(String),
         }),
-        { delay: 0, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+        { delay: 0, removeOnComplete: { count: 1000 }, removeOnFail: { count: 5000 } },
       );
     });
 
@@ -239,7 +238,7 @@ describe('quoteEvents', () => {
           event: 'quote.order.timeout',
           timestamp: expect.any(String),
         }),
-        { delay: 0, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+        { delay: 0, removeOnComplete: { count: 1000 }, removeOnFail: { count: 5000 } },
       );
     });
 
@@ -260,7 +259,7 @@ describe('quoteEvents', () => {
           event: 'quote.order.error',
           timestamp: expect.any(String),
         }),
-        { delay: 0, removeOnComplete: { age: ONE_DAY_IN_SECONDS } },
+        { delay: 0, removeOnComplete: { count: 1000 }, removeOnFail: { count: 5000 } },
       );
       expect(mockAdd.mock.calls[0][1].quoteRequestId).toBeUndefined();
     });

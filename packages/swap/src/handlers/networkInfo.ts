@@ -56,17 +56,17 @@ const networkInfo = async (): Promise<z.output<typeof NetworkInfo>> => {
       safeModeStatuses[`ingress_egress_${uncapitalize(assetConstants[asset].chain)}`];
     const broadcast = safeModeStatuses[`broadcast_${uncapitalize(assetConstants[asset].chain)}`];
     const canDeposit = isEnabled && !env.DISABLED_DEPOSIT_INTERNAL_ASSETS.has(asset);
-    const vaultSwapDepositsEnabled = ingressEgress.vault_deposit_witnessing_enabled;
-    const depositChannelDepositsEnabled = ingressEgress.deposit_channel_witnessing_enabled;
-    const depositChannelCreationEnabled = ingressEgress.deposit_channel_creation_enabled;
+    const vaultSwapDepositsEnabled = ingressEgress?.vault_deposit_witnessing_enabled;
+    const depositChannelDepositsEnabled = ingressEgress?.deposit_channel_witnessing_enabled;
+    const depositChannelCreationEnabled = ingressEgress?.deposit_channel_creation_enabled;
 
     return {
       asset,
-      boostDepositsEnabled: canDeposit && ingressEgress.boost_deposits_enabled,
+      boostDepositsEnabled: canDeposit && ingressEgress?.boost_deposits_enabled,
       egressEnabled:
         isEnabled &&
         safeModeStatuses.swapping.withdrawals_enabled &&
-        (broadcast.egress_witnessing_enabled ?? true) &&
+        (broadcast?.egress_witnessing_enabled ?? true) &&
         !env.DISABLED_DESTINATION_INTERNAL_ASSETS.has(asset),
       vaultSwapDepositsEnabled: canDeposit && vaultSwapDepositsEnabled,
       depositChannelDepositsEnabled: canDeposit && depositChannelDepositsEnabled,

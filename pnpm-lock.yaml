@@ -127,8 +127,8 @@ importers:
         specifier: 2.2.0-alpha.3
         version: 2.2.0-alpha.3
       '@chainflip/solana':
-        specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+        specifier: 2.2.3
+        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
         specifier: 2.2.0-alpha.1
         version: 2.2.0-alpha.1
@@ -161,8 +161,8 @@ importers:
         specifier: 2.2.0-alpha.3
         version: 2.2.0-alpha.3
       '@chainflip/solana':
-        specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        specifier: 2.2.3
+        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: 2.2.0-alpha.1
         version: 2.2.0-alpha.1
@@ -219,14 +219,14 @@ importers:
         specifier: 2.2.0-alpha.2
         version: 2.2.0-alpha.2
       '@chainflip/redis':
-        specifier: 2.1.1
-        version: 2.1.1
+        specifier: 2.1.2
+        version: 2.1.2
       '@chainflip/rpc':
         specifier: 2.2.0-alpha.3
         version: 2.2.0-alpha.3
       '@chainflip/solana':
-        specifier: 2.2.2
-        version: 2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        specifier: 2.2.3
+        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: 2.2.0-alpha.1
         version: 2.2.0-alpha.1
@@ -462,8 +462,8 @@ packages:
   '@chainflip/processor@2.2.0-alpha.2':
     resolution: {integrity: sha512-PcjmY8VbXZZCPJPBnO3wcURN94dqv4NLK/cry2tfPxYOr/74lEEKuJvupjnEX+zpQIp2ed/ecEjTHZ5aBZyqug==}
 
-  '@chainflip/redis@2.1.1':
-    resolution: {integrity: sha512-fRa4wLfSTw66U4SmmECX38Dqm4I2Fn5Z7Dk5H6Inv//6LiC7J7TYAoGjDM3FRoOPaPhVmltY+65cX3jPgzPIzA==}
+  '@chainflip/redis@2.1.2':
+    resolution: {integrity: sha512-e7rxsfvL7sSgG0I+eJpkT9d8Q5hnFw+m3FjapvEY/npjURYnV1E8XJXCH2aupZXCWxDzfqYmcNNNgN2T1Cg+VQ==}
 
   '@chainflip/rpc@2.2.0-alpha.3':
     resolution: {integrity: sha512-+pojUf8FMjW0qErOWbgXPq+tb729EgQYAuyEOafA/pN+sxBmxgbWgBvBoorys047lXLKh/Av5RCujEuXNT+Bmg==}
@@ -471,8 +471,8 @@ packages:
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
 
-  '@chainflip/solana@2.2.2':
-    resolution: {integrity: sha512-aoR7Zg5EtpwSukzu3VNhhmkcpTg4km29HMtf00ciez+Srk/9rbTNsGjfotj1qQYp5a/5jCO1y3BT2XeLcZ9QiA==}
+  '@chainflip/solana@2.2.3':
+    resolution: {integrity: sha512-AKZQ60aDNeuPenA7iHAE7eOVuKoRbCnXPchz5RFqXjzBhCTktwpyAKpU5Fpp92zrpBiHKbSqj2MZSV5FeDBFtA==}
 
   '@chainflip/utils@0.8.22':
     resolution: {integrity: sha512-VVerCmYtxW6rk3HCKnJzYAC60kf8Xv66Sp7ittMzpuJ9kzu+IeycY6lHv/I7GJnagy3zeuL6PNGWqdAMpuF+TQ==}
@@ -2139,6 +2139,9 @@ packages:
 
   bech32@2.0.0:
     resolution: {integrity: sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==}
+
+  bignumber.js@10.0.2:
+    resolution: {integrity: sha512-E8Wp9O06QA6lneJ4aRUXKYf/1GIomqUEmUMwtIOMtDxf1U52ffJY+y7JBk/8wRafA8qOIqLnXQGqonYXZdBnFQ==}
 
   bignumber.js@11.1.1:
     resolution: {integrity: sha512-LNkCYMieJqAts/Sj5094B92c5q+yRPlXWpABJnHMbUjB/F8AUjELmSmYX5mxbNiY/QnGnJvJIrnRuW5gUqbW5Q==}
@@ -6139,10 +6142,10 @@ snapshots:
       '@chainflip/utils': 2.2.0-alpha.1
       zod: 3.25.76
 
-  '@chainflip/redis@2.1.1':
+  '@chainflip/redis@2.1.2':
     dependencies:
       '@chainflip/utils': 2.1.2
-      bignumber.js: 9.3.1
+      bignumber.js: 10.0.2
       ioredis: 5.10.1
       zod: 3.25.76
     transitivePeerDependencies:
@@ -6158,7 +6161,7 @@ snapshots:
       '@chainflip/utils': 0.8.22
       scale-ts: 1.6.1
 
-  '@chainflip/solana@2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/scale': 1.11.0
       '@chainflip/utils': 2.1.2
@@ -6173,7 +6176,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@chainflip/solana@2.2.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
+  '@chainflip/solana@2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
     dependencies:
       '@chainflip/scale': 1.11.0
       '@chainflip/utils': 2.1.2
@@ -8453,6 +8456,8 @@ snapshots:
   bech32@1.1.4: {}
 
   bech32@2.0.0: {}
+
+  bignumber.js@10.0.2: {}
 
   bignumber.js@11.1.1: {}
 

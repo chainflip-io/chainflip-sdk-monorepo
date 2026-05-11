@@ -9,6 +9,16 @@ which it is deprecated.
 
 ## Unreleased
 
+### Added
+
+- New chain and assets: `Tron`, `Trx`, and `TrxUsdt` (USDT on Tron).
+
+### Dependencies
+
+- `@chainflip/rpc` upgraded to 2.2.0
+- `@chainflip/utils` upgraded to 2.2.0
+- `@chainflip/solana` upgraded to 2.2.3
+
 ## 2.1.0
 
 ### Added
