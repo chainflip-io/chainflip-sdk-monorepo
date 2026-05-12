@@ -241,6 +241,7 @@ describe(Quoter, () => {
       mockQuoter['inflightRequests'].set('string', {
         quoteRequestId: undefined,
         responders: new Set(),
+        requestedAt: performance.now(),
       });
 
       expect(fakeServer.on).toHaveBeenCalledWith('connection', expect.any(Function));
@@ -661,6 +662,7 @@ describe(Quoter, () => {
         marketMakerRequestId: request.request_id,
         legs: [[[0, 100n]]],
         beta: false,
+        durationMs: expect.any(Number),
       });
       expect(publishQuoteOrderTimeout).not.toHaveBeenCalled();
       expect(publishQuoteOrderError).not.toHaveBeenCalled();
@@ -681,6 +683,7 @@ describe(Quoter, () => {
         quoteRequestId: undefined,
         marketMaker: 'marketMaker2',
         marketMakerRequestId: request.request_id,
+        durationMs: expect.any(Number),
       });
       mm2.socket.disconnect();
     });
@@ -716,6 +719,7 @@ describe(Quoter, () => {
         marketMaker: 'marketMaker',
         marketMakerRequestId: request.request_id,
         error: 'tick provided is too small',
+        durationMs: expect.any(Number),
       });
     });
 
