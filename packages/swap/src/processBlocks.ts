@@ -2,14 +2,13 @@ import assert from 'assert';
 import { GraphQLClient } from 'graphql-request';
 import { performance } from 'perf_hooks';
 import { setTimeout as sleep } from 'timers/promises';
-import { inspect } from 'util';
 import prisma from './client.js';
 import env from './config/env.js';
 import { handlerMap, swapEventNames } from './event-handlers/index.js';
 import { GetBatchQuery, GetCallQuery } from './gql/generated/graphql.js';
 import { GET_BATCH } from './gql/query.js';
 import { handleExit } from './utils/function.js';
-import logger from './utils/logger.js';
+import logger, { inspectError } from './utils/logger.js';
 
 const client = new GraphQLClient(env.INGEST_GATEWAY_URL);
 
@@ -40,7 +39,7 @@ const fetchBlocks = async (height: number): Promise<Block[]> => {
 
       return blocks;
     } catch (error) {
-      logger.error('failed to fetch batch', { error: inspect(error, { depth: null }) });
+      logger.error('failed to fetch batch', { error: inspectError(error) });
       if (i === 4) throw error;
     }
   }
@@ -110,7 +109,7 @@ export default async function processBlocks() {
               await eventHandler({ prisma: txClient, event, block });
             } catch (error) {
               logger.error('processBlock error: Error handling event', {
-                error: inspect(error, { depth: null }),
+                error: inspectError(error),
                 eventName: event.name,
                 indexInBlock: event.indexInBlock,
                 blockHeight: block.height,

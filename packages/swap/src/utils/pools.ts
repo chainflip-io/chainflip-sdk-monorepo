@@ -2,7 +2,7 @@ import { ChainflipAsset, readAssetValue } from '@chainflip/utils/chainflip';
 import { FULL_TICK_RANGE } from '@/shared/consts.js';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { assert } from '@/shared/guards.js';
-import baseLogger from './logger.js';
+import baseLogger, { inspectError } from './logger.js';
 import { getLpAccounts } from './lp.js';
 import { getPoolDepth, refreshEnvironmentCache } from './rpc.js';
 import prisma, { Pool } from '../client.js';
@@ -81,7 +81,7 @@ export const warmCaches = async () => {
     ]);
     logger.info('pool caches warmed', { assets: baseAssets });
   } catch (err) {
-    logger.error('failed to warm pool caches', { err: err instanceof Error ? err.message : err });
+    logger.error('failed to warm pool caches', { err: inspectError(err) });
   }
 };
 
