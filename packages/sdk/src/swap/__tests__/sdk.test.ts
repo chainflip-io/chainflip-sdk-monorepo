@@ -255,7 +255,7 @@ describe(SwapSDK, () => {
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
         'https://chainflip-swap.staging/',
-        { ...params, brokerCommissionBps: 0, dcaEnabled: false, dcaV2Enabled: false },
+        { ...params, brokerCommissionBps: 0, dcaV2Enabled: false },
         {},
       );
       expect(result).toStrictEqual([{ quote: 1234 }]);
@@ -276,7 +276,7 @@ describe(SwapSDK, () => {
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
         'https://chainflip-swap.staging/',
-        { ...params, brokerCommissionBps: 0, dcaEnabled: true, dcaV2Enabled: true },
+        { ...params, brokerCommissionBps: 0, dcaV2Enabled: true },
         {},
       );
       expect(result).toStrictEqual([{ quote: 1234 }]);
@@ -305,7 +305,7 @@ describe(SwapSDK, () => {
       const result = await sdk.getQuoteV2(params);
       expect(getQuoteV2).toHaveBeenCalledWith(
         'https://chainflip-swap.staging/',
-        { ...params, brokerCommissionBps: 15, dcaEnabled: false, dcaV2Enabled: false },
+        { ...params, brokerCommissionBps: 15, dcaV2Enabled: false },
         {},
       );
       expect(result).toStrictEqual([{ quote: 1234 }]);
@@ -341,7 +341,6 @@ describe(SwapSDK, () => {
             { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
             { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
           ],
-          dcaEnabled: false,
           dcaV2Enabled: false,
         },
         {},
@@ -377,7 +376,6 @@ describe(SwapSDK, () => {
             gasBudget: '12345',
             messageLengthBytes: 100,
           },
-          dcaEnabled: false,
           dcaV2Enabled: false,
         },
         {},

@@ -31,7 +31,7 @@ console.log('eth destination address', ethDestAddress);
 
 const swapSDK = new SwapSDK({
   network: 'perseverance',
-  enabledFeatures: { dca: true },
+  enabledFeatures: { dcaV2: true },
 });
 
 const { quotes } = await swapSDK.getQuoteV2({

@@ -13,6 +13,13 @@ which it is deprecated.
 
 - New chain and assets: `Tron`, `Trx` and `TrxUsdt` (USDT on Tron).
 
+### Removed
+
+- `enabledFeatures.dca` option has been removed from `SwapSDKOptions`. DCA is
+  now enabled by default at the protocol level.
+- The deprecated fields `brokerCommissionBps`, `affiliateBrokers`, and
+  `fillOrKillParams` have been removed from the `depositChannel` property of the swap status response. They are avaialable at the root level of the response.
+
 ### Dependencies
 
 - `@chainflip/rpc` upgraded to 2.2.0

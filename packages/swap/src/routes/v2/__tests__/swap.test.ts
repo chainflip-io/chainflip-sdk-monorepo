@@ -868,16 +868,9 @@ describe('server', () => {
             "txRef": "0xfae1ed",
           },
           "depositChannel": {
-            "affiliateBrokers": [],
-            "brokerCommissionBps": 0,
             "createdAt": 516000,
             "depositAddress": "0x6aa69332b63bb5b1d7ca5355387edd5624e181f2",
             "estimatedExpiryTime": 1640998260000,
-            "fillOrKillParams": {
-              "minPrice": "0",
-              "refundAddress": "0x2afba9278e30ccf6a6ceb3a8b6e336b70068f045c666f2e7f4f9cc5f47db8972",
-              "retryDurationBlocks": 100,
-            },
             "id": "86-Ethereum-85",
             "isExpired": false,
             "openedThroughBackend": false,

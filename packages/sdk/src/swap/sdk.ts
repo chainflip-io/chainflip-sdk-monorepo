@@ -63,8 +63,6 @@ export type SwapSDKOptions = {
   };
   rpcUrl?: string;
   enabledFeatures?: {
-    /** @deprecated DEPRECATED(2.0): DCA will be enabled by default in version 2.2 */
-    dca?: boolean;
     dcaV2?: boolean;
   };
   /**
@@ -97,8 +95,6 @@ export class SwapSDK {
 
   private cache;
 
-  private dcaEnabled = false;
-
   private dcaV2Enabled = false;
 
   constructor(options: SwapSDKOptions = {}) {
@@ -116,7 +112,6 @@ export class SwapSDK {
       baseHeaders: CF_SDK_VERSION_HEADERS,
     });
     this.dcaV2Enabled = options.enabledFeatures?.dcaV2 ?? false;
-    this.dcaEnabled = this.dcaV2Enabled || (options.enabledFeatures?.dca ?? false);
     this.cache = new MultiCache({
       environment: {
         fetch: () => getEnvironment(this.rpcConfig),
@@ -224,7 +219,6 @@ export class SwapSDK {
       {
         ...quoteRequest,
         brokerCommissionBps: submitterBrokerCommissionBps,
-        dcaEnabled: this.dcaEnabled,
         dcaV2Enabled: this.dcaV2Enabled,
         brokerAccount: quoteRequest.brokerAccount ?? this.options.brokerAccount,
       },
