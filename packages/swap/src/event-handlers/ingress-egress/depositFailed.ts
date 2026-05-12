@@ -4,11 +4,17 @@ import { assethubIngressEgressDepositFailed as assetHubSchema210 } from '@chainf
 import { bitcoinIngressEgressDepositFailed as bitcoinSchema210 } from '@chainflip/processor/210/bitcoinIngressEgress/depositFailed';
 import { ethereumIngressEgressDepositFailed as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositFailed';
 import { solanaIngressEgressDepositFailed as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/depositFailed';
+import { arbitrumIngressEgressDepositFailed as arbitrumSchema220 } from '@chainflip/processor/220/arbitrumIngressEgress/depositFailed';
+import { assethubIngressEgressDepositFailed as assetHubSchema220 } from '@chainflip/processor/220/assethubIngressEgress/depositFailed';
+import { bitcoinIngressEgressDepositFailed as bitcoinSchema220 } from '@chainflip/processor/220/bitcoinIngressEgress/depositFailed';
+import { ethereumIngressEgressDepositFailed as ethereumSchema220 } from '@chainflip/processor/220/ethereumIngressEgress/depositFailed';
+import { solanaIngressEgressDepositFailed as solanaSchema220 } from '@chainflip/processor/220/solanaIngressEgress/depositFailed';
 import { tronIngressEgressDepositFailed as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/depositFailed';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
 import { assetConstants, ChainflipChain, isLegacyChainflipAsset } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
+import { hexToTronAddress } from '@chainflip/utils/tron';
 import assert from 'assert';
 import { z } from 'zod';
 import { assertUnreachable } from '@/shared/functions.js';
@@ -19,11 +25,11 @@ import { DepositDetailsData, getDepositTxRef } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
 const argsMap = {
-  Arbitrum: arbitrumSchema210.strict(),
-  Bitcoin: bitcoinSchema210.strict(),
-  Ethereum: ethereumSchema210.strict(),
-  Solana: solanaSchema210.strict(),
-  Assethub: assetHubSchema210.strict(),
+  Arbitrum: z.union([arbitrumSchema220.strict(), arbitrumSchema210.strict()]),
+  Bitcoin: z.union([bitcoinSchema220.strict(), bitcoinSchema210.strict()]),
+  Ethereum: z.union([ethereumSchema220.strict(), ethereumSchema210.strict()]),
+  Solana: z.union([solanaSchema220.strict(), solanaSchema210.strict()]),
+  Assethub: z.union([assetHubSchema220.strict(), assetHubSchema210.strict()]),
   Tron: tronSchema220,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
@@ -68,9 +74,10 @@ const extractDepositAddress = (depositWitness: DepositWitness) => {
     case 'Sol':
     case 'SolUsdc':
     case 'SolUsdt':
+      return base58.encode(hexToBytes(depositWitness.depositAddress));
     case 'Trx':
     case 'TrxUsdt':
-      return base58.encode(hexToBytes(depositWitness.depositAddress));
+      return hexToTronAddress(depositWitness.depositAddress);
     default:
       return assertUnreachable(depositWitness, 'unexpected asset');
   }

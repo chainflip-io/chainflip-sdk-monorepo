@@ -11,7 +11,7 @@ which it is deprecated.
 
 ### Added
 
-- New chain and assets: `Tron`, `Trx`, and `TrxUsdt` (USDT on Tron).
+- New chain and assets: `Tron`, `Trx` and `TrxUsdt` (USDT on Tron).
 
 ### Dependencies
 

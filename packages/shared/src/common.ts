@@ -36,8 +36,9 @@ export const formatTxRef = (txRef: TxRefData): string => {
     case 'Assethub':
       return `${txRef.data.blockNumber}-${txRef.data.extrinsicIndex}`;
     case 'Solana':
-    case 'Tron':
       return base58.encode(hexToBytes(txRef.data));
+    case 'Tron':
+      return txRef.data.replace('0x', '');
     default:
       return unreachable(txRef, `unexpected chain: ${JSON.stringify(txRef)}`);
   }

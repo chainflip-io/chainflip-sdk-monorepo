@@ -5,12 +5,12 @@ export const NetworkInfo = z.object({
   assets: z.array(
     z.object({
       asset: z.enum(chainflipAssets),
-      vaultSwapDepositsEnabled: z.boolean().optional(),
-      depositChannelDepositsEnabled: z.boolean().optional(),
-      depositChannelCreationEnabled: z.boolean().optional(),
-      egressEnabled: z.boolean().optional(),
-      boostDepositsEnabled: z.boolean().optional(),
-      livePriceProtectionEnabled: z.boolean().optional(),
+      vaultSwapDepositsEnabled: z.boolean(),
+      depositChannelDepositsEnabled: z.boolean(),
+      depositChannelCreationEnabled: z.boolean(),
+      egressEnabled: z.boolean(),
+      boostDepositsEnabled: z.boolean(),
+      livePriceProtectionEnabled: z.boolean(),
     }),
   ),
   cfBrokerCommissionBps: z.number(),

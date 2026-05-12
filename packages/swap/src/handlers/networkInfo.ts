@@ -62,15 +62,15 @@ const networkInfo = async (): Promise<z.output<typeof NetworkInfo>> => {
 
     return {
       asset,
-      boostDepositsEnabled: canDeposit && ingressEgress?.boost_deposits_enabled,
+      boostDepositsEnabled: canDeposit && (ingressEgress?.boost_deposits_enabled ?? false),
       egressEnabled:
         isEnabled &&
         safeModeStatuses.swapping.withdrawals_enabled &&
         (broadcast?.egress_witnessing_enabled ?? true) &&
         !env.DISABLED_DESTINATION_INTERNAL_ASSETS.has(asset),
-      vaultSwapDepositsEnabled: canDeposit && vaultSwapDepositsEnabled,
-      depositChannelDepositsEnabled: canDeposit && depositChannelDepositsEnabled,
-      depositChannelCreationEnabled: canDeposit && depositChannelCreationEnabled,
+      vaultSwapDepositsEnabled: canDeposit && (vaultSwapDepositsEnabled ?? false),
+      depositChannelDepositsEnabled: canDeposit && (depositChannelDepositsEnabled ?? false),
+      depositChannelCreationEnabled: canDeposit && (depositChannelCreationEnabled ?? false),
       livePriceProtectionEnabled: isNotNullish(chainflipAssetToPriceAssetMap[asset]),
     };
   });

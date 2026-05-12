@@ -69,6 +69,8 @@ export const getVaultOriginTxRef = (
 ) => {
   const kind = origin.txId.__kind;
 
+  // TODO(TRON): Tron might need a different implementation (PR still in review)
+  // https://linear.app/chainflip/issue/WEB-3464/handle-tron-vault-swap-origin-tx-ref
   switch (kind) {
     case 'Evm':
       return formatTxRef({ chain: 'Ethereum', data: origin.txId.value });

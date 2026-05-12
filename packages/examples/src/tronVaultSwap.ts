@@ -8,6 +8,8 @@ import 'dotenv/config';
 // TODO(TRON): Test this implementation works
 
 if (!process.env.TRON_SECRET_KEY) {
+  console.log('TRON_SECRET_KEY not set - generating random secret key');
+
   const account = TronWeb.createRandom();
   process.env.TRON_SECRET_KEY = account.privateKey;
 
