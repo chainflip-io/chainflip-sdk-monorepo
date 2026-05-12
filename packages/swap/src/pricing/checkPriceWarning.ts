@@ -42,7 +42,7 @@ export const checkPriceWarning = async ({
 
     return delta.lte(env.LIQUIDITY_WARNING_THRESHOLD);
   } catch (err) {
-    logger.error('error querying coingecko for price:', { err: inspectError(err) });
+    logger.error('error querying coingecko for price:', { error: inspectError(err) });
     return undefined;
   }
 };
