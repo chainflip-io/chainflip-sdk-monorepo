@@ -35,6 +35,20 @@ export default class Leg {
     throw new Error('one of the assets must be Usdc');
   }
 
+  getMetadata(): {
+    baseAsset: BaseChainflipAsset;
+    sourceAsset: ChainflipAsset;
+    destAsset: ChainflipAsset;
+    side: 'BUY' | 'SELL';
+  } {
+    return {
+      baseAsset: this.getBaseAsset(),
+      sourceAsset: this.srcAsset,
+      destAsset: this.destAsset,
+      side: this.getSide(),
+    };
+  }
+
   toJSON(): LegJson {
     const side = this.getSide();
     let baseAsset: BaseChainflipAsset;

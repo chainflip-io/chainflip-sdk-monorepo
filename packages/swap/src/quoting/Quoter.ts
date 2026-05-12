@@ -103,7 +103,12 @@ export default class Quoter {
 
   private readonly inflightRequests = new Map<
     string,
-    { quoteRequestId: string | undefined; responders: Set<AccountId>; requestedAt: number }
+    {
+      quoteRequestId: string | undefined;
+      responders: Set<AccountId>;
+      requestedAt: number;
+      legsByMarketMaker: Map<AccountId, readonly Leg[]>;
+    }
   >();
 
   private balanceTracker = new BalanceTracker(env.QUOTER_BALANCE_TRACKER_ACTIVE);
@@ -179,6 +184,9 @@ export default class Quoter {
             marketMakerRequestId: requestId,
             error,
             durationMs: inflight ? performance.now() - inflight.requestedAt : undefined,
+            legsMetadata: inflight?.legsByMarketMaker
+              .get(socket.data.marketMaker)
+              ?.map((leg) => leg.getMetadata()),
           });
         }
 
@@ -207,6 +215,9 @@ export default class Quoter {
             legs: result.data.legs,
             beta: socket.data.beta,
             durationMs: inflight ? performance.now() - inflight.requestedAt : undefined,
+            legsMetadata: inflight?.legsByMarketMaker
+              .get(socket.data.marketMaker)
+              ?.map((leg) => leg.getMetadata()),
           });
         }
 
@@ -226,10 +237,12 @@ export default class Quoter {
     if (connectedClients === 0) return [];
 
     const quoteRequestId = logStorage.getStore();
+    const legsByMarketMaker = new Map<AccountId, readonly Leg[]>();
     this.inflightRequests.set(request.request_id, {
       quoteRequestId,
       responders: new Set<AccountId>(),
       requestedAt: performance.now(),
+      legsByMarketMaker,
     });
 
     let expectedResponses = 0;
@@ -250,12 +263,15 @@ export default class Quoter {
           legs: request.legs.map((leg) => leg.toJSON()) as [LegJson] | [LegJson, LegJson],
         };
         quotedLegsMap.set(marketMaker, { format: singleOrBothLegs });
+        legsByMarketMaker.set(marketMaker, request.legs);
       } else if (quotesFirstLeg) {
         message = { ...request, legs: [first.toJSON()] };
         quotedLegsMap.set(marketMaker, { format: padSecondLeg });
+        legsByMarketMaker.set(marketMaker, [first]);
       } else if (second && quotedAssets[second.getBaseAsset()]) {
         message = { ...request, legs: [second.toJSON()] };
         quotedLegsMap.set(marketMaker, { format: padFirstLeg });
+        legsByMarketMaker.set(marketMaker, [second]);
       } else {
         // eslint-disable-next-line no-continue
         continue;
@@ -288,6 +304,9 @@ export default class Quoter {
                 marketMaker,
                 marketMakerRequestId: request.request_id,
                 durationMs,
+                legsMetadata: entry?.legsByMarketMaker
+                  .get(marketMaker)
+                  ?.map((leg) => leg.getMetadata()),
               });
             }
           }
@@ -328,6 +347,7 @@ export default class Quoter {
     const orders: RpcLimitOrder[] = [];
 
     for (let legIndex = 0; legIndex < legs.length; legIndex += 1) {
+      const legMetadata = legs[legIndex].getMetadata();
       const leg = legs[legIndex].toJSON();
 
       const sellAsset = getInternalAsset(
@@ -374,6 +394,9 @@ export default class Quoter {
               balance,
               amount,
               sellAsset,
+              baseAsset: legMetadata.baseAsset,
+              destAsset: legMetadata.destAsset,
+              side: legMetadata.side,
             });
           }
         }
