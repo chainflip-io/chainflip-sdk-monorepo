@@ -1,10 +1,11 @@
+import { swappingRefundEgressScheduled as schema210 } from '@chainflip/processor/210/swapping/refundEgressScheduled';
 import { swappingRefundEgressScheduled as schema220 } from '@chainflip/processor/220/swapping/refundEgressScheduled';
 import z from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-const eventArgs = schema220.strict();
+const schema = z.union([schema220.strict(), schema210.strict()]);
 
-export type RefundEgressScheduledArgs = z.input<typeof eventArgs>;
+export type RefundEgressScheduledArgs = z.input<typeof schema>;
 
 export default async function refundEgressScheduled({
   prisma,
@@ -17,7 +18,7 @@ export default async function refundEgressScheduled({
     egressFee: [egressFee, egressFeeAsset],
     amount: egressAmount,
     refundFee,
-  } = eventArgs.parse(event.args);
+  } = schema.parse(event.args);
 
   const fees = [
     {

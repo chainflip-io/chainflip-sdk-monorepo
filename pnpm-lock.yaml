@@ -124,14 +124,14 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-alpha.3
-        version: 2.2.0-alpha.3
+        specifier: 2.2.0-alpha.4
+        version: 2.2.0-alpha.4
       '@chainflip/solana':
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.1
-        version: 2.2.0-alpha.1
+        specifier: 2.2.0-alpha.2
+        version: 2.2.0-alpha.2
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -158,14 +158,14 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-alpha.3
-        version: 2.2.0-alpha.3
+        specifier: 2.2.0-alpha.4
+        version: 2.2.0-alpha.4
       '@chainflip/solana':
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.1
-        version: 2.2.0-alpha.1
+        specifier: 2.2.0-alpha.2
+        version: 2.2.0-alpha.2
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -216,20 +216,20 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/processor':
-        specifier: 2.2.0-alpha.2
-        version: 2.2.0-alpha.2
-      '@chainflip/redis':
-        specifier: 2.1.2
-        version: 2.1.2
-      '@chainflip/rpc':
         specifier: 2.2.0-alpha.3
         version: 2.2.0-alpha.3
+      '@chainflip/redis':
+        specifier: 2.2.0-alpha.1
+        version: 2.2.0-alpha.1
+      '@chainflip/rpc':
+        specifier: 2.2.0-alpha.4
+        version: 2.2.0-alpha.4
       '@chainflip/solana':
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.1
-        version: 2.2.0-alpha.1
+        specifier: 2.2.0-alpha.2
+        version: 2.2.0-alpha.2
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -459,14 +459,14 @@ packages:
   '@chainflip/bitcoin@2.1.1':
     resolution: {integrity: sha512-rJRM8es8eiLQhFhferPYmAh+HhF4bALqUgADpEx4BmFuq5mrBVHZjNJijQokeZmOBqp59Q2xJ2hrWQAf2/X6ug==}
 
-  '@chainflip/processor@2.2.0-alpha.2':
-    resolution: {integrity: sha512-PcjmY8VbXZZCPJPBnO3wcURN94dqv4NLK/cry2tfPxYOr/74lEEKuJvupjnEX+zpQIp2ed/ecEjTHZ5aBZyqug==}
+  '@chainflip/processor@2.2.0-alpha.3':
+    resolution: {integrity: sha512-bfI1sqzSab2FzrQNNoAi97n6A97uXJ7u69Q6iEa4ZpE5pVlqRzERnwJehusQ4x4sC2zu4oUD7ikpYVg0R+A0+Q==}
 
-  '@chainflip/redis@2.1.2':
-    resolution: {integrity: sha512-e7rxsfvL7sSgG0I+eJpkT9d8Q5hnFw+m3FjapvEY/npjURYnV1E8XJXCH2aupZXCWxDzfqYmcNNNgN2T1Cg+VQ==}
+  '@chainflip/redis@2.2.0-alpha.1':
+    resolution: {integrity: sha512-V9lmE2ojdl7wNfhob/LDa01iyJiVThG5nNEKhr0CmQyGAym2zGSIekPlZSVv241dNgIEs7ZMEHU3wNfy4M6d+Q==}
 
-  '@chainflip/rpc@2.2.0-alpha.3':
-    resolution: {integrity: sha512-+pojUf8FMjW0qErOWbgXPq+tb729EgQYAuyEOafA/pN+sxBmxgbWgBvBoorys047lXLKh/Av5RCujEuXNT+Bmg==}
+  '@chainflip/rpc@2.2.0-alpha.4':
+    resolution: {integrity: sha512-IWckBLnWAZn6pleOsAZLfb5JAuyQ6jQo7qQQoAKXV7RUsQLFOdCrxeN+Xpo/VliHL1AgCZKJjMW07AWpHvdWDA==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -482,6 +482,9 @@ packages:
 
   '@chainflip/utils@2.2.0-alpha.1':
     resolution: {integrity: sha512-jP3BnsBX+M//G0+qePvugyFOlzyWHBFpxTT60QkIV2NY9IhWL04LgcfX0kyzM7IAk1G3Ynaj77KI3kwx9ItXqQ==}
+
+  '@chainflip/utils@2.2.0-alpha.2':
+    resolution: {integrity: sha512-BqJH3V/gpN0sgvjhrbBCzpCJ/NqXxO4H4SBDC+ZqLFFxgAg0xQw1SP6zmY9vL/BJe1ukB/shE316qCJxFouUIA==}
 
   '@chevrotain/cst-dts-gen@10.5.0':
     resolution: {integrity: sha512-lhmC/FyqQ2o7pGK4Om+hzuDrm9rhFYIJ/AXoQBeongmn870Xeb0L6oGEiuR8nohFNL5sMaQEJWCxr1oIVIVXrw==}
@@ -2139,9 +2142,6 @@ packages:
 
   bech32@2.0.0:
     resolution: {integrity: sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==}
-
-  bignumber.js@10.0.2:
-    resolution: {integrity: sha512-E8Wp9O06QA6lneJ4aRUXKYf/1GIomqUEmUMwtIOMtDxf1U52ffJY+y7JBk/8wRafA8qOIqLnXQGqonYXZdBnFQ==}
 
   bignumber.js@11.1.1:
     resolution: {integrity: sha512-LNkCYMieJqAts/Sj5094B92c5q+yRPlXWpABJnHMbUjB/F8AUjELmSmYX5mxbNiY/QnGnJvJIrnRuW5gUqbW5Q==}
@@ -6137,21 +6137,21 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@2.2.0-alpha.2':
+  '@chainflip/processor@2.2.0-alpha.3':
     dependencies:
-      '@chainflip/utils': 2.2.0-alpha.1
+      '@chainflip/utils': 2.2.0-alpha.2
       zod: 3.25.76
 
-  '@chainflip/redis@2.1.2':
+  '@chainflip/redis@2.2.0-alpha.1':
     dependencies:
-      '@chainflip/utils': 2.1.2
-      bignumber.js: 10.0.2
+      '@chainflip/utils': 2.2.0-alpha.1
+      bignumber.js: 11.1.1
       ioredis: 5.10.1
       zod: 3.25.76
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.2.0-alpha.3':
+  '@chainflip/rpc@2.2.0-alpha.4':
     dependencies:
       '@chainflip/utils': 2.2.0-alpha.1
       zod: 3.25.76
@@ -6205,6 +6205,13 @@ snapshots:
       date-fns: 4.1.0
 
   '@chainflip/utils@2.2.0-alpha.1':
+    dependencies:
+      '@date-fns/utc': 2.1.1
+      '@noble/hashes': 2.2.0
+      bignumber.js: 11.1.1
+      date-fns: 4.1.0
+
+  '@chainflip/utils@2.2.0-alpha.2':
     dependencies:
       '@date-fns/utc': 2.1.1
       '@noble/hashes': 2.2.0
@@ -8456,8 +8463,6 @@ snapshots:
   bech32@1.1.4: {}
 
   bech32@2.0.0: {}
-
-  bignumber.js@10.0.2: {}
 
   bignumber.js@11.1.1: {}
 

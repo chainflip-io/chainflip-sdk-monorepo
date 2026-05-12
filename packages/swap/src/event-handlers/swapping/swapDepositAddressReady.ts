@@ -1,10 +1,11 @@
+import { swappingSwapDepositAddressReady as schema210 } from '@chainflip/processor/210/swapping/swapDepositAddressReady';
 import { swappingSwapDepositAddressReady as schema220 } from '@chainflip/processor/220/swapping/swapDepositAddressReady';
 import { z } from 'zod';
 import { calculateExpiryTime } from '../../utils/function.js';
 import { EventHandlerArgs } from '../index.js';
 
-const swapDepositAddressReadyArgs = schema220.strict();
-export type SwapDepositAddressReadyArgs = z.input<typeof swapDepositAddressReadyArgs>;
+const schema = z.union([schema220.strict(), schema210.strict()]);
+export type SwapDepositAddressReadyArgs = z.input<typeof schema>;
 
 const swapDepositAddressReady = async ({
   prisma,
@@ -28,7 +29,7 @@ const swapDepositAddressReady = async ({
     refundParameters,
     dcaParameters,
     brokerId,
-  } = swapDepositAddressReadyArgs.parse(event.args);
+  } = schema.parse(event.args);
 
   const chainInfo = await prisma.chainTracking.findFirst({
     where: {
