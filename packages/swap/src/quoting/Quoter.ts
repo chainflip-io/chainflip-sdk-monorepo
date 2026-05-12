@@ -265,7 +265,10 @@ export default class Quoter {
       socket.emit('quote_request', message);
     }
 
-    if (expectedResponses === 0) return [];
+    if (expectedResponses === 0) {
+      this.inflightRequests.delete(request.request_id);
+      return [];
+    }
 
     const clientsReceivedQuotes = new Map<AccountId, BetaQuote>();
 
