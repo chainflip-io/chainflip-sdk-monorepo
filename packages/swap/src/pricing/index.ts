@@ -24,6 +24,8 @@ export const coinGeckoIdMap = {
   HubDot: 'polkadot',
   HubUsdc: 'usd-coin',
   HubUsdt: 'tether',
+  Trx: 'tron',
+  TrxUsdt: 'tether',
 } as const satisfies Record<AnyChainflipAsset, string>;
 
 type CoingeckoId = (typeof coinGeckoIdMap)[AnyChainflipAsset];

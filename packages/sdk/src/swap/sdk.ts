@@ -475,6 +475,7 @@ export class SwapSDK {
     switch (res.body.chain) {
       case 'Arbitrum':
       case 'Ethereum':
+      case 'Tron':
         return { ...res.body, value: BigInt(res.body.value) };
       default:
         return res.body;

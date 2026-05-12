@@ -167,7 +167,11 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
           retry_duration: data.fillOrKillParams.retry_duration,
           max_oracle_price_slippage: data.fillOrKillParams.max_oracle_price_slippage,
         } as const;
-      } else if (data.srcAsset.chain === 'Ethereum' || data.srcAsset.chain === 'Arbitrum') {
+      } else if (
+        data.srcAsset.chain === 'Ethereum' ||
+        data.srcAsset.chain === 'Arbitrum' ||
+        data.srcAsset.chain === 'Tron'
+      ) {
         extraParams = {
           chain: data.srcAsset.chain,
           input_amount: `0x${data.amount.toString(16)}`,
@@ -222,6 +226,7 @@ export async function requestSwapDepositAddress(
     case 'Arbitrum':
     case 'Bitcoin':
     case 'Solana':
+    case 'Tron':
       // these addresses come properly formatted
       break;
     default:

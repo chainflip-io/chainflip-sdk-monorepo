@@ -36,6 +36,8 @@ const priceMap = {
   HubDot: 9.914487887030168,
   HubUsdc: 0.9989897393887496,
   HubUsdt: 0.9996396835618839,
+  Trx: 0.25,
+  TrxUsdt: 0.9996396835618839,
 } as const satisfies Record<AnyChainflipAsset, number>;
 
 describe(PriceCache, () => {

@@ -1,11 +1,11 @@
-import { liquidityProviderLiquidityDepositAddressReady as schema190 } from '@chainflip/processor/190/liquidityProvider/liquidityDepositAddressReady';
 import { liquidityProviderLiquidityDepositAddressReady as schema210 } from '@chainflip/processor/210/liquidityProvider/liquidityDepositAddressReady';
+import { liquidityProviderLiquidityDepositAddressReady as schema220 } from '@chainflip/processor/220/liquidityProvider/liquidityDepositAddressReady';
 import { z } from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
 const liquidityProviderLiquidityDepositAddressReady = z.union([
+  schema220.strict(),
   schema210.strict(),
-  schema190.strict(),
 ]);
 
 export type LiquidityDepositAddressReadyArgs = z.input<

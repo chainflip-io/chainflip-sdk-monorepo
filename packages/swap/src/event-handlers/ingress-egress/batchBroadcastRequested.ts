@@ -3,6 +3,7 @@ import { assethubIngressEgressBatchBroadcastRequested } from '@chainflip/process
 import { bitcoinIngressEgressBatchBroadcastRequested } from '@chainflip/processor/190/bitcoinIngressEgress/batchBroadcastRequested';
 import { ethereumIngressEgressBatchBroadcastRequested } from '@chainflip/processor/190/ethereumIngressEgress/batchBroadcastRequested';
 import { solanaIngressEgressBatchBroadcastRequested } from '@chainflip/processor/190/solanaIngressEgress/batchBroadcastRequested';
+import { tronIngressEgressBatchBroadcastRequested } from '@chainflip/processor/220/tronIngressEgress/batchBroadcastRequested';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import z from 'zod';
 import logger from '../../utils/logger.js';
@@ -14,6 +15,7 @@ const schemas = {
   Ethereum: ethereumIngressEgressBatchBroadcastRequested,
   Solana: solanaIngressEgressBatchBroadcastRequested,
   Assethub: assethubIngressEgressBatchBroadcastRequested,
+  Tron: tronIngressEgressBatchBroadcastRequested,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type BatchBroadcastRequestedArgsMap = {

@@ -22,6 +22,7 @@ describe(getLpBalances, () => {
       Arbitrum: { ETH: 6n, USDC: 7n, USDT: 15n },
       Solana: { SOL: 9n, USDC: 10n, USDT: 16n },
       Assethub: { DOT: 11n, USDT: 12n, USDC: 13n },
+      Tron: { TRX: 17n, USDT: 18n },
     } as ChainAssetMap<bigint>);
 
     const balances = await getLpBalances(new Set(['lp1']));
@@ -43,6 +44,8 @@ describe(getLpBalances, () => {
             "Sol": 9n,
             "SolUsdc": 10n,
             "SolUsdt": 16n,
+            "Trx": 17n,
+            "TrxUsdt": 18n,
             "Usdc": 4n,
             "Usdt": 5n,
             "Wbtc": 14n,

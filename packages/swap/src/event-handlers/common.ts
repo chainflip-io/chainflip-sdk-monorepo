@@ -2,9 +2,10 @@ import * as bitcoin from '@chainflip/bitcoin';
 import { arbitrumIngressEgressDepositFinalised } from '@chainflip/processor/11200/arbitrumIngressEgress/depositFinalised';
 import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/11200/assethubIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
-import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/11200/common';
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/11200/ethereumIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/11200/solanaIngressEgress/depositFinalised';
+import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/220/common';
+import { tronIngressEgressDepositFinalised } from '@chainflip/processor/220/tronIngressEgress/depositFinalised';
 import * as base58 from '@chainflip/utils/base58';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { POLKADOT_SS58_PREFIX } from '@chainflip/utils/consts';
@@ -90,6 +91,7 @@ export type DepositDetailsData = {
       Arbitrum: z.output<typeof arbitrumIngressEgressDepositFinalised>;
       Solana: z.output<typeof solanaIngressEgressDepositFinalised> | { depositDetails: undefined };
       Assethub: z.output<typeof assethubIngressEgressDepositFinalised>;
+      Tron: z.output<typeof tronIngressEgressDepositFinalised>;
     }[C]['depositDetails'];
   };
 }[ChainflipChain];
@@ -104,7 +106,8 @@ export const getDepositTxRef = (
 
   switch (depositDetails.chain) {
     case 'Arbitrum':
-    case 'Ethereum': {
+    case 'Ethereum':
+    case 'Tron': {
       const hash = depositDetails.data?.txHashes?.at(0);
       if (!hash) return undefined;
       return formatTxRef({ chain: depositDetails.chain, data: hash });
@@ -120,7 +123,7 @@ export const getDepositTxRef = (
     case 'Solana':
       return undefined;
     default:
-      return assertUnreachable(depositDetails);
+      return assertUnreachable(depositDetails, 'unexpected chain');
   }
 };
 
@@ -132,6 +135,7 @@ export const formatForeignChainAddress = (address: ForeignChainAddress): string 
     case 'Arb':
       return address.value;
     case 'Sol':
+    case 'Tron':
       return base58.encode(address.value);
     case 'Hub':
     case 'Dot':

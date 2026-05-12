@@ -17,12 +17,22 @@ const ARBITRUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   perseverance: 421614, // arb-sepolia
   mainnet: 42161, // mainnet
 };
+
+const TRON_CHAIN_ID: Record<ChainflipNetwork, number> = {
+  backspin: 4271970548, // backspin tron
+  sisyphos: 3448148188, // nile
+  perseverance: 3448148188, // nile
+  mainnet: 728126428, // mainnet
+};
+
 export const getEvmChainId = (chain: ChainflipChain, network: ChainflipNetwork) => {
   switch (chain) {
     case 'Ethereum':
       return ETHEREUM_EVM_CHAIN_ID[network];
     case 'Arbitrum':
       return ARBITRUM_EVM_CHAIN_ID[network];
+    case 'Tron':
+      return TRON_CHAIN_ID[network];
     default:
       return undefined;
   }
@@ -43,6 +53,7 @@ type AddressMap = {
   STATE_CHAIN_GATEWAY_ADDRESS: string;
   SOLUSDC_CONTRACT_ADDRESS: string;
   SOLUSDT_CONTRACT_ADDRESS: string;
+  TRXUSDT_CONTRACT_ADDRESS: string;
 };
 
 export const ADDRESSES: Record<ChainflipNetwork, AddressMap> = {
@@ -56,6 +67,7 @@ export const ADDRESSES: Record<ChainflipNetwork, AddressMap> = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0xeEBe00Ac0756308ac4AaBfD76c05c4F3088B8883',
     SOLUSDC_CONTRACT_ADDRESS: '24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p',
     SOLUSDT_CONTRACT_ADDRESS: '8D5DryH5hA6s7Wf5AHXX19pNBwaTmMmvj4UgQGW2S8dF',
+    TRXUSDT_CONTRACT_ADDRESS: 'TN3kCS3eNeY99maF38H6Q5CuJGMK61eqx7', // TRON USDT contract can change on backspin if the tron image is rebuilt
   },
   sisyphos: {
     FLIP_CONTRACT_ADDRESS: '0xcD079EAB6B5443b545788Fd210C8800FEADd87fa',
@@ -67,6 +79,7 @@ export const ADDRESSES: Record<ChainflipNetwork, AddressMap> = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0x1F7fE41C798cc7b1D34BdC8de2dDDA4a4bE744D9',
     SOLUSDC_CONTRACT_ADDRESS: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
     SOLUSDT_CONTRACT_ADDRESS: 'FvuqJYh8YeEmarW5qkSrYeEgzaTKktgL3vhgBy2Csy4o',
+    TRXUSDT_CONTRACT_ADDRESS: 'TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf',
   },
   perseverance: {
     FLIP_CONTRACT_ADDRESS: '0xdC27c60956cB065D19F08bb69a707E37b36d8086',
@@ -78,6 +91,7 @@ export const ADDRESSES: Record<ChainflipNetwork, AddressMap> = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0xA34a967197Ee90BB7fb28e928388a573c5CFd099',
     SOLUSDC_CONTRACT_ADDRESS: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
     SOLUSDT_CONTRACT_ADDRESS: 'FvuqJYh8YeEmarW5qkSrYeEgzaTKktgL3vhgBy2Csy4o',
+    TRXUSDT_CONTRACT_ADDRESS: 'TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf',
   },
   mainnet: {
     FLIP_CONTRACT_ADDRESS: '0x826180541412D574cf1336d22c0C0a287822678A',
@@ -89,6 +103,7 @@ export const ADDRESSES: Record<ChainflipNetwork, AddressMap> = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0x6995Ab7c4D7F4B03f467Cf4c8E920427d9621DBd',
     SOLUSDC_CONTRACT_ADDRESS: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
     SOLUSDT_CONTRACT_ADDRESS: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    TRXUSDT_CONTRACT_ADDRESS: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
   },
 };
 
@@ -115,4 +130,6 @@ export const chainflipAssetToPriceAssetMap: InternalAssetMap<PriceAsset | null> 
   HubDot: null,
   HubUsdc: null,
   HubUsdt: null,
+  Trx: null,
+  TrxUsdt: 'Usdt',
 };

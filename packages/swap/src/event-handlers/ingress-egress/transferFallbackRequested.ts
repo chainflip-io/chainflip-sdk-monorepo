@@ -1,11 +1,9 @@
-import { arbitrumIngressEgressTransferFallbackRequested as arbitrum190 } from '@chainflip/processor/190/arbitrumIngressEgress/transferFallbackRequested';
 import { assethubIngressEgressTransferFallbackRequested as assethub190 } from '@chainflip/processor/190/assethubIngressEgress/transferFallbackRequested';
 import { bitcoinIngressEgressTransferFallbackRequested as bitcoin190 } from '@chainflip/processor/190/bitcoinIngressEgress/transferFallbackRequested';
-import { ethereumIngressEgressTransferFallbackRequested as ethereum190 } from '@chainflip/processor/190/ethereumIngressEgress/transferFallbackRequested';
-import { solanaIngressEgressTransferFallbackRequested as solana190 } from '@chainflip/processor/190/solanaIngressEgress/transferFallbackRequested';
 import { arbitrumIngressEgressTransferFallbackRequested as arbitrum210 } from '@chainflip/processor/210/arbitrumIngressEgress/transferFallbackRequested';
 import { ethereumIngressEgressTransferFallbackRequested as ethereum210 } from '@chainflip/processor/210/ethereumIngressEgress/transferFallbackRequested';
 import { solanaIngressEgressTransferFallbackRequested as solana210 } from '@chainflip/processor/210/solanaIngressEgress/transferFallbackRequested';
+import { tronIngressEgressTransferFallbackRequested as tron220 } from '@chainflip/processor/220/tronIngressEgress/transferFallbackRequested';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import logger from '../../utils/logger.js';
@@ -13,7 +11,7 @@ import { formatForeignChainAddress } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
-  Arbitrum: z.union([arbitrum210.strict(), arbitrum190.strict()]).transform((args) => ({
+  Arbitrum: arbitrum210.strict().transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Arb',
@@ -27,14 +25,14 @@ const schemas = {
       value: args.destinationAddress,
     }),
   })),
-  Ethereum: z.union([ethereum210.strict(), ethereum190.strict()]).transform((args) => ({
+  Ethereum: ethereum210.strict().transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Eth',
       value: args.destinationAddress,
     }),
   })),
-  Solana: z.union([solana210.strict(), solana190.strict()]).transform((args) => ({
+  Solana: solana210.strict().transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Sol',
@@ -45,6 +43,13 @@ const schemas = {
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Hub',
+      value: args.destinationAddress,
+    }),
+  })),
+  Tron: tron220.transform((args) => ({
+    ...args,
+    destinationAddress: formatForeignChainAddress({
+      __kind: 'Tron',
       value: args.destinationAddress,
     }),
   })),

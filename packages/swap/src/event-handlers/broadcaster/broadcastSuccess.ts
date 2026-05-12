@@ -3,6 +3,7 @@ import { ethereumBroadcasterBroadcastSuccess } from '@chainflip/processor/131/et
 import { arbitrumBroadcasterBroadcastSuccess } from '@chainflip/processor/141/arbitrumBroadcaster/broadcastSuccess';
 import { solanaBroadcasterBroadcastSuccess } from '@chainflip/processor/160/solanaBroadcaster/broadcastSuccess';
 import { assethubBroadcasterBroadcastSuccess } from '@chainflip/processor/190/assethubBroadcaster/broadcastSuccess';
+import { tronBroadcasterBroadcastSuccess } from '@chainflip/processor/220/tronBroadcaster/broadcastSuccess';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { formatTxRef } from '@/shared/common.js';
@@ -28,6 +29,10 @@ const schemas = {
   Assethub: assethubBroadcasterBroadcastSuccess.transform((args) => ({
     ...args,
     transactionRef: formatTxRef({ chain: 'Assethub' as const, data: args.transactionRef }),
+  })),
+  Tron: tronBroadcasterBroadcastSuccess.transform((args) => ({
+    ...args,
+    transactionRef: formatTxRef({ chain: 'Tron' as const, data: args.transactionRef }),
   })),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 

@@ -15,6 +15,14 @@ export const EncodedVaultSwapData = z.discriminatedUnion('chain', [
     sourceTokenAddress: hexString.optional(),
   }),
   z.object({
+    chain: z.literal('Tron'),
+    calldata: hexString,
+    value: z.string(),
+    to: hexString,
+    note: hexString,
+    sourceTokenAddress: hexString.optional(),
+  }),
+  z.object({
     chain: z.literal('Solana'),
     programId: z.string(),
     data: hexString,

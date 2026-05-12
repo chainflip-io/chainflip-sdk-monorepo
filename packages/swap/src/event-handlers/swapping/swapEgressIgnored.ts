@@ -1,19 +1,19 @@
-import { swappingSwapEgressIgnored as schema190 } from '@chainflip/processor/190/swapping/swapEgressIgnored';
 import { swappingSwapEgressIgnored as schema210 } from '@chainflip/processor/210/swapping/swapEgressIgnored';
+import { swappingSwapEgressIgnored as schema220 } from '@chainflip/processor/220/swapping/swapEgressIgnored';
 import { z } from 'zod';
 import { getStateChainError } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
-const swapEgressIgnoredArgs = z.union([schema210.strict(), schema190.strict()]);
+const schema = z.union([schema220.strict(), schema210.strict()]);
 
-export type SwapEgressIgnoredArgs = z.input<typeof swapEgressIgnoredArgs>;
+export type SwapEgressIgnoredArgs = z.input<typeof schema>;
 
 export default async function swapEgressIgnored({
   prisma,
   event,
   block,
 }: EventHandlerArgs): Promise<void> {
-  const { amount, swapRequestId, reason } = swapEgressIgnoredArgs.parse(event.args);
+  const { amount, swapRequestId, reason } = schema.parse(event.args);
 
   const failure = await (reason.__kind === 'Module'
     ? getStateChainError(prisma, block, reason.value)

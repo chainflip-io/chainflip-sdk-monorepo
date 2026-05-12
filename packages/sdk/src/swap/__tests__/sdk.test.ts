@@ -3670,6 +3670,7 @@ describe(SwapSDK, () => {
           "Bitcoin": 0n,
           "Ethereum": 16n,
           "Solana": 0n,
+          "Tron": 0n,
         }
       `);
     });

@@ -1,5 +1,5 @@
-import { swappingSwapRequested as schema200 } from '@chainflip/processor/200/swapping/swapRequested';
 import { swappingSwapRequested as schema210 } from '@chainflip/processor/210/swapping/swapRequested';
+import { swappingSwapRequested as schema220 } from '@chainflip/processor/220/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import {
   assetConstants,
@@ -18,7 +18,7 @@ import { Prisma } from '../../client.js';
 import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([schema210.strict(), schema200.strict()]);
+const schema = z.union([schema220.strict(), schema210.strict()]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];
@@ -50,11 +50,9 @@ const getRequestInfo = (requestType: RequestType) => {
         loanId: requestType.outputAction.swapType.loanId,
       };
     }
-
     if (requestType.outputAction.__kind === 'CreditFlipAndTransferToGateway') {
       return { type: 'ACCOUNT_CREATION' as const, lpAccountId: requestType.outputAction.accountId };
     }
-
     return assertNever(
       requestType.outputAction,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,6 +69,8 @@ export const getVaultOriginTxRef = (
 ) => {
   const kind = origin.txId.__kind;
 
+  // TODO(TRON): Tron might need a different implementation (PR still in review)
+  // https://linear.app/chainflip/issue/WEB-3464/handle-tron-vault-swap-origin-tx-ref
   switch (kind) {
     case 'Evm':
       return formatTxRef({ chain: 'Ethereum', data: origin.txId.value });
@@ -89,23 +89,7 @@ export const getOriginInfo = async (
   prisma: Prisma.TransactionClient,
   srcAsset: ChainflipAsset,
   origin: Origin,
-  requestInfo: ReturnType<typeof getRequestInfo>,
 ) => {
-  // TODO(2.1): remove this branch once all networks are upgraded
-  if (requestInfo.type === 'ACCOUNT_CREATION') {
-    const channel = await prisma.accountCreationDepositChannel.findFirstOrThrow({
-      where: { chain: assetConstants[srcAsset].chain, lpAccountId: requestInfo.lpAccountId },
-      orderBy: { issuedBlock: 'desc' },
-      include: { swapBeneficiaries: true },
-    });
-
-    return {
-      originType: 'DEPOSIT_CHANNEL' as const,
-      accountCreationDepositChannelId: channel.id,
-      brokerId: channel.swapBeneficiaries[0].account,
-    };
-  }
-
   if (origin.__kind === 'DepositChannel') {
     const depositChannel = await prisma.swapDepositChannel.findFirst({
       where: { srcChain: assetConstants[srcAsset].chain, channelId: origin.channelId },
@@ -263,7 +247,7 @@ export default async function swapRequested({
     'legacy assets are not supported in swap requests',
   );
 
-  const originInfo = await getOriginInfo(prisma, inputAsset, origin, requestInfo);
+  const originInfo = await getOriginInfo(prisma, inputAsset, origin);
 
   const {
     originType,
