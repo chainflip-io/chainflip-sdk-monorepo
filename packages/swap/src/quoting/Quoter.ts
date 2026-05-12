@@ -103,7 +103,7 @@ export default class Quoter {
 
   private readonly inflightRequests = new Map<
     string,
-    { quoteRequestId: string | undefined; responders: Set<AccountId> }
+    { quoteRequestId: string | undefined; responders: Set<AccountId>; requestedAt: number }
   >();
 
   private balanceTracker = new BalanceTracker(env.QUOTER_BALANCE_TRACKER_ACTIVE);
@@ -178,6 +178,7 @@ export default class Quoter {
             marketMaker: socket.data.marketMaker,
             marketMakerRequestId: requestId,
             error,
+            durationMs: inflight ? performance.now() - inflight.requestedAt : undefined,
           });
         }
 
@@ -205,6 +206,7 @@ export default class Quoter {
             marketMakerRequestId: result.data.request_id,
             legs: result.data.legs,
             beta: socket.data.beta,
+            durationMs: inflight ? performance.now() - inflight.requestedAt : undefined,
           });
         }
 
@@ -227,6 +229,7 @@ export default class Quoter {
     this.inflightRequests.set(request.request_id, {
       quoteRequestId,
       responders: new Set<AccountId>(),
+      requestedAt: performance.now(),
     });
 
     let expectedResponses = 0;
@@ -274,12 +277,14 @@ export default class Quoter {
       const complete = (reason: 'timeout' | 'all-received') => {
         if (reason === 'timeout') {
           const entry = this.inflightRequests.get(request.request_id);
+          const durationMs = entry ? performance.now() - entry.requestedAt : undefined;
           for (const marketMaker of quotedLegsMap.keys()) {
             if (!entry?.responders.has(marketMaker)) {
               publishQuoteOrderTimeout({
                 quoteRequestId: entry?.quoteRequestId,
                 marketMaker,
                 marketMakerRequestId: request.request_id,
+                durationMs,
               });
             }
           }
