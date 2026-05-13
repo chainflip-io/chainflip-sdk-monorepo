@@ -60,4 +60,5 @@ jobs:
           else
             echo "Pre-release version detected: $version"
             echo "publish_tag=pre-release" >> $GITHUB_OUTPUT
+            echo "git_tag=$version" >> $GITHUB_OUTPUT
           fi
