@@ -10,6 +10,7 @@ import * as base58 from '@chainflip/utils/base58';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { POLKADOT_SS58_PREFIX } from '@chainflip/utils/consts';
 import * as ss58 from '@chainflip/utils/ss58';
+import { hexToTronAddress } from '@chainflip/utils/tron';
 import { Metadata, TypeRegistry } from '@polkadot/types';
 import assert from 'assert';
 import { z } from 'zod';
@@ -135,7 +136,6 @@ export const formatForeignChainAddress = (address: ForeignChainAddress): string 
     case 'Arb':
       return address.value;
     case 'Sol':
-    case 'Tron':
       return base58.encode(address.value);
     case 'Hub':
     case 'Dot':
@@ -144,12 +144,13 @@ export const formatForeignChainAddress = (address: ForeignChainAddress): string 
       if (address.value.__kind === 'OtherSegwit') {
         throw new Error('OtherSegwit scriptPubKey not supported');
       }
-
       return bitcoin.encodeAddress(
         address.value.value,
         address.value.__kind,
         env.CHAINFLIP_NETWORK,
       );
+    case 'Tron':
+      return hexToTronAddress(address.value);
     default:
       return assertUnreachable(address, 'unexpected address');
   }
