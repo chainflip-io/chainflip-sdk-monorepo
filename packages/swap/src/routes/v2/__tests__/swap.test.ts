@@ -1051,16 +1051,9 @@ describe('server', () => {
           txRef: '9dccc57dc24a62635e946b06629a01646741e728edeacfed0e30d9638e82b378',
         },
         depositChannel: {
-          affiliateBrokers: [],
-          brokerCommissionBps: 0,
           createdAt: 21688716000,
           depositAddress: 'tb1purq4kn2cl8cltjms3twmljpkrucfjxx3ths8ynmsgg9nkx2ypydqx9e6y2',
           estimatedExpiryTime: 3732519000000,
-          fillOrKillParams: {
-            minPrice: '5.140026445278486822',
-            refundAddress: 'tb1q78pjllxzm7069fj8mw3ud0dvk4d8n2muqs7q2k',
-            retryDurationBlocks: 150,
-          },
           id: '3614786-Bitcoin-875',
           isExpired: false,
           openedThroughBackend: false,
