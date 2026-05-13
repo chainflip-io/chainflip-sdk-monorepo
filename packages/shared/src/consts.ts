@@ -67,7 +67,7 @@ export const ADDRESSES: Record<ChainflipNetwork, AddressMap> = {
     STATE_CHAIN_GATEWAY_ADDRESS: '0xeEBe00Ac0756308ac4AaBfD76c05c4F3088B8883',
     SOLUSDC_CONTRACT_ADDRESS: '24PNhTaNtomHhoy3fTRaMhAFCRj4uHqhZEEoWrKDbR5p',
     SOLUSDT_CONTRACT_ADDRESS: '8D5DryH5hA6s7Wf5AHXX19pNBwaTmMmvj4UgQGW2S8dF',
-    TRXUSDT_CONTRACT_ADDRESS: 'TN3kCS3eNeY99maF38H6Q5CuJGMK61eqx7', // TRON USDT contract can change on backspin if the tron image is rebuilt
+    TRXUSDT_CONTRACT_ADDRESS: 'TQ6iqCJLAGYgVFccmARRLUBoAGM5FeMGqz', // TRON USDT contract can change on backspin if the tron image is rebuilt
   },
   sisyphos: {
     FLIP_CONTRACT_ADDRESS: '0xcD079EAB6B5443b545788Fd210C8800FEADd87fa',
