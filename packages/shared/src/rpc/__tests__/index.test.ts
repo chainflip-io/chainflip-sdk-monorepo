@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   boostPoolsDepth,
+  defaultLendingPoolConfig,
   fundingEnvironment,
   ingressEgressEnvironment,
   mockRpcResponse,
@@ -441,10 +442,13 @@ describe('getSupplyPoolsDepth', () => {
   it('retrieves the supply pools depth for a given asset', async () => {
     const spy = mockResponse(supplyPoolsDepth());
 
-    const result = await getSupplyPoolsDepth({ network: 'perseverance' }, {
-      chain: 'Bitcoin',
-      asset: 'BTC',
-    });
+    const result = await getSupplyPoolsDepth(
+      { network: 'perseverance' },
+      {
+        chain: 'Bitcoin',
+        asset: 'BTC',
+      },
+    );
 
     expect(result).toMatchInlineSnapshot(`
       [
@@ -475,10 +479,13 @@ describe('getSupplyPoolsDepth', () => {
   it('returns an empty array when no supply pools exist', async () => {
     mockResponse(supplyPoolsDepth([]));
 
-    const result = await getSupplyPoolsDepth({ network: 'perseverance' }, {
-      chain: 'Bitcoin',
-      asset: 'BTC',
-    });
+    const result = await getSupplyPoolsDepth(
+      { network: 'perseverance' },
+      {
+        chain: 'Bitcoin',
+        asset: 'BTC',
+      },
+    );
 
     expect(result).toEqual([]);
   });

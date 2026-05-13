@@ -68,6 +68,27 @@ exports[`getIngressEgressEnvironment > retrieves the ingress egress environment 
 ]
 `;
 
+exports[`getSupplyPoolsDepth > retrieves the supply pools depth for a given asset 2`] = `
+[
+  [
+    "https://archive.perseverance.chainflip.io",
+    [
+      {
+        "id": "1",
+        "jsonrpc": "2.0",
+        "method": "cf_lending_pools",
+        "params": [
+          {
+            "asset": "BTC",
+            "chain": "Bitcoin",
+          },
+        ],
+      },
+    ],
+  ],
+]
+`;
+
 exports[`getSwappingEnvironment > retrieves the swapping environment 2`] = `
 [
   [
