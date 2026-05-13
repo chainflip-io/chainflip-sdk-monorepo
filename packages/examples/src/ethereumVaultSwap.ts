@@ -14,7 +14,7 @@ if (!process.env.ETHEREUM_SECRET_KEY) {
 
 const swapSDK = new SwapSDK({
   network: 'perseverance',
-  enabledFeatures: { dca: true },
+  enabledFeatures: { dcaV2: true },
   // broker: {url: 'http://10.5.2.143:8080/ '}
 });
 

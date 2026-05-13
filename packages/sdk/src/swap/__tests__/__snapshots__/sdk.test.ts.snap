@@ -258,7 +258,7 @@ exports[`SwapSDK > getAssets > returns the correct values for backspin 1`] = `
     "asset": "USDT",
     "chain": "Tron",
     "chainflipId": "TrxUsdt",
-    "contractAddress": "TN3kCS3eNeY99maF38H6Q5CuJGMK61eqx7",
+    "contractAddress": "TQ6iqCJLAGYgVFccmARRLUBoAGM5FeMGqz",
     "decimals": 6,
     "isMainnet": false,
     "maximumSwapAmount": null,

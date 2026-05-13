@@ -120,7 +120,6 @@ export default class QuoteRequest {
   private readonly srcAsset: ChainflipAsset;
   private readonly destAsset: ChainflipAsset;
   private readonly depositAmount: bigint;
-  private readonly dcaEnabled: boolean;
   private readonly dcaV2Available: boolean;
   private readonly isVaultSwap: boolean;
   private readonly isOnChain: boolean;
@@ -155,7 +154,6 @@ export default class QuoteRequest {
     this.destAsset = params.destAsset;
     this.depositAmount = params.amount;
     this.dcaV2Available = isDcaV2Available(params);
-    this.dcaEnabled = this.dcaV2Available || (params.dcaEnabled && !env.DISABLE_DCA_QUOTING);
     this.isVaultSwap = params.isVaultSwap ?? false;
     this.isOnChain = params.isOnChain ?? false;
     this.pools = params.pools;
@@ -166,7 +164,7 @@ export default class QuoteRequest {
 
   private async setDcaQuoteParams() {
     if (
-      !this.dcaEnabled ||
+      env.DISABLE_DCA_QUOTING ||
       env.DCA_DISABLED_INTERNAL_ASSETS.has(this.srcAsset) ||
       env.DCA_DISABLED_INTERNAL_ASSETS.has(this.destAsset)
     ) {

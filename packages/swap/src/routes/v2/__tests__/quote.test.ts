@@ -1098,7 +1098,6 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
-        dcaEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1245,7 +1244,6 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
-        dcaEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1376,7 +1374,6 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
-        dcaEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1461,7 +1458,6 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
-        dcaEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1541,7 +1537,6 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
-        dcaEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1623,7 +1618,6 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'USDC',
         amount: (1e18).toString(),
-        dcaEnabled: 'true',
       });
 
       const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
@@ -1729,7 +1723,6 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: (0.001e8).toString(),
-        dcaEnabled: 'true',
         brokerCommissionBps: '10',
       });
 
@@ -1820,82 +1813,6 @@ describe('server', () => {
           ],
         ]
       `);
-    });
-
-    it('gets no DCA quote if the flag is missing', async () => {
-      env.DCA_SELL_CHUNK_SIZE_USD = { Eth: 3000 };
-      env.DCA_CHUNK_INTERVAL_BLOCKS = 2;
-      env.DCA_DEFAULT_SELL_CHUNK_SIZE_USD = 2000;
-      env.DCA_100K_USD_PRICE_IMPACT_PERCENT = {};
-      vi.mocked(getUsdValue).mockResolvedValue('9800');
-
-      mockRpcResponse((url, data: any) => {
-        if (data.method === 'cf_environment') {
-          return Promise.resolve({
-            data: environment({
-              maxSwapAmount: null,
-              ingressFee: hexEncodeNumber(0x61a8),
-              egressFee: hexEncodeNumber(0x0),
-            }),
-          });
-        }
-
-        if (data.method === 'cf_boost_pools_depth') {
-          return Promise.resolve({
-            data: boostPoolsDepth(),
-          });
-        }
-
-        if (data.method === 'cf_accounts') {
-          return Promise.resolve({
-            data: {
-              id: 1,
-              jsonrpc: '2.0',
-              result: [
-                ['cFMYYJ9F1r1pRo3NBbnQDVRVRwY9tYem39gcfKZddPjvfsFfH', 'Chainflip Testnet Broker 2'],
-              ],
-            },
-          });
-        }
-
-        if (data.method === 'cf_account_info') {
-          return Promise.resolve({
-            data: cfAccountInfo(),
-          });
-        }
-
-        if (data.method === 'cf_pool_depth') {
-          return Promise.resolve({
-            data: cfPoolDepth(),
-          });
-        }
-
-        throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
-      });
-
-      const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
-        broker_commission: buildFee('Usdc', 0),
-        ingress_fee: buildFee('Eth', 25000),
-        egress_fee: buildFee('Usdc', 0),
-        network_fee: buildFee('Usdc', 100100),
-        intermediary: null,
-        output: BigInt(100e6),
-      });
-
-      const params = new URLSearchParams({
-        srcChain: 'Ethereum',
-        srcAsset: 'ETH',
-        destChain: 'Ethereum',
-        destAsset: 'USDC',
-        amount: (1e18).toString(),
-        dcaEnabled: 'false',
-      });
-
-      const { body, status } = await request(server).get(`/v2/quote?${params.toString()}`);
-
-      expect(status).toBe(200);
-      expect(body).toMatchSnapshot();
-      expect(sendSpy).toHaveBeenCalledTimes(1);
     });
 
     it('gets only REGULAR quote because amount is less than 3000', async () => {
@@ -2349,7 +2266,6 @@ describe('server', () => {
         destChain: 'Ethereum',
         destAsset: 'ETH',
         amount: btcAmount.shiftedBy(assetConstants.Btc.decimals).toFixed(0),
-        dcaEnabled: 'true',
         dcaV2Enabled: 'true',
       });
 
@@ -2554,7 +2470,6 @@ describe('server', () => {
           destChain: 'Ethereum',
           destAsset: 'ETH',
           amount: (0.01e8).toString(),
-          dcaEnabled: 'true',
           isOnChain: 'true',
         });
 

@@ -44,7 +44,6 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          dcaEnabled: false,
           dcaV2Enabled: false,
           isVaultSwap: true,
         },
@@ -61,7 +60,6 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           brokerCommissionBps: 15,
-          dcaEnabled: false,
           dcaV2Enabled: false,
         },
         {},
@@ -81,7 +79,6 @@ describe('ApiService', () => {
             { account: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa', commissionBps: 10 },
             { account: 'cFLdopvNB7LaiBbJoNdNC26e9Gc1FNJKFtvNZjAmXAAVnzCk4', commissionBps: 20 },
           ],
-          dcaEnabled: false,
           dcaV2Enabled: false,
         },
         {},
@@ -97,7 +94,6 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           isVaultSwap: true,
-          dcaEnabled: true,
           dcaV2Enabled: false,
         },
         {},
@@ -116,7 +112,6 @@ describe('ApiService', () => {
             gasBudget: '12345',
             messageLengthBytes: 100,
           },
-          dcaEnabled: true,
           dcaV2Enabled: false,
         },
         {},
@@ -132,7 +127,6 @@ describe('ApiService', () => {
         {
           ...mockRoute,
           brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
-          dcaEnabled: false,
           dcaV2Enabled: false,
         },
         {},
@@ -147,7 +141,6 @@ describe('ApiService', () => {
         'https://swapperoo.org',
         {
           ...mockRoute,
-          dcaEnabled: false,
           dcaV2Enabled: false,
         },
         {

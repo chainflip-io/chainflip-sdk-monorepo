@@ -23,7 +23,7 @@ if (!process.env.SOLANA_SECRET_KEY_BASE58) {
 
 const swapSDK = new SwapSDK({
   network: 'perseverance',
-  enabledFeatures: { dca: true },
+  enabledFeatures: { dcaV2: true },
 });
 
 const keypair = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SECRET_KEY_BASE58));

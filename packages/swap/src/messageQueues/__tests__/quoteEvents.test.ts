@@ -69,7 +69,6 @@ describe('quoteEvents', () => {
         srcAsset: 'Btc',
         destAsset: 'Eth',
         depositAmount: '100000000',
-        dcaEnabled: false,
       };
 
       publishQuoteRequestReceived(data);
@@ -80,7 +79,6 @@ describe('quoteEvents', () => {
           srcAsset: 'Btc',
           destAsset: 'Eth',
           depositAmount: '100000000',
-          dcaEnabled: false,
           quoteRequestId: mockRequestId,
           event: 'quote.request.received',
           timestamp: expect.any(String),
