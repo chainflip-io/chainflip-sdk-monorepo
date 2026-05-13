@@ -26,6 +26,14 @@ which it is deprecated.
 - `@chainflip/utils` upgraded to 2.2.0
 - `@chainflip/solana` upgraded to 2.2.3
 
+### Deprecated
+
+- `SwapSDK.prototype.getBoostLiquidity`: deprecated `feeTierBps` field.
+  5 is the default value moving forward as all the other boost pools have been removed.
+- `SwapSDK.prototype.getBoostLiquidity`: `BoostPoolDepth` now includes a `poolType` property for each item in the returned array,
+  specifying the boost pool type. Possible values are `LEGACY_BOOST` | `SUPPLY`.
+  Some supply pools (i.e BTC) will contribute to protocol boosts moving forward.
+
 ## 2.1.0
 
 ### Added

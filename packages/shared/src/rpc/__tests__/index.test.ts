@@ -4,6 +4,7 @@ import {
   fundingEnvironment,
   ingressEgressEnvironment,
   mockRpcResponse,
+  supplyPoolsDepth,
   swappingEnvironment,
 } from '../../tests/fixtures.js';
 import {
@@ -11,6 +12,7 @@ import {
   getSwappingEnvironment,
   getIngressEgressEnvironment,
   getAllBoostPoolsDepth,
+  getSupplyPoolsDepth,
 } from '../index.js';
 
 const mockResponse = (data: any) => mockRpcResponse({ data });
@@ -432,5 +434,52 @@ describe('getAllBoostPoolsDepth', () => {
     );
     spy.mock.calls[0][1][0].id = '1';
     expect(spy.mock.calls).toMatchSnapshot();
+  });
+});
+
+describe('getSupplyPoolsDepth', () => {
+  it('retrieves the supply pools depth for a given asset', async () => {
+    const spy = mockResponse(supplyPoolsDepth());
+
+    const result = await getSupplyPoolsDepth({ network: 'perseverance' }, {
+      chain: 'Bitcoin',
+      asset: 'BTC',
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "asset": {
+            "asset": "BTC",
+            "chain": "Bitcoin",
+          },
+          "availableAmount": 100000n,
+          "currentInterestRate": 100,
+          "interestRateCurve": {
+            "interestAtJunctionUtilisation": 75,
+            "interestAtMaxUtilisation": 200,
+            "interestAtZeroUtilisation": 50,
+            "junctionUtilisation": 80,
+          },
+          "liquidationFee": 5,
+          "originationFee": 10,
+          "totalAmount": 100000n,
+          "utilisationRate": 0,
+        },
+      ]
+    `);
+    spy.mock.calls[0][1][0].id = '1';
+    expect(spy.mock.calls).toMatchSnapshot();
+  });
+
+  it('returns an empty array when no supply pools exist', async () => {
+    mockResponse(supplyPoolsDepth([]));
+
+    const result = await getSupplyPoolsDepth({ network: 'perseverance' }, {
+      chain: 'Bitcoin',
+      asset: 'BTC',
+    });
+
+    expect(result).toEqual([]);
   });
 });

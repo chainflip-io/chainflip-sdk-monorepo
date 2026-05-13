@@ -2,7 +2,13 @@
 import { chainflipAssets, ChainflipChain, chainflipNetworks } from '@chainflip/utils/chainflip';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { BoostQuote, FillOrKillParams, Quote } from '@/shared/schemas.js';
-import { boostPoolsDepth, environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
+import {
+  boostPoolsDepth,
+  defaultLendingPoolConfig,
+  environment,
+  mockRpcResponse,
+  supplyPoolsDepth,
+} from '@/shared/tests/fixtures.js';
 import { SwapSDK } from '../sdk.js';
 import { getQuoteV2, getStatusV2 } from '../services/ApiService.js';
 import { QuoteRequest } from '../types.js';
@@ -3675,7 +3681,13 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.getBoostLiquidity, () => {
-    it('returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier', async () => {
+    it('returns empty array for deprecated feeTierBps values', async () => {
+      await expect(sdk.getBoostLiquidity({ feeTierBps: 30 })).rejects.toThrow(
+        'Unsupported fee tier. Only 5 bps is supported starting from version 2.2.',
+      );
+    });
+
+    it('returns the boost pools liquidity depth', async () => {
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_boost_pools_depth') {
           return Promise.resolve({
@@ -3683,84 +3695,27 @@ describe(SwapSDK, () => {
               {
                 chain: 'Bitcoin',
                 asset: 'BTC',
-                tier: 10,
+                tier: 5,
                 available_amount: '0x186a0',
               },
               {
                 chain: 'Ethereum',
                 asset: 'ETH',
-                tier: 10,
-                available_amount: '0x186a0',
-              },
-              {
-                chain: 'Ethereum',
-                asset: 'ETH',
-                tier: 30,
+                tier: 5,
                 available_amount: '0x186a0',
               },
             ]),
           });
         }
 
-        return defaultRpcMocks(url, data);
-      });
-
-      const freshSdk = new SwapSDK({ network: 'sisyphos' });
-      expect(
-        await freshSdk.getBoostLiquidity({
-          feeTierBps: 10,
-        }),
-      ).toMatchSnapshot();
-    });
-    it('returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier & asset', async () => {
-      mockRpcResponse((url, data: any) => {
-        if (data.method === 'cf_boost_pools_depth') {
+        if (data.method === 'cf_lending_pools') {
           return Promise.resolve({
-            data: boostPoolsDepth([
+            data: supplyPoolsDepth([
               {
-                chain: 'Bitcoin',
-                asset: 'BTC',
-                tier: 10,
+                asset: { chain: 'Bitcoin', asset: 'BTC' },
+                total_amount: '0x186a0',
                 available_amount: '0x186a0',
-              },
-              {
-                chain: 'Ethereum',
-                asset: 'ETH',
-                tier: 10,
-                available_amount: '0x186a0',
-              },
-              {
-                chain: 'Ethereum',
-                asset: 'ETH',
-                tier: 30,
-                available_amount: '0x186a0',
-              },
-            ]),
-          });
-        }
-
-        return defaultRpcMocks(url, data);
-      });
-
-      const freshSdk = new SwapSDK({ network: 'sisyphos' });
-      expect(
-        await freshSdk.getBoostLiquidity({
-          feeTierBps: 10,
-          asset: 'ETH',
-          chain: 'Ethereum',
-        }),
-      ).toMatchSnapshot();
-    });
-    it('returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc', async () => {
-      mockRpcResponse((url, data: any) => {
-        if (data.method === 'cf_boost_pools_depth') {
-          return Promise.resolve({
-            data: boostPoolsDepth([
-              {
-                chain: 'Bitcoin',
-                asset: 'BTC',
-                tier: 10,
-                available_amount: '0x186a0',
+                ...defaultLendingPoolConfig,
               },
             ]),
           });
@@ -3773,7 +3728,7 @@ describe(SwapSDK, () => {
       expect(await freshSdk.getBoostLiquidity()).toMatchSnapshot();
     });
 
-    it('returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset and sorted descending', async () => {
+    it('returns the boost pools liquidity filtered by asset and sorted descending', async () => {
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_boost_pools_depth') {
           return Promise.resolve({
@@ -3781,20 +3736,27 @@ describe(SwapSDK, () => {
               {
                 chain: 'Bitcoin',
                 asset: 'BTC',
-                tier: 10,
-                available_amount: '0x186a0',
-              },
-              {
-                chain: 'Bitcoin',
-                asset: 'BTC',
-                tier: 20,
+                tier: 5,
                 available_amount: '0x186a0',
               },
               {
                 chain: 'Ethereum',
                 asset: 'ETH',
-                tier: 10,
+                tier: 5,
                 available_amount: '0x186a0',
+              },
+            ]),
+          });
+        }
+
+        if (data.method === 'cf_lending_pools') {
+          return Promise.resolve({
+            data: supplyPoolsDepth([
+              {
+                asset: { chain: 'Bitcoin', asset: 'BTC' },
+                total_amount: '0x186a0',
+                available_amount: '0x186a0',
+                ...defaultLendingPoolConfig,
               },
             ]),
           });
