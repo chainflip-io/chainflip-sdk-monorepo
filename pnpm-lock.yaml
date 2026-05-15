@@ -124,42 +124,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-alpha.4
-        version: 2.2.0-alpha.4
-      '@chainflip/solana':
-        specifier: 2.2.3
-        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
-      '@chainflip/utils':
-        specifier: 2.2.0-alpha.2
-        version: 2.2.0-alpha.2
-      '@ts-rest/core':
-        specifier: ^3.52.1
-        version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
-      axios:
-        specifier: ^1.15.0
-        version: 1.15.0
-      bignumber.js:
-        specifier: ^9.3.0
-        version: 9.3.0
-      ethers:
-        specifier: ^6.14.4
-        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
-    devDependencies:
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0)
-
-  packages/shared:
-    dependencies:
-      '@chainflip/bitcoin':
-        specifier: 2.1.1
-        version: 2.1.1(typescript@5.9.3)
-      '@chainflip/rpc':
-        specifier: 2.2.0-alpha.4
-        version: 2.2.0-alpha.4
+        specifier: 2.2.0-alpha.5
+        version: 2.2.0-alpha.5
       '@chainflip/solana':
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -178,12 +144,46 @@ importers:
       ethers:
         specifier: ^6.14.4
         version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0)
+
+  packages/shared:
+    dependencies:
+      '@chainflip/bitcoin':
+        specifier: 2.1.1
+        version: 2.1.1(typescript@5.9.3)
+      '@chainflip/rpc':
+        specifier: 2.2.0-alpha.5
+        version: 2.2.0-alpha.5
+      '@chainflip/solana':
+        specifier: 2.2.3
+        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+      '@chainflip/utils':
+        specifier: 2.2.0-alpha.2
+        version: 2.2.0-alpha.2
+      '@ts-rest/core':
+        specifier: ^3.52.1
+        version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
+      axios:
+        specifier: ^1.15.0
+        version: 1.15.0
+      bignumber.js:
+        specifier: ^9.3.0
+        version: 9.3.0
+      ethers:
+        specifier: ^6.14.4
+        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       ioredis:
         specifier: ^5.6.1
         version: 5.6.1
       ws:
         specifier: ^8.18.2
-        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -193,10 +193,10 @@ importers:
         version: 5.8.0
       '@ethersproject/providers':
         specifier: ^5.8.0
-        version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+        version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
+        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -222,8 +222,8 @@ importers:
         specifier: 2.2.0-alpha.1
         version: 2.2.0-alpha.1
       '@chainflip/rpc':
-        specifier: 2.2.0-alpha.4
-        version: 2.2.0-alpha.4
+        specifier: 2.2.0-alpha.5
+        version: 2.2.0-alpha.5
       '@chainflip/solana':
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -465,8 +465,8 @@ packages:
   '@chainflip/redis@2.2.0-alpha.1':
     resolution: {integrity: sha512-V9lmE2ojdl7wNfhob/LDa01iyJiVThG5nNEKhr0CmQyGAym2zGSIekPlZSVv241dNgIEs7ZMEHU3wNfy4M6d+Q==}
 
-  '@chainflip/rpc@2.2.0-alpha.4':
-    resolution: {integrity: sha512-IWckBLnWAZn6pleOsAZLfb5JAuyQ6jQo7qQQoAKXV7RUsQLFOdCrxeN+Xpo/VliHL1AgCZKJjMW07AWpHvdWDA==}
+  '@chainflip/rpc@2.2.0-alpha.5':
+    resolution: {integrity: sha512-ispm/7rSgmePPMjJZTCjD9Ww6+TRVvTTRwGj0IqOu32NSPYtS8ICrXArCCPs9dRHWqCY2fvrn44kbInb8gJNow==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -6151,7 +6151,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.2.0-alpha.4':
+  '@chainflip/rpc@2.2.0-alpha.5':
     dependencies:
       '@chainflip/utils': 2.2.0-alpha.1
       zod: 3.25.76
@@ -6533,7 +6533,7 @@ snapshots:
     dependencies:
       '@ethersproject/logger': 5.8.0
 
-  '@ethersproject/providers@5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
+  '@ethersproject/providers@5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
     dependencies:
       '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
@@ -6554,7 +6554,7 @@ snapshots:
       '@ethersproject/transactions': 5.8.0
       '@ethersproject/web': 5.8.0
       bech32: 1.1.4
-      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -7831,9 +7831,9 @@ snapshots:
     optionalDependencies:
       zod: 3.25.76
 
-  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
+  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
-      ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@5.9.3)
       typechain: 8.3.2(typescript@5.9.3)
@@ -12887,10 +12887,10 @@ snapshots:
       bufferutil: 4.1.0
       utf-8-validate: 6.0.6
 
-  ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10):
+  ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     optionalDependencies:
       bufferutil: 4.1.0
-      utf-8-validate: 5.0.10
+      utf-8-validate: 6.0.6
 
   ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10):
     optionalDependencies:
