@@ -8,7 +8,7 @@ updates:
       prefix: 'chore'
       include: 'scope'
     cooldown:
-      days-from-release: 14
+      default-days: 14
     groups:
       prisma:
         patterns:
