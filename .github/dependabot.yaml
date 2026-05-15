@@ -7,6 +7,8 @@ updates:
     commit-message:
       prefix: 'chore'
       include: 'scope'
+    cooldown:
+      default-days: 14
     groups:
       prisma:
         patterns:
