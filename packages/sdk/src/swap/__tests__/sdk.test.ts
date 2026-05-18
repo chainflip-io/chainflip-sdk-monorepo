@@ -3681,7 +3681,7 @@ describe(SwapSDK, () => {
   });
 
   describe(SwapSDK.prototype.getBoostLiquidity, () => {
-    it('returns empty array for deprecated feeTierBps values', async () => {
+    it('throws error for unsupported feeTierBps values', async () => {
       await expect(sdk.getBoostLiquidity({ feeTierBps: 30 })).rejects.toThrow(
         'Unsupported fee tier. Only 5 bps is supported starting from version 2.2.',
       );
@@ -3699,6 +3699,22 @@ describe(SwapSDK, () => {
       });
       const freshSdk = new SwapSDK({ network: 'sisyphos' });
       await expect(freshSdk.getBoostLiquidity({ feeTierBps: 5 })).resolves.not.toThrow();
+    });
+
+    it('does not fetch BTC supply pool when filtering by non-BTC asset', async () => {
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({ data: boostPoolsDepth([]) });
+        }
+        if (data.method === 'cf_lending_pools') {
+          throw new Error('Should not fetch supply pool for non-BTC asset');
+        }
+        return defaultRpcMocks(url, data);
+      });
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
+      await expect(
+        freshSdk.getBoostLiquidity({ chain: 'Ethereum', asset: 'ETH' }),
+      ).resolves.not.toThrow();
     });
 
     it('returns the boost pools liquidity depth', async () => {

@@ -301,8 +301,11 @@ export class SwapSDK {
     const internalAsset = 'chain' in params && 'asset' in params ? getInternalAsset(params) : null;
     const fetchBtcSupplyPool = !internalAsset || internalAsset === 'Btc';
 
-    let poolsDepth = await this.getBoostPoolsDepth();
-    const btcSupplyPoolDepth = fetchBtcSupplyPool ? await this.getBtcSupplyPoolDepth() : [];
+    // eslint-disable-next-line prefer-const
+    let [poolsDepth, btcSupplyPoolDepth] = await Promise.all([
+      this.getBoostPoolsDepth(),
+      fetchBtcSupplyPool ? this.getBtcSupplyPoolDepth() : Promise.resolve([]),
+    ]);
 
     if (internalAsset) {
       poolsDepth = poolsDepth
@@ -319,7 +322,7 @@ export class SwapSDK {
       })),
       ...btcSupplyPoolDepth.map((pool) => ({
         availableAmount: pool.availableAmount,
-        feeTierBps: 5,
+        feeTierBps: 5, // supply pools boosts cost 5bps fixed
         poolType: 'SUPPLY' as const,
         ...pool.asset,
       })),
