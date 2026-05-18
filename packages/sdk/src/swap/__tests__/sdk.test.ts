@@ -3687,6 +3687,20 @@ describe(SwapSDK, () => {
       );
     });
 
+    it('accepts feeTierBps: 5 without throwing', async () => {
+      mockRpcResponse((url, data: any) => {
+        if (data.method === 'cf_boost_pools_depth') {
+          return Promise.resolve({ data: boostPoolsDepth([]) });
+        }
+        if (data.method === 'cf_lending_pools') {
+          return Promise.resolve({ data: supplyPoolsDepth([]) });
+        }
+        return defaultRpcMocks(url, data);
+      });
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
+      await expect(freshSdk.getBoostLiquidity({ feeTierBps: 5 })).resolves.not.toThrow();
+    });
+
     it('returns the boost pools liquidity depth', async () => {
       mockRpcResponse((url, data: any) => {
         if (data.method === 'cf_boost_pools_depth') {

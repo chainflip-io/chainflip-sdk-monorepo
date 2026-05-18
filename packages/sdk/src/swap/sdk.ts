@@ -298,13 +298,11 @@ export class SwapSDK {
       throw new Error('Unsupported fee tier. Only 5 bps is supported starting from version 2.2.');
     }
 
-    // eslint-disable-next-line prefer-const
-    let [poolsDepth, btcSupplyPoolDepth] = await Promise.all([
-      this.getBoostPoolsDepth(),
-      this.getBtcSupplyPoolDepth(),
-    ]);
-
     const internalAsset = 'chain' in params && 'asset' in params ? getInternalAsset(params) : null;
+    const fetchBtcSupplyPool = !internalAsset || internalAsset === 'Btc';
+
+    let poolsDepth = await this.getBoostPoolsDepth();
+    const btcSupplyPoolDepth = fetchBtcSupplyPool ? await this.getBtcSupplyPoolDepth() : [];
 
     if (internalAsset) {
       poolsDepth = poolsDepth
@@ -319,14 +317,12 @@ export class SwapSDK {
         poolType: 'LEGACY_BOOST' as const,
         ...internalAssetToRpcAsset[depth.asset],
       })),
-      ...(!internalAsset || internalAsset === 'Btc'
-        ? btcSupplyPoolDepth.map((pool) => ({
-            availableAmount: pool.availableAmount,
-            feeTierBps: 5,
-            poolType: 'SUPPLY' as const,
-            ...pool.asset,
-          }))
-        : []),
+      ...btcSupplyPoolDepth.map((pool) => ({
+        availableAmount: pool.availableAmount,
+        feeTierBps: 5,
+        poolType: 'SUPPLY' as const,
+        ...pool.asset,
+      })),
     ];
   }
 
