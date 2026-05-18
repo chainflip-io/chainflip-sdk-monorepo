@@ -324,7 +324,7 @@ export class SwapSDK {
             availableAmount: pool.availableAmount,
             feeTierBps: 5,
             poolType: 'SUPPLY' as const,
-            ...internalAssetToRpcAsset[getInternalAsset(pool.asset)],
+            ...pool.asset,
           }))
         : []),
     ];
