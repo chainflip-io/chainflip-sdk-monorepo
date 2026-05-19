@@ -28,8 +28,10 @@ import {
   BoostPoolsDepth,
   Environment,
   RpcConfig,
+  SupplyPoolsDepth,
   getAllBoostPoolsDepth,
   getEnvironment,
+  getSupplyPoolsDepth,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount } from '@/shared/rpc/utils.js';
 import { BoostQuote, Quote } from '@/shared/schemas.js';
@@ -177,6 +179,10 @@ export class SwapSDK {
       .map((a) => a.asset);
   }
 
+  private async getBtcSupplyPoolDepth(): Promise<SupplyPoolsDepth> {
+    return getSupplyPoolsDepth(this.rpcConfig, internalAssetToRpcAsset.Btc);
+  }
+
   private async getBoostPoolsDepth(): Promise<BoostPoolsDepth> {
     return getAllBoostPoolsDepth(this.rpcConfig);
   }
@@ -278,27 +284,49 @@ export class SwapSDK {
   }
 
   async getBoostLiquidity(
-    params: { feeTierBps?: number } | ({ feeTierBps?: number } & UncheckedAssetAndChain) = {},
+    params:
+      | {
+          /** @deprecated DEPRECATED(2.2): Only value supported moving forward is 5 bps */
+          feeTierBps?: number;
+        }
+      | ({
+          /** @deprecated DEPRECATED(2.2): Only value supported moving forward is 5 bps */
+          feeTierBps?: number;
+        } & UncheckedAssetAndChain) = {},
   ): Promise<BoostPoolDepth[]> {
-    let poolsDepth = await this.getBoostPoolsDepth();
+    if (params.feeTierBps && params.feeTierBps !== 5) {
+      throw new Error('Unsupported fee tier. Only 5 bps is supported starting from version 2.2.');
+    }
 
-    if ('chain' in params && 'asset' in params) {
-      const { chain, asset } = params;
-      const internalAsset = getInternalAsset({ chain, asset });
+    const internalAsset = 'chain' in params && 'asset' in params ? getInternalAsset(params) : null;
+    const fetchBtcSupplyPool = !internalAsset || internalAsset === 'Btc';
+
+    // eslint-disable-next-line prefer-const
+    let [poolsDepth, btcSupplyPoolDepth] = await Promise.all([
+      this.getBoostPoolsDepth(),
+      fetchBtcSupplyPool ? this.getBtcSupplyPoolDepth() : Promise.resolve([]),
+    ]);
+
+    if (internalAsset) {
       poolsDepth = poolsDepth
         .filter((boostPoolDepth) => boostPoolDepth.asset === internalAsset)
         .sort((a, b) => b.tier - a.tier);
     }
 
-    if ('feeTierBps' in params && params.feeTierBps !== undefined) {
-      poolsDepth = poolsDepth.filter((boostPoolDepth) => boostPoolDepth.tier === params.feeTierBps);
-    }
-
-    return poolsDepth.map((depth) => ({
-      availableAmount: depth.availableAmount,
-      feeTierBps: depth.tier,
-      ...internalAssetToRpcAsset[depth.asset],
-    }));
+    return [
+      ...poolsDepth.map((depth) => ({
+        availableAmount: depth.availableAmount,
+        feeTierBps: depth.tier,
+        poolType: 'LEGACY_BOOST' as const,
+        ...internalAssetToRpcAsset[depth.asset],
+      })),
+      ...btcSupplyPoolDepth.map((pool) => ({
+        availableAmount: pool.availableAmount,
+        feeTierBps: 5, // supply pools boosts cost 5bps fixed
+        poolType: 'SUPPLY' as const,
+        ...pool.asset,
+      })),
+    ];
   }
 
   async requestDepositAddressV2({

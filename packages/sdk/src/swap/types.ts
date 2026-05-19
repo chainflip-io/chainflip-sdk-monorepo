@@ -72,4 +72,5 @@ export type BoostPoolDepth = {
   availableAmount: bigint;
   asset: AssetSymbol;
   chain: ChainflipChain;
+  poolType: 'LEGACY_BOOST' | 'SUPPLY';
 };

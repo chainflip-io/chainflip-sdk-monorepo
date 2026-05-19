@@ -88,7 +88,9 @@ export const getAllBoostPoolsDepth = transform(createRequest('cf_boost_pools_dep
     ...rest,
   })),
 );
+export const getSupplyPoolsDepth = createRequest(`cf_lending_pools`);
 
 export type BoostPoolsDepth = Awaited<ReturnType<typeof getAllBoostPoolsDepth>>;
+export type SupplyPoolsDepth = Awaited<ReturnType<typeof getSupplyPoolsDepth>>;
 
 export const getSwapRateV3 = createRequest('cf_swap_rate_v3');

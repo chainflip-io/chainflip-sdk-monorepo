@@ -3,6 +3,7 @@ import {
   CfEnvironmentResponse,
   CfFundingEnvironmentResponse,
   CfIngressEgressEnvironmentResponse,
+  CfLendingPoolsResponse,
   CfPoolsEnvironmentResponse,
   CfSupportedAssetsResponse,
   CfSwapRateResponse,
@@ -265,6 +266,34 @@ export const boostPoolsDepth = (
     { chain: 'Bitcoin', asset: 'BTC', tier: 5, available_amount: '0x0' },
     { chain: 'Bitcoin', asset: 'BTC', tier: 10, available_amount: '0x186aa' },
     { chain: 'Bitcoin', asset: 'BTC', tier: 30, available_amount: '0x0' },
+  ],
+  id: 1,
+});
+
+export const defaultLendingPoolConfig = {
+  utilisation_rate: 0,
+  current_interest_rate: 100,
+  origination_fee: 10,
+  liquidation_fee: 5,
+  interest_rate_curve: {
+    interest_at_zero_utilisation: 50,
+    junction_utilisation: 80,
+    interest_at_junction_utilisation: 75,
+    interest_at_max_utilisation: 200,
+  },
+};
+
+export const supplyPoolsDepth = (
+  mockedSupplyPoolsDepth?: CfLendingPoolsResponse,
+): RpcResponse<CfLendingPoolsResponse> => ({
+  jsonrpc: '2.0',
+  result: mockedSupplyPoolsDepth ?? [
+    {
+      asset: { chain: 'Bitcoin', asset: 'BTC' },
+      total_amount: '0x186a0',
+      available_amount: '0x186a0',
+      ...defaultLendingPoolConfig,
+    },
   ],
   id: 1,
 });

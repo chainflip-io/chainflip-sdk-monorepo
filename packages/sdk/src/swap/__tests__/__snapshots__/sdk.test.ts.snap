@@ -1152,58 +1152,47 @@ exports[`SwapSDK > getAssets > returns the filtered destination assets for the c
 
 exports[`SwapSDK > getAssets > throws when requesting an unsupported chain 1`] = `[Error: unsupported source chain "Dogecoin"]`;
 
-exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc 1`] = `
+exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth 1`] = `
 [
   {
     "asset": "BTC",
     "availableAmount": 100000n,
     "chain": "Bitcoin",
-    "feeTierBps": 10,
-  },
-]
-`;
-
-exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by asset and sorted descending 1`] = `
-[
-  {
-    "asset": "BTC",
-    "availableAmount": 100000n,
-    "chain": "Bitcoin",
-    "feeTierBps": 20,
-  },
-  {
-    "asset": "BTC",
-    "availableAmount": 100000n,
-    "chain": "Bitcoin",
-    "feeTierBps": 10,
-  },
-]
-`;
-
-exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier & asset 1`] = `
-[
-  {
-    "asset": "ETH",
-    "availableAmount": 100000n,
-    "chain": "Ethereum",
-    "feeTierBps": 10,
-  },
-]
-`;
-
-exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth based on the cf_boost_pools_depth rpc filtered by tier 1`] = `
-[
-  {
-    "asset": "BTC",
-    "availableAmount": 100000n,
-    "chain": "Bitcoin",
-    "feeTierBps": 10,
+    "feeTierBps": 5,
+    "poolType": "LEGACY_BOOST",
   },
   {
     "asset": "ETH",
     "availableAmount": 100000n,
     "chain": "Ethereum",
-    "feeTierBps": 10,
+    "feeTierBps": 5,
+    "poolType": "LEGACY_BOOST",
+  },
+  {
+    "asset": "BTC",
+    "availableAmount": 100000n,
+    "chain": "Bitcoin",
+    "feeTierBps": 5,
+    "poolType": "SUPPLY",
+  },
+]
+`;
+
+exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity filtered by asset and sorted descending 1`] = `
+[
+  {
+    "asset": "BTC",
+    "availableAmount": 100000n,
+    "chain": "Bitcoin",
+    "feeTierBps": 5,
+    "poolType": "LEGACY_BOOST",
+  },
+  {
+    "asset": "BTC",
+    "availableAmount": 100000n,
+    "chain": "Bitcoin",
+    "feeTierBps": 5,
+    "poolType": "SUPPLY",
   },
 ]
 `;
