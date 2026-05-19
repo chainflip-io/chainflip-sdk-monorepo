@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { hexString } from '../parsers.js';
+import { hexString, tronAddress } from '../parsers.js';
 
 export const EncodedVaultSwapData = z.discriminatedUnion('chain', [
   z.object({
@@ -18,9 +18,9 @@ export const EncodedVaultSwapData = z.discriminatedUnion('chain', [
     chain: z.literal('Tron'),
     calldata: hexString,
     value: z.string(),
-    to: hexString,
+    to: tronAddress,
     note: hexString,
-    sourceTokenAddress: hexString.optional(),
+    sourceTokenAddress: tronAddress.optional(),
   }),
   z.object({
     chain: z.literal('Solana'),
