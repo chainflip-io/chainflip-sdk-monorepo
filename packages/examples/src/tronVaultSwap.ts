@@ -6,7 +6,7 @@ import { SwapSDK, Chains, Assets } from '@/sdk/swap/index.js';
 import 'dotenv/config';
 
 type PickTronAsset = 'Trx' | 'TrxUsdt';
-const pickAsset: PickTronAsset = 'Trx' as PickTronAsset;
+const pickAsset: PickTronAsset = 'Trx';
 
 const srcAsset = pickAsset === 'Trx' ? Assets.TRX : Assets.USDT;
 const swapAmount = (50e6).toString(); // 50 USDT (6 decimals) or 50 TRX in sun
@@ -107,5 +107,9 @@ transaction = await tronWeb.transactionBuilder.addUpdateData(
 
 const signedTx = await tronWeb.trx.sign(transaction);
 const receipt = await tronWeb.trx.sendRawTransaction(signedTx);
+
+if (!receipt.result) {
+  throw new Error(`Transaction failed: ${receipt.code || 'unknown error'}`);
+}
 
 console.log('txid', receipt.txid);
