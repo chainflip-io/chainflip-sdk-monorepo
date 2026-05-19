@@ -16,9 +16,6 @@ if (!process.env.TRON_SECRET_KEY) {
   // TronWeb expects private keys without the 0x prefix
   process.env.TRON_SECRET_KEY = account.privateKey.replace(/^0x/, '');
   console.log('TRON_SECRET_KEY not set - generated random secret key', process.env.TRON_SECRET_KEY);
-  throw new Error(
-    'you need to fund this account otherwise TronWeb will pretend like it sent funds without actually sending anything',
-  );
 }
 
 const privateKey = process.env.TRON_SECRET_KEY.replace(/^0x/, '');
