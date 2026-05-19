@@ -81,7 +81,7 @@ if (sourceTokenAddress) {
     { feeLimit: 100_000_000 },
     [
       { type: 'address', value: to },
-      { type: 'uint256', value: BigInt(swapAmount).toString() },
+      { type: 'uint256', value: swapAmount },
     ],
     tronAddress as string,
   );
