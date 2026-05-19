@@ -5,25 +5,33 @@ import { TronWeb } from 'tronweb';
 import { SwapSDK, Chains, Assets } from '@/sdk/swap/index.js';
 import 'dotenv/config';
 
-// TODO(TRON): Test this implementation works
+type PickTronAsset = 'Trx' | 'TrxUsdt';
+const pickAsset: PickTronAsset = 'Trx' as PickTronAsset;
+
+const srcAsset = pickAsset === 'Trx' ? Assets.TRX : Assets.USDT;
+const swapAmount = (50e6).toString(); // 50 USDT (6 decimals) or 50 TRX in sun
 
 if (!process.env.TRON_SECRET_KEY) {
-  console.log('TRON_SECRET_KEY not set - generating random secret key');
-
   const account = TronWeb.createRandom();
-  process.env.TRON_SECRET_KEY = account.privateKey;
-
-  console.log('TRON_SECRET_KEY not set - generating random secret key');
-  console.log('generated secret key', process.env.TRON_SECRET_KEY);
+  // TronWeb expects private keys without the 0x prefix
+  process.env.TRON_SECRET_KEY = account.privateKey.replace(/^0x/, '');
+  console.log('TRON_SECRET_KEY not set - generated random secret key', process.env.TRON_SECRET_KEY);
+  throw new Error(
+    'you need to fund this account otherwise TronWeb will pretend like it sent funds without actually sending anything',
+  );
 }
+
+const privateKey = process.env.TRON_SECRET_KEY.replace(/^0x/, '');
 
 const tronWeb = new TronWeb({
   fullHost: 'https://nile.trongrid.io', // Nile testnet matches perseverance
-  privateKey: process.env.TRON_SECRET_KEY,
+  // fullHost: 'http://chainflip-backspin:8090',
+  privateKey,
 });
 
-const tronAddress = tronWeb.address.fromPrivateKey(process.env.TRON_SECRET_KEY as string);
+const tronAddress = tronWeb.address.fromPrivateKey(privateKey);
 console.log('wallet address', tronAddress);
+console.log('swapping', swapAmount, srcAsset);
 
 // Destination is on Ethereum — use ETH_DEST_ADDRESS or generate a random address
 const ethDestAddress = process.env.ETH_DEST_ADDRESS ?? Wallet.createRandom().address;
@@ -31,15 +39,17 @@ console.log('eth destination address', ethDestAddress);
 
 const swapSDK = new SwapSDK({
   network: 'perseverance',
+  // network: 'backspin',
   enabledFeatures: { dcaV2: true },
+  // broker: { url: 'https://rpc.backspin.chainflip.io' },
 });
 
 const { quotes } = await swapSDK.getQuoteV2({
   srcChain: Chains.Tron,
-  srcAsset: Assets.TRX,
+  srcAsset,
   destChain: Chains.Ethereum,
-  destAsset: Assets.ETH,
-  amount: (1000e6).toString(), // 1000 TRX in SUN
+  destAsset: Assets.USDC,
+  amount: swapAmount,
   isVaultSwap: true,
 });
 
@@ -47,65 +57,55 @@ const quote = quotes.find((q) => q.type === 'REGULAR');
 if (!quote) throw new Error('No quote');
 console.log('quote', quote);
 
+console.log('requesting encode vault swap data...');
 const vaultSwapData = await swapSDK.encodeVaultSwapData({
   quote,
   destAddress: ethDestAddress,
   fillOrKillParams: {
     slippageTolerancePercent: quote.recommendedSlippageTolerancePercent,
     refundAddress: tronAddress as string,
-    retryDurationBlocks: 100,
+    retryDurationBlocks: 10,
     livePriceSlippageTolerancePercent: quote.recommendedLivePriceSlippageTolerancePercent,
   },
 });
-console.log('transactionData', vaultSwapData);
+console.log('vaultSwapData', vaultSwapData);
 if (vaultSwapData.chain !== 'Tron') throw new Error('Invalid chain');
 
-const { calldata, to, value, note, sourceTokenAddress } = vaultSwapData;
+const { to, value, note, sourceTokenAddress } = vaultSwapData;
+
+let transaction;
 
 if (sourceTokenAddress) {
-  const trc20Contract = await tronWeb.contract(
-    [
-      {
-        name: 'approve',
-        type: 'function',
-        inputs: [
-          { name: '_spender', type: 'address' },
-          { name: '_value', type: 'uint256' },
-        ],
-        outputs: [{ name: '', type: 'bool' }],
-      },
-    ],
+  // TRC-20 (USDT): call transfer(vault, amount) on the token contract.
+  // The note is attached separately and identifies the swap to Chainflip.
+  const { transaction: trc20Tx } = await tronWeb.transactionBuilder.triggerSmartContract(
     sourceTokenAddress,
+    'transfer(address,uint256)',
+    { feeLimit: 100_000_000 },
+    [
+      { type: 'address', value: to },
+      { type: 'uint256', value: BigInt(swapAmount).toString() },
+    ],
+    tronAddress as string,
   );
-  console.log('approving contract');
-  await trc20Contract.approve(to, quote.depositAmount).send();
+  transaction = trc20Tx;
+} else {
+  // Native TRX: send TRX directly to the Chainflip Vault address.
+  transaction = await tronWeb.transactionBuilder.sendTrx(
+    to,
+    Number(value), // value is in sun (1 TRX = 1,000,000 sun)
+    tronAddress as string,
+  );
 }
 
-console.log('sending transaction');
-
-// calldata = 0x<4-byte-selector><abi-encoded-params>
-const selectorHex = calldata.slice(2, 10);
-const paramsHex = calldata.slice(10);
-
-const { transaction } = await tronWeb.transactionBuilder.triggerSmartContract(
-  to,
-  selectorHex,
-  {
-    callValue: Number(value),
-    rawParameter: paramsHex,
-    feeLimit: 100_000_000, // 100 TRX
-  },
-  [],
-  tronAddress as string,
-);
-
-// note is Tron's memo field — lives in raw_data.data, separate from the contract calldata
-const txWithNote = await tronWeb.transactionBuilder.addUpdateData(
+// Attach swap parameters as a note — this is what identifies the transaction to Chainflip
+transaction = await tronWeb.transactionBuilder.addUpdateData(
   transaction,
-  note.slice(2),
+  note.slice(2), // strip leading 0x
   'hex',
 );
-const signedTx = await tronWeb.trx.sign(txWithNote);
+
+const signedTx = await tronWeb.trx.sign(transaction);
 const receipt = await tronWeb.trx.sendRawTransaction(signedTx);
 
-console.log(receipt.txid);
+console.log('txid', receipt.txid);

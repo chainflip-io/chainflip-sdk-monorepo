@@ -7,6 +7,7 @@ import {
   assetSymbols,
 } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
+import { isValidTronAddress } from '@chainflip/utils/tron';
 import { z } from 'zod';
 
 export const booleanString = z
@@ -31,6 +32,10 @@ export const chainflipAddress = z.string().refine(
 
 export const solanaAddress = z.string().refine(isValidSolanaAddress, (address) => ({
   message: `${address} is not a valid Solana address`,
+}));
+
+export const tronAddress = z.string().refine(isValidTronAddress, (address) => ({
+  message: `${address} is not a valid Tron address`,
 }));
 
 export const u128 = z.union([z.number(), numericString, hexString]).transform((arg) => BigInt(arg));
