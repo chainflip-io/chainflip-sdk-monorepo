@@ -178,16 +178,18 @@ export default class Quoter {
           const inflight =
             requestId !== 'unknown' ? this.inflightRequests.get(requestId) : undefined;
           inflight?.responders.add(socket.data.marketMaker);
-          publishQuoteOrderError({
-            quoteRequestId: inflight?.quoteRequestId,
-            marketMaker: socket.data.marketMaker,
-            marketMakerRequestId: requestId,
-            error,
-            durationMs: inflight ? performance.now() - inflight.requestedAt : undefined,
-            legsMetadata: inflight?.legsByMarketMaker
-              .get(socket.data.marketMaker)
-              ?.map((leg) => leg.getMetadata()),
-          });
+          if (!socket.data.beta) {
+            publishQuoteOrderError({
+              quoteRequestId: inflight?.quoteRequestId,
+              marketMaker: socket.data.marketMaker,
+              marketMakerRequestId: requestId,
+              error,
+              durationMs: inflight ? performance.now() - inflight.requestedAt : undefined,
+              legsMetadata: inflight?.legsByMarketMaker
+                .get(socket.data.marketMaker)
+                ?.map((leg) => leg.getMetadata()),
+            });
+          }
         }
 
         if (result.success && !this.inflightRequests.has(result.data.request_id)) {
@@ -196,29 +198,33 @@ export default class Quoter {
             requestId: result.data.request_id,
             marketMaker: socket.data.marketMaker,
           });
-          publishQuoteOrderError({
-            quoteRequestId: undefined,
-            marketMaker: socket.data.marketMaker,
-            marketMakerRequestId: result.data.request_id,
-            error: 'unknown request_id',
-          });
+          if (!socket.data.beta) {
+            publishQuoteOrderError({
+              quoteRequestId: undefined,
+              marketMaker: socket.data.marketMaker,
+              marketMakerRequestId: result.data.request_id,
+              error: 'unknown request_id',
+            });
+          }
           return;
         }
 
         if (result.success) {
           const inflight = this.inflightRequests.get(result.data.request_id);
           inflight?.responders.add(socket.data.marketMaker);
-          publishQuoteOrderReceived({
-            quoteRequestId: inflight?.quoteRequestId,
-            marketMaker: socket.data.marketMaker,
-            marketMakerRequestId: result.data.request_id,
-            legs: result.data.legs,
-            beta: socket.data.beta,
-            durationMs: inflight ? performance.now() - inflight.requestedAt : undefined,
-            legsMetadata: inflight?.legsByMarketMaker
-              .get(socket.data.marketMaker)
-              ?.map((leg) => leg.getMetadata()),
-          });
+          if (!socket.data.beta) {
+            publishQuoteOrderReceived({
+              quoteRequestId: inflight?.quoteRequestId,
+              marketMaker: socket.data.marketMaker,
+              marketMakerRequestId: result.data.request_id,
+              legs: result.data.legs,
+              beta: socket.data.beta,
+              durationMs: inflight ? performance.now() - inflight.requestedAt : undefined,
+              legsMetadata: inflight?.legsByMarketMaker
+                .get(socket.data.marketMaker)
+                ?.map((leg) => leg.getMetadata()),
+            });
+          }
         }
 
         this.quotes$.next({
@@ -298,7 +304,8 @@ export default class Quoter {
           const entry = this.inflightRequests.get(request.request_id);
           const durationMs = entry ? performance.now() - entry.requestedAt : undefined;
           for (const marketMaker of quotedLegsMap.keys()) {
-            if (!entry?.responders.has(marketMaker)) {
+            const isBeta = this.accountIdToSocket.get(marketMaker)?.data.beta;
+            if (!entry?.responders.has(marketMaker) && !isBeta) {
               publishQuoteOrderTimeout({
                 quoteRequestId: entry?.quoteRequestId,
                 marketMaker,
