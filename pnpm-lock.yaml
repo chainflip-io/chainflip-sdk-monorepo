@@ -130,8 +130,8 @@ importers:
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.5
-        version: 2.2.0-alpha.5
+        specifier: 2.2.0-alpha.6
+        version: 2.2.0-alpha.6
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -164,8 +164,8 @@ importers:
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.5
-        version: 2.2.0-alpha.5
+        specifier: 2.2.0-alpha.6
+        version: 2.2.0-alpha.6
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -228,8 +228,8 @@ importers:
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.5
-        version: 2.2.0-alpha.5
+        specifier: 2.2.0-alpha.6
+        version: 2.2.0-alpha.6
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -486,8 +486,8 @@ packages:
   '@chainflip/utils@2.2.0-alpha.2':
     resolution: {integrity: sha512-BqJH3V/gpN0sgvjhrbBCzpCJ/NqXxO4H4SBDC+ZqLFFxgAg0xQw1SP6zmY9vL/BJe1ukB/shE316qCJxFouUIA==}
 
-  '@chainflip/utils@2.2.0-alpha.5':
-    resolution: {integrity: sha512-EMZrRu5fUdUB5Y7+gkYgmx5FbophTXUFCm7dbjCVSa7m/kJn00QyJTAaQO3j+B5QSUbmbhBLs3JoNqK71XU6Jg==}
+  '@chainflip/utils@2.2.0-alpha.6':
+    resolution: {integrity: sha512-O65ZOo74NdYvQdkozWwwL+pgyTE6EkIRugZrBe7OrFX9h608bj4kiZUkuANqIbNanxuMUCXtP5HSHraXS8LjfA==}
 
   '@chevrotain/cst-dts-gen@10.5.0':
     resolution: {integrity: sha512-lhmC/FyqQ2o7pGK4Om+hzuDrm9rhFYIJ/AXoQBeongmn870Xeb0L6oGEiuR8nohFNL5sMaQEJWCxr1oIVIVXrw==}
@@ -6232,7 +6232,7 @@ snapshots:
       bignumber.js: 11.1.1
       date-fns: 4.1.0
 
-  '@chainflip/utils@2.2.0-alpha.5':
+  '@chainflip/utils@2.2.0-alpha.6':
     dependencies:
       '@date-fns/utc': 2.1.1
       '@noble/hashes': 2.2.0
