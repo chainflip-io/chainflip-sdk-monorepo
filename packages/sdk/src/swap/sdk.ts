@@ -11,6 +11,7 @@ import {
   internalAssetToRpcAsset,
   ChainMap,
 } from '@chainflip/utils/chainflip';
+import { calculateTotalEffectiveBorrowableAmount } from '@chainflip/utils/lending';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
 import { createApiContract } from '@/shared/api/contract.js';
@@ -30,8 +31,8 @@ import {
   RpcConfig,
   SupplyPoolsDepth,
   getAllBoostPoolsDepth,
+  getAllSupplyPoolsDepth,
   getEnvironment,
-  getSupplyPoolsDepth,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount } from '@/shared/rpc/utils.js';
 import { BoostQuote, Quote } from '@/shared/schemas.js';
@@ -180,7 +181,7 @@ export class SwapSDK {
   }
 
   private async getBtcSupplyPoolDepth(): Promise<SupplyPoolsDepth> {
-    return getSupplyPoolsDepth(this.rpcConfig, internalAssetToRpcAsset.Btc);
+    return getAllSupplyPoolsDepth(this.rpcConfig, internalAssetToRpcAsset.Btc);
   }
 
   private async getBoostPoolsDepth(): Promise<BoostPoolsDepth> {
@@ -321,7 +322,12 @@ export class SwapSDK {
         ...internalAssetToRpcAsset[depth.asset],
       })),
       ...btcSupplyPoolDepth.map((pool) => ({
-        availableAmount: pool.availableAmount,
+        // TODO(2.2): Document and simplify this logic by calculating the effective available amount in the RPC itself
+        availableAmount: calculateTotalEffectiveBorrowableAmount({
+          totalAmount: pool.totalAmount,
+          totalAvailableAmount: pool.availableAmount,
+          utilisationCap: pool.utilisationCap,
+        }),
         feeTierBps: 5, // supply pools boosts cost 5bps fixed
         poolType: 'SUPPLY' as const,
         ...pool.asset,
