@@ -11,7 +11,7 @@ import {
   internalAssetToRpcAsset,
   ChainMap,
 } from '@chainflip/utils/chainflip';
-import { calculateTotalEffectiveBorrowableAmount } from '@chainflip/utils/lending';
+import { calculateTotalEffectiveBorrowableAmount, ppmToBps } from '@chainflip/utils/lending';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
 import { createApiContract } from '@/shared/api/contract.js';
@@ -327,7 +327,7 @@ export class SwapSDK {
         availableAmount: calculateTotalEffectiveBorrowableAmount({
           totalAmount: pool.totalAmount,
           totalAvailableAmount: pool.availableAmount,
-          utilisationCap: pool.utilisationCap,
+          utilisationCapBps: ppmToBps(pool.utilisationCap ?? 1_000_000),
         }),
         feeTierBps: SUPPLY_POOL_BOOST_FEE_BPS, // supply pools boosts cost 5bps fixed
         poolType: 'SUPPLY' as const,

@@ -1,5 +1,5 @@
 import { ChainflipAsset } from '@chainflip/utils/chainflip';
-import { calculateTotalEffectiveBorrowableAmount } from '@chainflip/utils/lending';
+import { calculateTotalEffectiveBorrowableAmount, ppmToBps } from '@chainflip/utils/lending';
 import { SUPPLY_POOL_BOOST_FEE_BPS } from '@/shared/consts.js';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions.js';
@@ -48,7 +48,7 @@ export const getBoostFeeBpsForAmount = async ({
       poolAvailableAmount = calculateTotalEffectiveBorrowableAmount({
         totalAmount: poolDepth.totalAmount,
         totalAvailableAmount: poolDepth.availableAmount,
-        utilisationCap: poolDepth.utilisationCap,
+        utilisationCapBps: ppmToBps(poolDepth.utilisationCap ?? 1_000_000),
       });
     }
 
