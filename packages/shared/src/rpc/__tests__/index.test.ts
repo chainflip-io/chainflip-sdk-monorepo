@@ -12,7 +12,7 @@ import {
   getSwappingEnvironment,
   getIngressEgressEnvironment,
   getAllBoostPoolsDepth,
-  getSupplyPoolsDepth,
+  getAllSupplyPoolsDepth,
 } from '../index.js';
 
 const mockResponse = (data: any) => mockRpcResponse({ data });
@@ -437,11 +437,11 @@ describe('getAllBoostPoolsDepth', () => {
   });
 });
 
-describe('getSupplyPoolsDepth', () => {
+describe('getAllSupplyPoolsDepth', () => {
   it('retrieves the supply pools depth for a given asset', async () => {
     const spy = mockResponse(supplyPoolsDepth());
 
-    const result = await getSupplyPoolsDepth(
+    const result = await getAllSupplyPoolsDepth(
       { network: 'perseverance' },
       {
         chain: 'Bitcoin',
@@ -478,7 +478,7 @@ describe('getSupplyPoolsDepth', () => {
   it('returns an empty array when no supply pools exist', async () => {
     mockResponse(supplyPoolsDepth([]));
 
-    const result = await getSupplyPoolsDepth(
+    const result = await getAllSupplyPoolsDepth(
       { network: 'perseverance' },
       {
         chain: 'Bitcoin',

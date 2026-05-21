@@ -17,13 +17,14 @@ import {
   cfPoolDepth,
   environment,
   mockRpcResponse,
+  supplyPoolsDepth,
 } from '@/shared/tests/fixtures.js';
 import prisma from '../../../client.js';
 import env from '../../../config/env.js';
 import { getUsdValue } from '../../../pricing/checkPriceWarning.js';
 import Quoter from '../../../quoting/Quoter.js';
 import app from '../../../server.js';
-import { boostPoolsCache } from '../../../utils/boost.js';
+import { boostPoolsCache, supplyPoolsCache } from '../../../utils/boost.js';
 import { getTotalLiquidity } from '../../../utils/pools.js';
 
 vi.mock('../../../utils/pools', async (importOriginal) => {
@@ -98,6 +99,29 @@ const mockRpcs = ({
       });
     }
 
+    if (data.method === 'state_getRuntimeVersion') {
+      return Promise.resolve({
+        data: {
+          jsonrpc: '2.0',
+          id: 1,
+          result: {
+            specName: 'chainflip-node',
+            implName: 'chainflip-node',
+            specVersion: 20200,
+            implVersion: 0,
+            authoringVersion: 1,
+            transactionVersion: 17,
+            stateVersion: 1,
+            apis: [],
+          },
+        },
+      });
+    }
+
+    if (data.method === 'cf_lending_pools') {
+      return Promise.resolve({ data: supplyPoolsDepth() });
+    }
+
     throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
   });
 
@@ -129,6 +153,8 @@ describe('server', () => {
     mockRpcs({ ingressFee: hexEncodeNumber(2000000), egressFee: hexEncodeNumber(50000) });
     // eslint-disable-next-line dot-notation
     boostPoolsCache['store'].clear();
+    // eslint-disable-next-line dot-notation
+    supplyPoolsCache['store'].clear();
   });
 
   afterEach(() => {
@@ -1679,6 +1705,29 @@ describe('server', () => {
           });
         }
 
+        if (data.method === 'state_getRuntimeVersion') {
+          return Promise.resolve({
+            data: {
+              jsonrpc: '2.0',
+              id: 1,
+              result: {
+                specName: 'chainflip-node',
+                implName: 'chainflip-node',
+                specVersion: 20200,
+                implVersion: 0,
+                authoringVersion: 1,
+                transactionVersion: 17,
+                stateVersion: 1,
+                apis: [],
+              },
+            },
+          });
+        }
+
+        if (data.method === 'cf_lending_pools') {
+          return Promise.resolve({ data: supplyPoolsDepth() });
+        }
+
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
@@ -2242,6 +2291,29 @@ describe('server', () => {
           });
         }
 
+        if (data.method === 'state_getRuntimeVersion') {
+          return Promise.resolve({
+            data: {
+              jsonrpc: '2.0',
+              id: 1,
+              result: {
+                specName: 'chainflip-node',
+                implName: 'chainflip-node',
+                specVersion: 20200,
+                implVersion: 0,
+                authoringVersion: 1,
+                transactionVersion: 17,
+                stateVersion: 1,
+                apis: [],
+              },
+            },
+          });
+        }
+
+        if (data.method === 'cf_lending_pools') {
+          return Promise.resolve({ data: supplyPoolsDepth() });
+        }
+
         throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
       });
 
@@ -2440,6 +2512,29 @@ describe('server', () => {
             return Promise.resolve({
               data: cfPoolDepth(),
             });
+          }
+
+          if (data.method === 'state_getRuntimeVersion') {
+            return Promise.resolve({
+              data: {
+                jsonrpc: '2.0',
+                id: 1,
+                result: {
+                  specName: 'chainflip-node',
+                  implName: 'chainflip-node',
+                  specVersion: 20200,
+                  implVersion: 0,
+                  authoringVersion: 1,
+                  transactionVersion: 17,
+                  stateVersion: 1,
+                  apis: [],
+                },
+              },
+            });
+          }
+
+          if (data.method === 'cf_lending_pools') {
+            return Promise.resolve({ data: supplyPoolsDepth() });
           }
 
           throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);

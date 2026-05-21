@@ -11,6 +11,7 @@ import {
   internalAssetToRpcAsset,
   ChainMap,
 } from '@chainflip/utils/chainflip';
+import { calculateTotalEffectiveBorrowableAmount, ppmToBps } from '@chainflip/utils/lending';
 import { HexString } from '@chainflip/utils/types';
 import { initClient } from '@ts-rest/core';
 import { createApiContract } from '@/shared/api/contract.js';
@@ -21,6 +22,7 @@ import {
   requestSwapDepositAddress,
   requestSwapParameterEncoding,
 } from '@/shared/broker.js';
+import { SUPPLY_POOL_BOOST_FEE_BPS } from '@/shared/consts.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
 import { assert } from '@/shared/guards.js';
@@ -30,8 +32,8 @@ import {
   RpcConfig,
   SupplyPoolsDepth,
   getAllBoostPoolsDepth,
+  getAllSupplyPoolsDepth,
   getEnvironment,
-  getSupplyPoolsDepth,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount } from '@/shared/rpc/utils.js';
 import { BoostQuote, Quote } from '@/shared/schemas.js';
@@ -180,7 +182,7 @@ export class SwapSDK {
   }
 
   private async getBtcSupplyPoolDepth(): Promise<SupplyPoolsDepth> {
-    return getSupplyPoolsDepth(this.rpcConfig, internalAssetToRpcAsset.Btc);
+    return getAllSupplyPoolsDepth(this.rpcConfig, internalAssetToRpcAsset.Btc);
   }
 
   private async getBoostPoolsDepth(): Promise<BoostPoolsDepth> {
@@ -321,8 +323,13 @@ export class SwapSDK {
         ...internalAssetToRpcAsset[depth.asset],
       })),
       ...btcSupplyPoolDepth.map((pool) => ({
-        availableAmount: pool.availableAmount,
-        feeTierBps: 5, // supply pools boosts cost 5bps fixed
+        // TODO(2.2): Document and simplify this logic by calculating the effective available amount in the RPC itself
+        availableAmount: calculateTotalEffectiveBorrowableAmount({
+          totalAmount: pool.totalAmount,
+          totalAvailableAmount: pool.availableAmount,
+          utilisationCapBps: ppmToBps(pool.utilisationCap ?? 1_000_000),
+        }),
+        feeTierBps: SUPPLY_POOL_BOOST_FEE_BPS, // supply pools boosts cost 5bps fixed
         poolType: 'SUPPLY' as const,
         ...pool.asset,
       })),
