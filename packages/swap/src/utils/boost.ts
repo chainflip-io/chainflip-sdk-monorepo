@@ -1,5 +1,6 @@
 import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import { calculateTotalEffectiveBorrowableAmount } from '@chainflip/utils/lending';
+import { SUPPLY_POOL_BOOST_FEE_BPS } from '@/shared/consts.js';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions.js';
 import { getBoostPoolsDepth, getRuntimeVersion, getSupplyPoolsDepth } from './rpc.js';
@@ -15,7 +16,6 @@ export const supplyPoolsCache = new AsyncCacheMap({
   resetExpiryOnLookup: false,
   ttl: 6_000,
 });
-const SUPPLY_POOL_BOOST_FEE_BPS = 5;
 
 export const getBoostFeeBpsForAmount = async ({
   amount,
@@ -55,7 +55,7 @@ export const getBoostFeeBpsForAmount = async ({
     const amountToBeUsedFromPool = bigintMin(remainingAmount, poolAvailableAmount);
     feeAmount += getPipAmountFromAmount(
       amountToBeUsedFromPool,
-      'tier' in poolDepth ? poolDepth.tier : 5, // Supply pools have a fixed 5 bps fee for boost loans
+      'tier' in poolDepth ? poolDepth.tier : SUPPLY_POOL_BOOST_FEE_BPS, // Supply pools have a fixed fee for boost loans
     );
     remainingAmount -= amountToBeUsedFromPool;
 

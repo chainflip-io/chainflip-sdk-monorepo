@@ -22,6 +22,7 @@ import {
   requestSwapDepositAddress,
   requestSwapParameterEncoding,
 } from '@/shared/broker.js';
+import { SUPPLY_POOL_BOOST_FEE_BPS } from '@/shared/consts.js';
 import { MultiCache } from '@/shared/dataStructures.js';
 import { parseFoKParams } from '@/shared/functions.js';
 import { assert } from '@/shared/guards.js';
@@ -328,7 +329,7 @@ export class SwapSDK {
           totalAvailableAmount: pool.availableAmount,
           utilisationCap: pool.utilisationCap,
         }),
-        feeTierBps: 5, // supply pools boosts cost 5bps fixed
+        feeTierBps: SUPPLY_POOL_BOOST_FEE_BPS, // supply pools boosts cost 5bps fixed
         poolType: 'SUPPLY' as const,
         ...pool.asset,
       })),

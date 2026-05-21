@@ -133,3 +133,5 @@ export const chainflipAssetToPriceAssetMap: InternalAssetMap<PriceAsset | null> 
   Trx: null,
   TrxUsdt: 'Usdt',
 };
+
+export const SUPPLY_POOL_BOOST_FEE_BPS = 5;
