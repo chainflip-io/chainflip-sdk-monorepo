@@ -119,22 +119,22 @@ describe(getSupplyPoolsDepth, () => {
 
 describe(getRuntimeVersion, () => {
   it('returns the runtime version with camelCased fields', async () => {
-    mockRpcResponse({
+    mockRpcResponse(async () => ({
       data: {
         jsonrpc: '2.0',
         id: 1,
         result: {
-          spec_name: 'chainflip-node',
-          impl_name: 'chainflip-node',
-          spec_version: 20200,
-          impl_version: 0,
-          authoring_version: 1,
-          transaction_version: 17,
-          state_version: 1,
+          specName: 'chainflip-node',
+          implName: 'chainflip-node',
+          specVersion: 20200,
+          implVersion: 0,
+          authoringVersion: 1,
+          transactionVersion: 17,
+          stateVersion: 1,
           apis: [],
         },
       },
-    });
+    }));
 
     const result = await getRuntimeVersion();
 
