@@ -34,10 +34,8 @@ export const getBoostFeeBpsForAmount = async ({
 
   const maxBoostFeeBps = Math.max(
     0,
-    ...[
-      assetBoostPoolsDepth.map((pool) => pool.tier),
-      assetSupplyPoolsDepth.length > 0 ? SUPPLY_POOL_BOOST_FEE_BPS : 0, // Supply pools have a fixed 5 bps fee for boost loans
-    ].flat(),
+    ...assetBoostPoolsDepth.map((pool) => pool.tier),
+    assetSupplyPoolsDepth.length > 0 ? SUPPLY_POOL_BOOST_FEE_BPS : 0,
   );
   // TODO(2.2): Simplify logic by checking against total liquidity of both pools and calculating fee amount only once at the end
   for (const poolDepth of [assetBoostPoolsDepth, assetSupplyPoolsDepth].flat()) {
