@@ -11,7 +11,7 @@ import {
   getBoostDelay,
   getBoostPoolsDepth,
   getLpBalances,
-  getRuntimeVersion,
+  cachedGetRuntimeVersion,
   getSupplyPoolsDepth,
 } from '../rpc.js';
 
@@ -117,7 +117,7 @@ describe(getSupplyPoolsDepth, () => {
   });
 });
 
-describe(getRuntimeVersion, () => {
+describe(cachedGetRuntimeVersion, () => {
   it('returns the runtime version with camelCased fields', async () => {
     mockRpcResponse(async () => ({
       data: {
@@ -136,7 +136,7 @@ describe(getRuntimeVersion, () => {
       },
     }));
 
-    const result = await getRuntimeVersion();
+    const result = await cachedGetRuntimeVersion();
 
     expect(result.specVersion).toBe(20200);
     expect(result.specName).toBe('chainflip-node');

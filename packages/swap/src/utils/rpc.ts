@@ -22,7 +22,7 @@ import {
   getAccountInfo as getAccountInfoRpc,
   getAllSupplyPoolsDepth,
   SupplyPoolsDepth,
-  getRuntimeVersion as getRuntimeVersionRpc,
+  getRuntimeVersion,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils.js';
 import { memoize } from './function.js';
@@ -198,6 +198,4 @@ export const getDefaultOracleProtectionValue = async (asset: BaseChainflipAsset)
   return readAssetValue(defaultOracleProtectionValue, asset);
 };
 
-export const getRuntimeVersion = () => getRuntimeVersionRpc(rpcConfig);
-
-export const cachedGetRuntimeVersion = memoize(getRuntimeVersion, 300_000);
+export const cachedGetRuntimeVersion = memoize(() => getRuntimeVersion(rpcConfig), 300_000);

@@ -48,7 +48,7 @@ describe(getBoostFeeBpsForAmount, () => {
   // TODO(2.2): Remove after all networks are upgraded
   describe('pre-runtime 20200: 5, 15, 30 bps boost pools (no supply pools)', () => {
     beforeEach(() => {
-      vi.mocked(rpc.getRuntimeVersion).mockResolvedValue({ specVersion: 20199 } as any);
+      vi.mocked(rpc.cachedGetRuntimeVersion).mockResolvedValue({ specVersion: 20199 } as any);
       vi.mocked(rpc.getBoostPoolsDepth).mockResolvedValue([
         boostPool(5, BigInt(1e8)),
         boostPool(15, BigInt(0.5e8)),
@@ -88,7 +88,7 @@ describe(getBoostFeeBpsForAmount, () => {
 
   describe('post-runtime 20200: 5 bps boost pool + 5 bps supply pool', () => {
     beforeEach(() => {
-      vi.mocked(rpc.getRuntimeVersion).mockResolvedValue({ specVersion: 20200 } as any);
+      vi.mocked(rpc.cachedGetRuntimeVersion).mockResolvedValue({ specVersion: 20200 } as any);
       vi.mocked(rpc.getBoostPoolsDepth).mockResolvedValue([boostPool(5, BigInt(1e8))]);
       vi.mocked(rpc.getSupplyPoolsDepth).mockResolvedValue([supplyPool(BigInt(1e8))]);
     });
