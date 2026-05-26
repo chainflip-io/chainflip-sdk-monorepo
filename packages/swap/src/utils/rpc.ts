@@ -199,3 +199,5 @@ export const getDefaultOracleProtectionValue = async (asset: BaseChainflipAsset)
 };
 
 export const getRuntimeVersion = () => getRuntimeVersionRpc(rpcConfig);
+
+export const cachedGetRuntimeVersion = memoize(getRuntimeVersion, 300_000);

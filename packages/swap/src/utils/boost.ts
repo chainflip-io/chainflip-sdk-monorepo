@@ -3,7 +3,7 @@ import { calculateTotalEffectiveBorrowableAmount, ppmToBps } from '@chainflip/ut
 import { SUPPLY_POOL_BOOST_FEE_BPS } from '@/shared/consts.js';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions.js';
-import { getBoostPoolsDepth, getRuntimeVersion, getSupplyPoolsDepth } from './rpc.js';
+import { cachedGetRuntimeVersion, getBoostPoolsDepth, getSupplyPoolsDepth } from './rpc.js';
 
 export const boostPoolsCache = new AsyncCacheMap({
   fetch: (asset: ChainflipAsset) => getBoostPoolsDepth({ asset }),
@@ -24,8 +24,9 @@ export const getBoostFeeBpsForAmount = async ({
   amount: bigint;
   asset: ChainflipAsset;
 }): Promise<{ estimatedBoostFeeBps: number | undefined; maxBoostFeeBps: number }> => {
-  if (asset !== 'Btc') return { estimatedBoostFeeBps: undefined, maxBoostFeeBps: 0 };
-  const { specVersion } = await getRuntimeVersion();
+  if (asset !== 'Btc' || amount === 0n)
+    return { estimatedBoostFeeBps: undefined, maxBoostFeeBps: 0 };
+  const { specVersion } = await cachedGetRuntimeVersion();
   const assetBoostPoolsDepth = await boostPoolsCache.get(asset);
   const assetSupplyPoolsDepth = specVersion >= 20200 ? await supplyPoolsCache.get(asset) : []; // TODO(2.2): Remove version check once all networks are upgraded
 
