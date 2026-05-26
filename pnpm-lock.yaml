@@ -124,14 +124,14 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-alpha.8
-        version: 2.2.0-alpha.8
+        specifier: 2.2.0-alpha.9
+        version: 2.2.0-alpha.9
       '@chainflip/solana':
         specifier: 2.2.3
-        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.3
-        version: 2.2.0-alpha.3
+        specifier: 2.2.0-alpha.6
+        version: 2.2.0-alpha.6
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -143,7 +143,7 @@ importers:
         version: 9.3.0
       ethers:
         specifier: ^6.14.4
-        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -158,14 +158,14 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.2.0-alpha.8
-        version: 2.2.0-alpha.8
+        specifier: 2.2.0-alpha.9
+        version: 2.2.0-alpha.9
       '@chainflip/solana':
         specifier: 2.2.3
-        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+        version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.3
-        version: 2.2.0-alpha.3
+        specifier: 2.2.0-alpha.6
+        version: 2.2.0-alpha.6
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.4)(zod@3.25.76)
@@ -177,13 +177,13 @@ importers:
         version: 9.3.0
       ethers:
         specifier: ^6.14.4
-        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       ioredis:
         specifier: ^5.6.1
         version: 5.6.1
       ws:
         specifier: ^8.18.2
-        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -193,10 +193,10 @@ importers:
         version: 5.8.0
       '@ethersproject/providers':
         specifier: ^5.8.0
-        version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
+        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -222,14 +222,14 @@ importers:
         specifier: 2.2.0-alpha.1
         version: 2.2.0-alpha.1
       '@chainflip/rpc':
-        specifier: 2.2.0-alpha.8
-        version: 2.2.0-alpha.8
+        specifier: 2.2.0-alpha.9
+        version: 2.2.0-alpha.9
       '@chainflip/solana':
         specifier: 2.2.3
         version: 2.2.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.2.0-alpha.3
-        version: 2.2.0-alpha.3
+        specifier: 2.2.0-alpha.6
+        version: 2.2.0-alpha.6
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -465,8 +465,8 @@ packages:
   '@chainflip/redis@2.2.0-alpha.1':
     resolution: {integrity: sha512-V9lmE2ojdl7wNfhob/LDa01iyJiVThG5nNEKhr0CmQyGAym2zGSIekPlZSVv241dNgIEs7ZMEHU3wNfy4M6d+Q==}
 
-  '@chainflip/rpc@2.2.0-alpha.8':
-    resolution: {integrity: sha512-GE8KTxsUqRFzQCFyP5Yh31eyBV/uQiHUv8cpnqCjnkksnMbDI7iQsgcn0/qi0QGosZSTF8yddTJ3NF24uHiu8w==}
+  '@chainflip/rpc@2.2.0-alpha.9':
+    resolution: {integrity: sha512-kpQiHn3oDLRnY+FcGxy1sY63iqkhvNglJ7On2woeXRoJ9nly3tTA7paIWDLcHycnzdTlNqCqp5a+UdLtURAoSQ==}
 
   '@chainflip/scale@1.11.0':
     resolution: {integrity: sha512-gLs2pARutz6JJSKth92TYQEHVWvwpavWNUARB9626t+QxlparHyL10t9XibD2X1sr+GLXWKj2q5qXOSGU8CICA==}
@@ -486,8 +486,8 @@ packages:
   '@chainflip/utils@2.2.0-alpha.2':
     resolution: {integrity: sha512-BqJH3V/gpN0sgvjhrbBCzpCJ/NqXxO4H4SBDC+ZqLFFxgAg0xQw1SP6zmY9vL/BJe1ukB/shE316qCJxFouUIA==}
 
-  '@chainflip/utils@2.2.0-alpha.3':
-    resolution: {integrity: sha512-IMfSN0ZIeC58oIcDh5k2mAwlIucfxb4KfGqoJY/OKt1dm0o+GiilVt8SS/GYf7AEDvv0/VgR/Blk0FlNLgPz/w==}
+  '@chainflip/utils@2.2.0-alpha.6':
+    resolution: {integrity: sha512-O65ZOo74NdYvQdkozWwwL+pgyTE6EkIRugZrBe7OrFX9h608bj4kiZUkuANqIbNanxuMUCXtP5HSHraXS8LjfA==}
 
   '@chevrotain/cst-dts-gen@10.5.0':
     resolution: {integrity: sha512-lhmC/FyqQ2o7pGK4Om+hzuDrm9rhFYIJ/AXoQBeongmn870Xeb0L6oGEiuR8nohFNL5sMaQEJWCxr1oIVIVXrw==}
@@ -1448,56 +1448,67 @@ packages:
     resolution: {integrity: sha512-x+e/Z9H0RAWckn4V2OZZl6EmV0L2diuX3QB0uM1r6BvhUIv6xBPL5mrAX2E3e8N8rEHVPwFfz/ETUbV4oW9+lQ==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.44.0':
     resolution: {integrity: sha512-1exwiBFf4PU/8HvI8s80icyCcnAIB86MCBdst51fwFmH5dyeoWVPVgmQPcKrMtBQ0W5pAs7jBCWuRXgEpRzSCg==}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.44.0':
     resolution: {integrity: sha512-ZTR2mxBHb4tK4wGf9b8SYg0Y6KQPjGpR4UWwTFdnmjB4qRtoATZ5dWn3KsDwGa5Z2ZBOE7K52L36J9LueKBdOQ==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.44.0':
     resolution: {integrity: sha512-GFWfAhVhWGd4r6UxmnKRTBwP1qmModHtd5gkraeW2G490BpFOZkFtem8yuX2NyafIP/mGpRJgTJ2PwohQkUY/Q==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-loongarch64-gnu@4.44.0':
     resolution: {integrity: sha512-xw+FTGcov/ejdusVOqKgMGW3c4+AgqrfvzWEVXcNP6zq2ue+lsYUgJ+5Rtn/OTJf7e2CbgTFvzLW2j0YAtj0Gg==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-powerpc64le-gnu@4.44.0':
     resolution: {integrity: sha512-bKGibTr9IdF0zr21kMvkZT4K6NV+jjRnBoVMt2uNMG0BYWm3qOVmYnXKzx7UhwrviKnmK46IKMByMgvpdQlyJQ==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-gnu@4.44.0':
     resolution: {integrity: sha512-vV3cL48U5kDaKZtXrti12YRa7TyxgKAIDoYdqSIOMOFBXqFj2XbChHAtXquEn2+n78ciFgr4KIqEbydEGPxXgA==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.44.0':
     resolution: {integrity: sha512-TDKO8KlHJuvTEdfw5YYFBjhFts2TR0VpZsnLLSYmB7AaohJhM8ctDSdDnUGq77hUh4m/djRafw+9zQpkOanE2Q==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.44.0':
     resolution: {integrity: sha512-8541GEyktXaw4lvnGp9m84KENcxInhAt6vPWJ9RodsB/iGjHoMB2Pp5MVBCiKIRxrxzJhGCxmNzdu+oDQ7kwRA==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.44.0':
     resolution: {integrity: sha512-iUVJc3c0o8l9Sa/qlDL2Z9UP92UZZW1+EmQ4xfjTc1akr0iUFZNfxrXJ/R1T90h/ILm9iXEY6+iPrmYB3pXKjw==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.44.0':
     resolution: {integrity: sha512-PQUobbhLTQT5yz/SPg116VJBgz+XOtXt8D1ck+sfJJhuEsMj2jSej5yTdp8CvWBSceu+WW+ibVL6dm0ptG5fcA==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-win32-arm64-msvc@4.44.0':
     resolution: {integrity: sha512-M0CpcHf8TWn+4oTxJfh7LQuTuaYeXGbk0eageVjQCKzYLsajWS/lFC94qlRqOlyC2KvRT90ZrfXULYmukeIy7w==}
@@ -6154,7 +6165,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.2.0-alpha.8':
+  '@chainflip/rpc@2.2.0-alpha.9':
     dependencies:
       '@chainflip/utils': 2.2.0-alpha.1
       zod: 3.25.76
@@ -6221,7 +6232,7 @@ snapshots:
       bignumber.js: 11.1.1
       date-fns: 4.1.0
 
-  '@chainflip/utils@2.2.0-alpha.3':
+  '@chainflip/utils@2.2.0-alpha.6':
     dependencies:
       '@date-fns/utc': 2.1.1
       '@noble/hashes': 2.2.0
@@ -6543,7 +6554,7 @@ snapshots:
     dependencies:
       '@ethersproject/logger': 5.8.0
 
-  '@ethersproject/providers@5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@ethersproject/providers@5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
@@ -6564,7 +6575,7 @@ snapshots:
       '@ethersproject/transactions': 5.8.0
       '@ethersproject/web': 5.8.0
       bech32: 1.1.4
-      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -7841,9 +7852,9 @@ snapshots:
     optionalDependencies:
       zod: 3.25.76
 
-  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
+  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
-      ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@5.9.3)
       typechain: 8.3.2(typescript@5.9.3)
@@ -12897,10 +12908,10 @@ snapshots:
       bufferutil: 4.1.0
       utf-8-validate: 6.0.6
 
-  ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     optionalDependencies:
       bufferutil: 4.1.0
-      utf-8-validate: 6.0.6
+      utf-8-validate: 5.0.10
 
   ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10):
     optionalDependencies:

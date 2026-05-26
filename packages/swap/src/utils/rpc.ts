@@ -20,6 +20,9 @@ import {
   getPoolDepth as getPoolDepthRpc,
   getAccounts as getAccountsRpc,
   getAccountInfo as getAccountInfoRpc,
+  getAllSupplyPoolsDepth,
+  SupplyPoolsDepth,
+  getRuntimeVersion,
 } from '@/shared/rpc/index.js';
 import { validateSwapAmount as validateAmount } from '@/shared/rpc/utils.js';
 import { memoize } from './function.js';
@@ -158,6 +161,13 @@ export const getBoostPoolsDepth = async ({
   return allBoostPoolsDepth;
 };
 
+export const getSupplyPoolsDepth = async ({
+  asset,
+}: {
+  asset?: ChainflipAsset;
+}): Promise<SupplyPoolsDepth> =>
+  getAllSupplyPoolsDepth(rpcConfig, asset ? internalAssetToRpcAsset[asset] : undefined);
+
 export const getLpBalances = async <T extends string>(
   accountIds: Set<T> | T[],
 ): Promise<(readonly [T, InternalAssetMap<bigint>])[]> => {
@@ -187,3 +197,5 @@ export const getDefaultOracleProtectionValue = async (asset: BaseChainflipAsset)
 
   return readAssetValue(defaultOracleProtectionValue, asset);
 };
+
+export const cachedGetRuntimeVersion = memoize(() => getRuntimeVersion(rpcConfig), 300_000);
