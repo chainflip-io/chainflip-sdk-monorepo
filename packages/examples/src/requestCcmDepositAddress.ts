@@ -6,15 +6,26 @@ import 'dotenv/config';
 const swapSDK = new SwapSDK({
   network: 'perseverance',
   enabledFeatures: { dcaV2: true },
-  broker: { url: 'http://10.5.2.143:8080/ ' },
 });
+
+// CCM params
+const ccmGasBudget = '10000';
+const ccmMessage = '0xdeadbeef';
+
+const quoteAmount = (0.001e18).toString();
+const ethRefundAddress = '0x37876B47DEE43492DAC3d87F7682df52dDBC65Ca';
+const tronDestAddress = 'TPvGoFxzYMj932E1u8msYLncEtHhAruQdN';
 
 const { quotes } = await swapSDK.getQuoteV2({
   srcChain: Chains.Ethereum,
-  srcAsset: Assets.USDC,
-  destChain: Chains.Solana,
-  destAsset: Assets.SOL,
-  amount: (500e6).toString(),
+  srcAsset: Assets.ETH,
+  destChain: Chains.Tron,
+  destAsset: Assets.TRX,
+  amount: quoteAmount,
+  ccmParams: {
+    gasBudget: ccmGasBudget,
+    messageLengthBytes: Math.ceil((ccmMessage.length - 2) / 2),
+  },
 });
 
 const quote = quotes.find((q) => q.type === 'REGULAR');
@@ -23,18 +34,17 @@ console.log('quote', quote);
 
 const channel = await swapSDK.requestDepositAddressV2({
   quote,
-  destAddress: '3tV35UV7rvHqYK4zvqKXaTPBESw9QxGP7LpQRcNHjdDZ',
+  destAddress: tronDestAddress,
   fillOrKillParams: {
     slippageTolerancePercent: quote.recommendedSlippageTolerancePercent,
-    refundAddress: '0xcDb829647668b72D6046a1b5fA852De553261030',
-    retryDurationBlocks: 100,
+    refundAddress: ethRefundAddress,
+    retryDurationBlocks: 2,
     livePriceSlippageTolerancePercent: quote.recommendedLivePriceSlippageTolerancePercent,
   },
   ccmParams: {
-    message: '0x010000002f010064000184ff44ab00000000f401',
-    gasBudget: '1450000',
-    ccmAdditionalData:
-      '0x007417da8b99d7748127a76b03d61fee69c80dfef73ad2d5503737beedc5a9ed480008b78b2094a85d94fccab50ffb07c8492382f2eb6eb4a8ea94a7d84686f2a8bac20043922bdabbe135d77fd58311bf529e29604bb220cb7f90033987c7395cdf47f70162cefae0327767424c7a553077c91c8e4c9918230395aa8b6baf7dd33b5151f6',
+    gasBudget: ccmGasBudget,
+    message: ccmMessage,
   },
 });
-console.log(channel);
+
+console.log('request deposit address response', channel);
