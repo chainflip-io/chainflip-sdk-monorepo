@@ -157,6 +157,8 @@ export default z
     ENABLE_QUOTE_RATE_LIMIT: optionalBoolean.default('false'),
     ENABLE_NOT_FOUND_RATE_LIMIT: optionalBoolean.default('true'),
     NOT_FOUND_MAX_REQUESTS_LIMIT: optionalNumber(10),
+    NOT_FOUND_RATE_LIMIT_WINDOW_MS: optionalNumber(60_000),
+    NOT_FOUND_RATE_LIMIT_BLOCK_DURATION_MS: optionalNumber(600_000),
     QUOTE_RATE_LIMIT_WINDOW_MS: optionalNumber(60_000),
     QUOTE_RATE_LIMIT_MAX_REQUESTS: optionalNumber(100),
     QUOTE_RATE_LIMIT_BLOCK_DURATION_MS: optionalNumber(300_000),

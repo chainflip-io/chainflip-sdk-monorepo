@@ -12,7 +12,7 @@ import Quoter from './quoting/Quoter.js';
 import { createApiRouter } from './routes/api.js';
 import { handleError, maintenanceMode, quoteMiddleware } from './routes/middlewares/common.js';
 import { createIpBlacklist } from './routes/middlewares/ipBlacklist.js';
-import { notFoundRateLimit } from './routes/middlewares/notFoundRateLimit.js';
+import { createNotFoundRateLimit } from './routes/middlewares/notFoundRateLimit.js';
 import { createQuoteRateLimit } from './routes/middlewares/quoteRateLimit.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
@@ -50,7 +50,7 @@ app.use((req, res, next) => {
 app.use(
   '/v2/swaps',
   createIpBlacklist(),
-  notFoundRateLimit,
+  createNotFoundRateLimit(),
   lastUpdateHeader,
   express.json(),
   swapV2,
