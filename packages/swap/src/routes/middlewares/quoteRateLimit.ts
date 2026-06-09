@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { isString } from '@/shared/guards.js';
-import env from '../config/env.js';
-import { handleExit } from '../utils/function.js';
-import logger from '../utils/logger.js';
-import ServiceError from '../utils/ServiceError.js';
+import env from '../../config/env.js';
+import { handleExit } from '../../utils/function.js';
+import logger from '../../utils/logger.js';
+import ServiceError from '../../utils/ServiceError.js';
 
 type IpRecord = {
   timestamps: number[];

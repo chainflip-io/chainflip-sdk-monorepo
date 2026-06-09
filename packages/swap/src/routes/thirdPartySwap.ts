@@ -1,6 +1,6 @@
 import express from 'express';
-import { asyncHandler } from './common.js';
 import prisma from '../client.js';
+import { asyncHandler } from './middlewares/common.js';
 import logger from '../utils/logger.js';
 import { thirdPartySwapSchema } from '../utils/parsers.js';
 import ServiceError from '../utils/ServiceError.js';

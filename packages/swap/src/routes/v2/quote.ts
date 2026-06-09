@@ -7,7 +7,7 @@ import {
 import Quoter from '../../quoting/Quoter.js';
 import QuoteRequest from '../../quoting/QuoteRequest.js';
 import logger from '../../utils/logger.js';
-import { asyncHandler, handleQuotingError } from '../common.js';
+import { asyncHandler, handleQuotingError } from '../middlewares/common.js';
 
 const router = express.Router();
 

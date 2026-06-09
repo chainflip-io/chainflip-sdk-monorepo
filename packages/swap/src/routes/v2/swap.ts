@@ -20,7 +20,7 @@ import { getLastChainTrackingUpdateTimestamp } from '../../utils/intercept.js';
 import logger from '../../utils/logger.js';
 import { getRequiredBlockConfirmations } from '../../utils/rpc.js';
 import { estimateSwapDuration } from '../../utils/swap.js';
-import { asyncHandler } from '../common.js';
+import { asyncHandler } from '../middlewares/common.js';
 
 const router = express.Router();
 
