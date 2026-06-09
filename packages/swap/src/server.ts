@@ -10,9 +10,10 @@ import env from './config/env.js';
 import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
 import { createApiRouter } from './routes/api.js';
-import { handleError, maintenanceMode, quoteMiddleware } from './routes/common.js';
-import { createIpBlacklist } from './routes/ipBlacklist.js';
-import { createQuoteRateLimit } from './routes/quoteRateLimit.js';
+import { handleError, maintenanceMode, quoteMiddleware } from './routes/middlewares/common.js';
+import { createIpBlacklist } from './routes/middlewares/ipBlacklist.js';
+import { notFoundRateLimit } from './routes/middlewares/notFoundRateLimit.js';
+import { createQuoteRateLimit } from './routes/middlewares/quoteRateLimit.js';
 import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
 import swapV2 from './routes/v2/swap.js';
@@ -46,7 +47,14 @@ app.use((req, res, next) => {
   logStorage.run(info.reqId, next);
 });
 
-app.use('/v2/swaps', createIpBlacklist(), lastUpdateHeader, express.json(), swapV2);
+app.use(
+  '/v2/swaps',
+  createIpBlacklist(),
+  notFoundRateLimit,
+  lastUpdateHeader,
+  express.json(),
+  swapV2,
+);
 app.use('/third-party-swap', maintenanceMode, express.json(), thirdPartySwap);
 
 app.get('/healthcheck', (req, res) => {

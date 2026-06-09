@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../client.js';
-import { asyncHandler } from '../routes/common.js';
+import { asyncHandler } from '../routes/middlewares/common.js';
 
 export const getLastChainTrackingUpdateTimestamp = async () => {
   const latestChainTracking = await prisma.chainTracking.findFirst({

@@ -1,9 +1,9 @@
 import { RequestHandler, ErrorRequestHandler } from 'express';
 import * as express from 'express';
 import type { RouteParameters } from 'express-serve-static-core';
-import env from '../config/env.js';
-import logger, { inspectError } from '../utils/logger.js';
-import ServiceError from '../utils/ServiceError.js';
+import env from '../../config/env.js';
+import logger, { inspectError } from '../../utils/logger.js';
+import ServiceError from '../../utils/ServiceError.js';
 
 export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
   if (error instanceof ServiceError) {

@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { isString } from '@/shared/guards.js';
-import prisma from '../client.js';
-import { handleExit } from '../utils/function.js';
-import logger from '../utils/logger.js';
-import ServiceError from '../utils/ServiceError.js';
+import prisma from '../../client.js';
+import { handleExit } from '../../utils/function.js';
+import logger from '../../utils/logger.js';
+import ServiceError from '../../utils/ServiceError.js';
 
 export const createIpBlacklist = (): RequestHandler => {
   let cachedIps = Promise.resolve(new Set<string>());

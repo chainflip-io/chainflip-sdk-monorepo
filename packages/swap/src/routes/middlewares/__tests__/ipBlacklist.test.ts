@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import prisma from '../../client.js';
+import prisma from '../../../client.js';
 import { createIpBlacklist } from '../ipBlacklist.js';
 
 const mockReq = (ip?: string) => ({ headers: { 'cf-connecting-ip': ip } }) as unknown as Request;
