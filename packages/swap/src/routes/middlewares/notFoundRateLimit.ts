@@ -5,8 +5,8 @@ import logger from '../../utils/logger.js';
 import ServiceError from '../../utils/ServiceError.js';
 
 const WINDOW_MS = 60_000; // 1 minute
-const MAX_NOT_FOUNDS = env.NOT_FOUND_RATE_LIMIT_MAX_REQUESTS;
 const BAN_DURATION_MS = 10 * 60_000; // 10 minutes
+const MAX_NOT_FOUNDS = env.NOT_FOUND_MAX_REQUESTS_LIMIT;
 
 type IpRecord = {
   timestamps: number[];

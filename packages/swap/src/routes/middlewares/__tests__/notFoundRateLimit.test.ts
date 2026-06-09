@@ -14,7 +14,7 @@ const mockRes = (statusCode = 200) => {
 const IP = '1.2.3.4';
 const OTHER_IP = '5.6.7.8';
 
-const MAX_REQUESTS = env.NOT_FOUND_RATE_LIMIT_MAX_REQUESTS;
+const MAX_REQUESTS = env.NOT_FOUND_MAX_REQUESTS_LIMIT;
 const BAN_DURATION_MS = 10 * 60_000; // 10 minutes
 
 describe('notFoundRateLimit', () => {
