@@ -12,6 +12,10 @@ which it is deprecated.
 ### Added
 
 - New chain and assets: `Tron`, `Trx` and `TrxUsdt` (USDT on Tron).
+- Optional `brokerAccount` field on quote requests (`getQuoteV2`), which adds an
+  optional `brokerIdSs58` query param to `/v2/quote`. Brokers are encouraged to
+  update their SDK and pass their own address so their quotes can be attributed
+  to them, enabling analytics over broker's performance.
 
 ### Removed
 
