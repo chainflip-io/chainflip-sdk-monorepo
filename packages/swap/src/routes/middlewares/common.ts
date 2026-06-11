@@ -26,9 +26,18 @@ export const maintenanceMode: RequestHandler = (req, res, next) => {
 
 export const quoteMiddleware: RequestHandler = (req, res, next) => {
   if (env.DISABLE_QUOTING) {
+    if (
+      env.QUOTING_ALLOWED_ORIGINS.size &&
+      req.headers.origin &&
+      env.QUOTING_ALLOWED_ORIGINS.has(req.headers.origin.toLowerCase())
+    ) {
+      next();
+      return;
+    }
     next(ServiceError.unavailable('Quoting is currently unavailable due to maintenance'));
     return;
   }
+
   next();
 };
 

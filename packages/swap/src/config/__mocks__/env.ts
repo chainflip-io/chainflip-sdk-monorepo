@@ -20,6 +20,7 @@ export default {
   DISABLED_DESTINATION_INTERNAL_ASSETS: new Set(),
   MAX_CHANNELS_OPEN_PER_ADDRESS: 10,
   DISABLE_QUOTING: false,
+  QUOTING_ALLOWED_ORIGINS: new Set(),
   SOLANA_RPC_HTTP_URL: 'http://solana-rpc.test',
   BITCOIN_RPC_HTTP_URL: 'http://bitcoin-rpc.test',
   STABLE_COIN_SLIPPAGE_MIN_PRICE: 0.995,
