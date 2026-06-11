@@ -262,6 +262,11 @@ describe('ingress-egress-tracking', () => {
             "numberOfChunks": 1,
           },
           "depositChainBlockHeight": 1234567890,
+          "depositDetails": {
+            "txId": "77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239",
+            "type": "Bitcoin",
+            "vout": 0,
+          },
           "destAddress": "0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff",
           "destAsset": "Eth",
           "maxBoostFeeBps": 30,
@@ -319,6 +324,12 @@ describe('ingress-egress-tracking', () => {
           "ccmDepositMetadata": null,
           "dcaParams": null,
           "depositChainBlockHeight": 7881101,
+          "depositDetails": {
+            "txHashes": [
+              "0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6",
+            ],
+            "type": "EVM",
+          },
           "destAddress": "0xcb583c817964a2c527608f8b813a4c9bddb559a9",
           "destAsset": "Flip",
           "maxBoostFeeBps": 0,
@@ -442,6 +453,71 @@ describe('ingress-egress-tracking', () => {
           "depositChainBlockHeight": 4046637,
           "destAddress": "0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff",
           "destAsset": "Eth",
+          "maxBoostFeeBps": 30,
+          "refundParams": {
+            "maxOraclePriceSlippage": 100,
+            "minPrice": 17756447149729355758171422264767581477873599056965n,
+            "refundAddress": "tb1qhjurnfz4qah4rg7ntue6x287ehdvded20rj9vh",
+            "refundCcmMetadata": null,
+            "retryDuration": 100,
+          },
+          "srcAsset": "Btc",
+          "txConfirmations": 1230521256,
+          "txRef": "91d7edcdca97558e74d3d69205402026e3bb70158ec9d8cc063a5072fcbc5024",
+        }
+      `);
+      expect(findBitcoinVaultSwapData).toHaveBeenCalledTimes(1);
+      expect(findBitcoinVaultSwapData).toHaveBeenCalledWith(
+        'http://bitcoin-rpc.test',
+        '91d7edcdca97558e74d3d69205402026e3bb70158ec9d8cc063a5072fcbc5024',
+      );
+    });
+
+    it('gets pending vault swap from toolkit for bitcoin to tron', async () => {
+      await updateChainTracking({ chain: 'Bitcoin', height: 1234567893n });
+
+      vi.mocked(findBitcoinVaultSwapData).mockResolvedValueOnce({
+        inputAsset: 'Btc',
+        amount: 500000n,
+        depositAddress: 'tb1pce9k3fq67hl8g8qxnwu45fpacxmfhvqtd543kclyk459ukwd3kkq6xshnl',
+        refundParams: {
+          refundAddress: 'tb1qhjurnfz4qah4rg7ntue6x287ehdvded20rj9vh',
+          retryDuration: 100,
+          minPrice: 17756447149729355758171422264767581477873599056965n,
+          maxOraclePriceSlippage: 100,
+          refundCcmMetadata: null,
+        },
+        destinationAddress: 'TQ6iqCJLAGYgVFccmARRLUBoAGM5FeMGqz',
+        outputAsset: 'Trx',
+        brokerFee: { account: null, commissionBps: 0 },
+        affiliateFees: [],
+        ccmDepositMetadata: null,
+        maxBoostFee: 30,
+        dcaParams: { chunkInterval: 2, numberOfChunks: 1 },
+        depositChainBlockHeight: 4046637,
+      });
+
+      const swap = await getPendingVaultSwap(
+        '91d7edcdca97558e74d3d69205402026e3bb70158ec9d8cc063a5072fcbc5024',
+      );
+
+      expect(swap).toMatchInlineSnapshot(`
+        {
+          "affiliateFees": [],
+          "amount": 500000n,
+          "brokerFee": {
+            "account": "",
+            "commissionBps": 0,
+          },
+          "ccmDepositMetadata": null,
+          "dcaParams": {
+            "chunkInterval": 2,
+            "numberOfChunks": 1,
+          },
+          "depositAddress": "tb1pce9k3fq67hl8g8qxnwu45fpacxmfhvqtd543kclyk459ukwd3kkq6xshnl",
+          "depositChainBlockHeight": 4046637,
+          "destAddress": "TQ6iqCJLAGYgVFccmARRLUBoAGM5FeMGqz",
+          "destAsset": "Trx",
           "maxBoostFeeBps": 30,
           "refundParams": {
             "maxOraclePriceSlippage": 100,
