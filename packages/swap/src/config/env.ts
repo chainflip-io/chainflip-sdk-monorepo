@@ -136,6 +136,15 @@ export default z
     DISABLE_DCA_QUOTING: optionalBoolean,
     // in case we want to disable quoting as a part of maintenance mode
     DISABLE_QUOTING: optionalBoolean,
+    QUOTING_ALLOWED_ORIGINS: optionalString('').transform(
+      (string) =>
+        new Set(
+          string
+            .split(',')
+            .map((origin) => origin.trim().toLowerCase())
+            .filter(Boolean),
+        ),
+    ),
     DISABLE_BOOST_QUOTING: optionalBoolean,
     STABLE_COIN_SLIPPAGE_MIN_PRICE: optionalNumber(0.995).describe(
       'The targeted minimum price for stable coin swaps when providing a slippage recommendation',
