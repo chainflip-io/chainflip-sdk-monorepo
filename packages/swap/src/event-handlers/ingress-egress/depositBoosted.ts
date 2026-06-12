@@ -90,8 +90,10 @@ export const depositBoosted =
       const totalBoostFee = Array.isArray(boostFee)
         ? boostFee.reduce((acc, [, fee]) => acc + fee, BigInt(0))
         : boostFee;
-      const effectiveBoostFeeBps =
-        (totalBoostFee * BigInt(ONE_IN_PIP)) / BigInt(depositAmount.toString());
+      const effectiveBoostFeeBps = new BigNumber(totalBoostFee)
+        .multipliedBy(ONE_IN_PIP)
+        .dividedBy(depositAmount)
+        .toFixed(0);
 
       const fees = {
         create: [

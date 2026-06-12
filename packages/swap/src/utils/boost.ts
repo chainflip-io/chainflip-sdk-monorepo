@@ -68,7 +68,7 @@ export const getBoostFeeBpsForAmount = async ({
   return {
     estimatedBoostFeeBps: Math.max(
       5,
-      new BigNumber(feeAmount).multipliedBy(ONE_IN_PIP).dividedBy(amount).toNumber(),
+      Number(new BigNumber(feeAmount).multipliedBy(ONE_IN_PIP).dividedBy(amount).toFixed(0)),
     ),
     maxBoostFeeBps,
   };
