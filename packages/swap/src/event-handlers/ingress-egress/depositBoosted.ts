@@ -12,6 +12,7 @@ import { bitcoinIngressEgressDepositBoosted as bitcoinSchema220 } from '@chainfl
 import { ethereumIngressEgressDepositBoosted as ethereumSchema220 } from '@chainflip/processor/220/ethereumIngressEgress/depositBoosted';
 import { tronIngressEgressDepositBoosted as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/depositBoosted';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
+import BigNumber from 'bignumber.js';
 import { z } from 'zod';
 import { ONE_IN_PIP } from '@/shared/functions.js';
 import { Prisma, SwapFeeType } from '../../client.js';
@@ -90,8 +91,9 @@ export const depositBoosted =
       const totalBoostFee = Array.isArray(boostFee)
         ? boostFee.reduce((acc, [, fee]) => acc + fee, BigInt(0))
         : boostFee;
-      const effectiveBoostFeeBps =
-        (totalBoostFee * BigInt(ONE_IN_PIP)) / BigInt(depositAmount.toString());
+      const effectiveBoostFeeBps = Math.trunc(
+        new BigNumber(totalBoostFee).multipliedBy(ONE_IN_PIP).dividedBy(depositAmount).toNumber(),
+      );
 
       const fees = {
         create: [
@@ -103,7 +105,7 @@ export const depositBoosted =
       const nativeId = action.swapRequestId;
       const data: Prisma.SwapRequestUpdateInput = {
         maxBoostFeeBps,
-        effectiveBoostFeeBps: Number(effectiveBoostFeeBps),
+        effectiveBoostFeeBps: Math.max(5, effectiveBoostFeeBps),
         prewitnessedDepositId,
         depositTransactionRef: txRef,
         depositBoostedAt: new Date(block.timestamp),

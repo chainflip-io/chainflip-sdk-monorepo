@@ -1,5 +1,6 @@
 import { ChainflipAsset } from '@chainflip/utils/chainflip';
 import { calculateTotalEffectiveBorrowableAmount, ppmToBps } from '@chainflip/utils/lending';
+import BigNumber from 'bignumber.js';
 import { SUPPLY_POOL_BOOST_FEE_BPS } from '@/shared/consts.js';
 import { AsyncCacheMap } from '@/shared/dataStructures.js';
 import { ONE_IN_PIP, bigintMin, getPipAmountFromAmount } from '@/shared/functions.js';
@@ -65,7 +66,10 @@ export const getBoostFeeBpsForAmount = async ({
   if (remainingAmount > 0) return { estimatedBoostFeeBps: undefined, maxBoostFeeBps };
 
   return {
-    estimatedBoostFeeBps: Number((feeAmount * BigInt(ONE_IN_PIP)) / BigInt(amount)),
+    estimatedBoostFeeBps: Math.max(
+      5,
+      Math.trunc(new BigNumber(feeAmount).multipliedBy(ONE_IN_PIP).dividedBy(amount).toNumber()),
+    ),
     maxBoostFeeBps,
   };
 };

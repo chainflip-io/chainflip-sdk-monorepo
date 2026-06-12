@@ -129,7 +129,7 @@ exports[`depositBoosted > updates the values for event with 180 schema 1`] = `
   "depositTransactionRef": "a609689d549a894c996e25d21bff81f243d64965f87b245ef774ad87196976cc",
   "destAddress": "0x41ad2bc63a2059f9b623533d87fe99887d794847",
   "destAsset": "Eth",
-  "effectiveBoostFeeBps": 4,
+  "effectiveBoostFeeBps": 5,
   "egressId": null,
   "fallbackEgressId": null,
   "fallbackRefundEgressId": null,
