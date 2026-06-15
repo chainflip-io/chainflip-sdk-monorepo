@@ -30,7 +30,7 @@ const args = yargs(process.argv)
     alias: 'p',
     description: 'the package to tag',
     demandOption: true,
-    choices: ['cli', 'sdk'],
+    choices: ['sdk'],
   })
   .option('tag', {
     alias: 't',
