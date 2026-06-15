@@ -28,7 +28,8 @@ which it is deprecated.
 
 - `@chainflip/rpc` upgraded to 2.2.0
 - `@chainflip/utils` upgraded to 2.2.0
-- `@chainflip/solana` upgraded to 2.2.3
+- `@chainflip/solana` upgraded to 2.2.5
+- `@chainflip/bitcoin` upgraded to 2.2.0
 
 ### Deprecated
 
