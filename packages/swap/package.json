@@ -59,12 +59,12 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@chainflip/bitcoin": "2.2.0-beta.0",
-    "@chainflip/processor": "2.2.0-beta.0",
-    "@chainflip/rpc": "2.2.0-beta.0",
-    "@chainflip/utils": "2.2.0-beta.0",
-    "@chainflip/redis": "2.2.0-beta.0",
-    "@chainflip/solana": "2.2.5-beta.0",
+    "@chainflip/bitcoin": "2.2.0",
+    "@chainflip/processor": "2.2.0",
+    "@chainflip/rpc": "2.2.0",
+    "@chainflip/utils": "2.2.0",
+    "@chainflip/redis": "2.2.0",
+    "@chainflip/solana": "2.2.5",
     "@polkadot/api": "^15.10.2",
     "@polkadot/types": "^15.10.2",
     "@prisma/adapter-pg": "^7.4.2",
