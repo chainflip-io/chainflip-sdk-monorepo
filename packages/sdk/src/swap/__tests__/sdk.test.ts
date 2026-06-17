@@ -246,6 +246,54 @@ describe(SwapSDK, () => {
     });
   });
 
+  describe('forwards compatibility with unknown assets', () => {
+    const mockNetworkInfoWithUnknownAsset = () => {
+      const freshSdk = new SwapSDK({ network: 'sisyphos' });
+      vi.mocked(freshSdk['apiClient'].networkInfo).mockResolvedValue({
+        status: 200,
+        body: {
+          assets: [
+            {
+              asset: 'Eth',
+              depositChannelCreationEnabled: true,
+              depositChannelDepositsEnabled: true,
+              egressEnabled: true,
+              boostDepositsEnabled: true,
+              vaultSwapDepositsEnabled: true,
+              livePriceProtectionEnabled: true,
+            },
+            // an asset added to the backend after this SDK version was published
+            {
+              asset: 'NewCoin',
+              chain: 'Newchain',
+              depositChannelCreationEnabled: true,
+              depositChannelDepositsEnabled: true,
+              egressEnabled: true,
+              boostDepositsEnabled: true,
+              vaultSwapDepositsEnabled: true,
+              livePriceProtectionEnabled: true,
+            } as any,
+          ],
+          cfBrokerCommissionBps: 0,
+        },
+        headers: new Headers(),
+      });
+      return freshSdk;
+    };
+
+    it('getAssets skips assets this SDK version does not know about', async () => {
+      const freshSdk = mockNetworkInfoWithUnknownAsset();
+      const assets = await freshSdk.getAssets();
+      expect(assets.map((a) => a.chainflipId)).toEqual(['Eth']);
+    });
+
+    it('getChains skips chains belonging only to unknown assets', async () => {
+      const freshSdk = mockNetworkInfoWithUnknownAsset();
+      const chains = await freshSdk.getChains();
+      expect(chains.map((c) => c.chain)).toEqual(['Ethereum']);
+    });
+  });
+
   describe(SwapSDK.prototype.getQuoteV2, () => {
     it('calls api', async () => {
       const params: QuoteRequest = {
