@@ -2,6 +2,7 @@ import { unreachable } from '@chainflip/utils/assertion';
 import {
   assetConstants,
   getInternalAsset,
+  isChainflipAsset,
   type ChainflipAsset,
   type ChainAssetMap,
   type ChainflipNetwork,
@@ -158,6 +159,7 @@ export class SwapSDK {
     const assets = await this.cache.read('networkInfo');
 
     return assets.assets
+      .filter((a) => isChainflipAsset(a.asset)) // allow forward compatibility with new assets
       .filter((a) => {
         switch (type) {
           case 'all':
