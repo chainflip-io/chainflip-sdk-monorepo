@@ -36,6 +36,7 @@ import type { GetBatchQuery } from '../gql/generated/graphql.js';
 
 // client-preset v6 no longer emits raw schema types (`Block`, `Event`); derive
 // them from the GetBatch operation type instead.
+// use `plugins: ['typescript']` in case we need full schema types again
 type Block = NonNullable<GetBatchQuery['blocks']>['nodes'][number];
 type Event = Block['events']['nodes'][number];
 
