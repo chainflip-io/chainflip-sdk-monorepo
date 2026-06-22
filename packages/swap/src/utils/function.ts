@@ -117,11 +117,11 @@ export function calculateExpiryTime(args: {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export function readField<
-  A extends object,
-  B extends object,
-  K extends keyof A & keyof B,
->(a: A | null | undefined, b: B | null | undefined, key: K): A[K] | B[K] | undefined;
+export function readField<A extends object, B extends object, K extends keyof A & keyof B>(
+  a: A | null | undefined,
+  b: B | null | undefined,
+  key: K,
+): A[K] | B[K] | undefined;
 export function readField<
   A extends object,
   B extends object,
