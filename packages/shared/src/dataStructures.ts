@@ -177,8 +177,7 @@ export class MultiCache<T extends FetchMap> {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const isFunction = (value: unknown): value is Function =>
+const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
   typeof value === 'function' && value.constructor === Function;
 
 export function createInternalAssetMap<T>(value: T): InternalAssetMap<T>;

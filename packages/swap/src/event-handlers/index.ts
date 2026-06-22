@@ -34,8 +34,8 @@ import swapScheduled from './swapping/swapScheduled.js';
 import chainStateUpdated from './tracking/chainStateUpdated.js';
 import type { Block, Event } from '../gql/generated/graphql.js';
 
-// eslint-disable-next-line @typescript-eslint/no-shadow, @typescript-eslint/ban-types
-type GenericPalletEventMap<Pallet extends string, Event extends string> = {} & {
+// eslint-disable-next-line @typescript-eslint/no-shadow
+type GenericPalletEventMap<Pallet extends string, Event extends string> = {
   [C in ChainflipChain as `${C}${Pallet}`]: {
     [E in Event]: `${C}${Pallet}.${E}`;
   };

@@ -9,7 +9,9 @@ import { LegJson } from './schemas.js';
 
 export default class Leg {
   static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint): Leg;
+
   static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint | null): Leg | null;
+
   static of(srcAsset: ChainflipAsset, destAsset: ChainflipAsset, amount: bigint | null) {
     if (amount === null) return null;
     assert(srcAsset !== destAsset, 'srcAsset and destAsset must be different');
