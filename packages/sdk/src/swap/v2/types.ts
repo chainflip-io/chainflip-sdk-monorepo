@@ -87,8 +87,7 @@ type ChunkInfo = {
 
 type PickRequired<T> = {
   [K in keyof T as undefined extends T[K] ? never : K]: T[K];
-  // eslint-disable-next-line @typescript-eslint/ban-types
-} & {};
+} & Record<string, never>;
 
 interface SwapFields {
   originalInputAmount: string;

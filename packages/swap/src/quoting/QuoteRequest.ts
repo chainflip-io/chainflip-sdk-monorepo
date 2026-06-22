@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/lines-between-class-members */
+/* eslint-disable lines-between-class-members */
 import {
   assetConstants,
   ChainflipAsset,

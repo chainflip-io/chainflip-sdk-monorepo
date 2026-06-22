@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/lines-between-class-members */
+/* eslint-disable lines-between-class-members */
 /* eslint-disable max-classes-per-file */
 import { BytesLike, VoidSigner } from 'ethers';
 import { describe, it, expect, vi } from 'vitest';

@@ -116,16 +116,16 @@ export function calculateExpiryTime(args: {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
-export function readField<A extends {}, B extends {}, K extends keyof A & keyof B>(
-  a: A | null | undefined,
-  b: B | null | undefined,
-  key: K,
-): A[K] | B[K] | undefined;
+
 export function readField<
-  A extends {},
-  B extends {},
-  C extends {},
+  A extends Record<string, never>,
+  B extends Record<string, never>,
+  K extends keyof A & keyof B,
+>(a: A | null | undefined, b: B | null | undefined, key: K): A[K] | B[K] | undefined;
+export function readField<
+  A extends Record<string, never>,
+  B extends Record<string, never>,
+  C extends Record<string, never>,
   K extends keyof A & keyof B & keyof C,
 >(
   a: A | null | undefined,
@@ -134,10 +134,10 @@ export function readField<
   key: K,
 ): A[K] | B[K] | C[K] | undefined;
 export function readField<
-  A extends {},
-  B extends {},
-  C extends {},
-  D extends {},
+  A extends Record<string, never>,
+  B extends Record<string, never>,
+  C extends Record<string, never>,
+  D extends Record<string, never>,
   K extends keyof A & keyof B & keyof C & keyof D,
 >(
   a: A | null | undefined,
@@ -147,11 +147,11 @@ export function readField<
   key: K,
 ): A[K] | B[K] | C[K] | D[K] | undefined;
 export function readField<
-  A extends {},
-  B extends {},
-  C extends {},
-  D extends {},
-  E extends {},
+  A extends Record<string, never>,
+  B extends Record<string, never>,
+  C extends Record<string, never>,
+  D extends Record<string, never>,
+  E extends Record<string, never>,
   K extends keyof A & keyof B & keyof C & keyof D & keyof E,
 >(
   a: A | null | undefined,
@@ -166,7 +166,6 @@ export function readField(...args: any[]) {
   return args.reduce((acc, obj) => acc ?? obj?.[key], undefined) ?? undefined;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
-/* eslint-enable @typescript-eslint/ban-types */
 
 const cachedGetSpecVersion = memoize(
   () => rpc.getRuntimeVersion({ network: env.CHAINFLIP_NETWORK }).catch(() => ({ specVersion: 0 })),
