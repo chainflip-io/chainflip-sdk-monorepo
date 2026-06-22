@@ -66,14 +66,16 @@ const getRequestInfo = (requestType: RequestType) => {
 
 export const getVaultOriginTxRef = (
   origin: Extract<z.output<typeof schema>['origin'], { __kind: 'Vault' }>,
+  srcAsset: ChainflipAsset,
 ) => {
   const kind = origin.txId.__kind;
 
-  // TODO(TRON): Tron might need a different implementation (PR still in review)
-  // https://linear.app/chainflip/issue/WEB-3464/handle-tron-vault-swap-origin-tx-ref
   switch (kind) {
     case 'Evm':
-      return formatTxRef({ chain: 'Ethereum', data: origin.txId.value });
+      return formatTxRef({
+        chain: assetConstants[srcAsset].chain === 'Tron' ? 'Tron' : 'Ethereum',
+        data: origin.txId.value,
+      });
     case 'Bitcoin':
       return formatTxRef({ chain: 'Bitcoin', data: origin.txId.value });
     case 'Solana':
@@ -127,7 +129,7 @@ export const getOriginInfo = async (
   if (origin.__kind === 'Vault') {
     return {
       originType: 'VAULT',
-      depositTransactionRef: getVaultOriginTxRef(origin),
+      depositTransactionRef: getVaultOriginTxRef(origin, srcAsset),
       brokerId: origin.brokerId,
     } as const;
   }
