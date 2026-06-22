@@ -35,7 +35,7 @@ import chainStateUpdated from './tracking/chainStateUpdated.js';
 import type { Block, Event } from '../gql/generated/graphql.js';
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
-type GenericPalletEventMap<Pallet extends string, Event extends string> = Record<string, never> & {
+type GenericPalletEventMap<Pallet extends string, Event extends string> = {
   [C in ChainflipChain as `${C}${Pallet}`]: {
     [E in Event]: `${C}${Pallet}.${E}`;
   };

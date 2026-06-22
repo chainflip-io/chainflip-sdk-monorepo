@@ -87,7 +87,7 @@ type ChunkInfo = {
 
 type PickRequired<T> = {
   [K in keyof T as undefined extends T[K] ? never : K]: T[K];
-} & Record<string, never>;
+};
 
 interface SwapFields {
   originalInputAmount: string;
