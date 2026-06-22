@@ -13,6 +13,10 @@ const config: CodegenConfig = {
       },
       config: {
         enumsAsTypes: true,
+        // client-preset v6 defaults unmapped scalars to `unknown`; restore the
+        // previous `any` behavior so downstream `new Date(block.timestamp)` /
+        // `schema.parse(event.args)` call sites keep type-checking.
+        defaultScalarType: 'any',
       },
     },
   },
