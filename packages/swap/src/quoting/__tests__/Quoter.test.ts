@@ -664,7 +664,7 @@ describe(Quoter, () => {
         legs: [[[0, 100n]]],
         beta: false,
         durationMs: expect.any(Number),
-        legsMetadata: [{ baseAsset: 'Btc', sourceAsset: 'Btc', destAsset: 'Usdc', side: 'SELL' }],
+        legsMetadata: [{ baseAsset: 'Btc', sourceAsset: 'Btc', destAsset: 'Usdc', side: 'BUY' }],
       });
       expect(publishQuoteOrderTimeout).not.toHaveBeenCalled();
       expect(publishQuoteOrderError).not.toHaveBeenCalled();
@@ -686,7 +686,7 @@ describe(Quoter, () => {
         marketMaker: 'marketMaker2',
         marketMakerRequestId: request.request_id,
         durationMs: expect.any(Number),
-        legsMetadata: [{ baseAsset: 'Btc', sourceAsset: 'Btc', destAsset: 'Usdc', side: 'SELL' }],
+        legsMetadata: [{ baseAsset: 'Btc', sourceAsset: 'Btc', destAsset: 'Usdc', side: 'BUY' }],
       });
       mm2.socket.disconnect();
     });
@@ -723,7 +723,7 @@ describe(Quoter, () => {
         marketMakerRequestId: request.request_id,
         error: 'tick provided is too small',
         durationMs: expect.any(Number),
-        legsMetadata: [{ baseAsset: 'Btc', sourceAsset: 'Btc', destAsset: 'Usdc', side: 'SELL' }],
+        legsMetadata: [{ baseAsset: 'Btc', sourceAsset: 'Btc', destAsset: 'Usdc', side: 'BUY' }],
       });
     });
 
@@ -764,7 +764,7 @@ describe(Quoter, () => {
           sellAsset: 'Usdc',
           baseAsset: 'Btc',
           destAsset: 'Usdc',
-          side: 'SELL',
+          side: 'buy',
         }),
       );
     });
