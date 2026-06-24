@@ -764,7 +764,7 @@ describe(Quoter, () => {
           sellAsset: 'Usdc',
           baseAsset: 'Btc',
           destAsset: 'Usdc',
-          side: 'buy',
+          side: 'BUY',
         }),
       );
     });
