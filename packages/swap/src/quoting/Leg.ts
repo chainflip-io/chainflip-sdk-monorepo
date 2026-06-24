@@ -47,7 +47,8 @@ export default class Leg {
       baseAsset: this.getBaseAsset(),
       sourceAsset: this.srcAsset,
       destAsset: this.destAsset,
-      side: this.getSide(),
+      // the market maker takes the opposite side of the swapper
+      side: this.getSide() === 'BUY' ? 'SELL' : 'BUY',
     };
   }
 
