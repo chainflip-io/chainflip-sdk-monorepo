@@ -9,6 +9,8 @@
     "eslint:check": "pnpm -r eslint:check",
     "eslint:fix": "eslint . --fix --ignore-path .gitignore",
     "deprecations:report": "tsx ./scripts/reportDeprecations.mts",
+    "migrate:deploy:localnet": "pnpm -r --workspace-concurrency=1 run migrate:deploy:localnet",
+    "localnet": "tsx ./scripts/start-localnet.mts",
     "syncpack:list": "pnpm syncpack list-mismatches",
     "syncpack:fix": "pnpm syncpack fix-mismatches",
     "typecheck": "pnpm -r typecheck",
