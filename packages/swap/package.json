@@ -25,6 +25,7 @@
     "typecheck": "tsc --noEmit",
     "generate:models": "prisma generate",
     "migrate:deploy": "dotenvx run -- prisma migrate deploy",
+    "migrate:deploy:localnet": "dotenvx run -f .env.localnet -- prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
     "migrate:reset": "prisma migrate reset",
     "migrate": "prisma migrate",
