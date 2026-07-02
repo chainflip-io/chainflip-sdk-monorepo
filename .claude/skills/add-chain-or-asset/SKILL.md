@@ -1,6 +1,6 @@
 ---
 name: add-chain-or-asset
-description: Add a new chain or asset to chainflip-sdk-monorepo (shared, sdk, swap, examples packages). Use when adding a chain/asset here, or when the chainflip-add-chain-or-asset orchestrator delegates the sdk step. Covers @chainflip/* dep bumps, enums/consts, address validation, broker/parsers, prisma migration, swap event-handlers, and snapshot regen. Run AFTER product-toolkit has published.
+description: Add a new chain or asset to chainflip-sdk-monorepo (shared, sdk, swap, examples packages). Use when adding a chain/asset here, or when the chainflip-web-add-chain-or-asset orchestrator delegates the sdk step. Covers @chainflip/* dep bumps, enums/consts, address validation, broker/parsers, prisma migration, swap event-handlers, and snapshot regen. Run AFTER product-toolkit has published.
 ---
 
 # sdk-monorepo: add a chain / asset
@@ -19,6 +19,7 @@ networks | linearParentKey
 ```
 
 ## Step 0 — bump deps
+
 Bump `@chainflip/{utils,rpc,redis,processor,solana}` to the versions product-toolkit just
 published, install, and typecheck to surface what the new enum types now require.
 
@@ -74,16 +75,17 @@ published, install, and typecheck to surface what the new enum types now require
 
 ## Category matrix (what differs)
 
-| Concern | EVM | EVM-compatible | non-EVM (SVM) |
-|---|---|---|---|
-| Address validator | reuse `validateEvmAddress` | `validate<Chain>Address = isValid<Chain>Address` from `@chainflip/utils/<chain>` | validator from `@chainflip/<chain>` (base58/curve) |
-| `getEvmChainId` | returns `<CHAIN>_EVM_CHAIN_ID` | returns `<CHAIN>_CHAIN_ID` | returns `undefined` (excluded from signer asserts) |
-| `formatForeignChainAddress` (in `shared/src/common.ts`) | raw `address.value` | `hexTo<Chain>Address(address.value)` (NOT base58) | `base58.encode(hexToBytes(...))` / `hexEncodedBase58Address` |
-| `formatTxRef` (in `shared/src/common.ts`) | reuse ETH hex branch | strip `0x` (hex) | `base58.encode` |
-| Vault-swap encoding | shared EVM branch | EVM branch + `to`/`sourceTokenAddress` as `<chain>Address` (not `hexString`) | separate base58/programId branch |
-| Contract address | `<ASSET>_CONTRACT_ADDRESS` (`0x`) | `<ASSET>_CONTRACT_ADDRESS`; gas asset returns `undefined` | `<ASSET>_CONTRACT_ADDRESS` = SPL mint (base58) |
+| Concern                                                 | EVM                               | EVM-compatible                                                                   | non-EVM (SVM)                                                |
+| ------------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Address validator                                       | reuse `validateEvmAddress`        | `validate<Chain>Address = isValid<Chain>Address` from `@chainflip/utils/<chain>` | validator from `@chainflip/<chain>` (base58/curve)           |
+| `getEvmChainId`                                         | returns `<CHAIN>_EVM_CHAIN_ID`    | returns `<CHAIN>_CHAIN_ID`                                                       | returns `undefined` (excluded from signer asserts)           |
+| `formatForeignChainAddress` (in `shared/src/common.ts`) | raw `address.value`               | `hexTo<Chain>Address(address.value)` (NOT base58)                                | `base58.encode(hexToBytes(...))` / `hexEncodedBase58Address` |
+| `formatTxRef` (in `shared/src/common.ts`)               | reuse ETH hex branch              | strip `0x` (hex)                                                                 | `base58.encode`                                              |
+| Vault-swap encoding                                     | shared EVM branch                 | EVM branch + `to`/`sourceTokenAddress` as `<chain>Address` (not `hexString`)     | separate base58/programId branch                             |
+| Contract address                                        | `<ASSET>_CONTRACT_ADDRESS` (`0x`) | `<ASSET>_CONTRACT_ADDRESS`; gas asset returns `undefined`                        | `<ASSET>_CONTRACT_ADDRESS` = SPL mint (base58)               |
 
 Notes:
+
 - **EVM support is already generic** in this repo — the multi-EVM groundwork (chain-generic
   `chains.ts`/`sdk.ts`, `getEvmChainId`) landed historically in `397005dc`. The `signer.ts`
   `assertSignerIsConnectedToChain` helper referenced there has since been removed/moved, so don't
@@ -94,6 +96,7 @@ Notes:
   regressed to base58 in `9ae2b611`, corrected to `hexToTronAddress` in `7ddfdaf6`).
 
 ## Asset-only path (ref `6f5518e3`)
+
 - `packages/shared/src/consts.ts`: extend the `AddressMap` type + every network entry with the
   new `<ASSET>_CONTRACT_ADDRESS`; add to `chainflipAssetToPriceAssetMap`.
 - `packages/sdk/src/swap/assets.ts`: add to `assetNames`.
@@ -107,6 +110,7 @@ Notes:
   package.
 
 ## Verify (commands per CLAUDE.md)
+
 - `pnpm typecheck`, `pnpm eslint:check`, `pnpm prettier:check` across the workspace.
 - Per-package tests: `pnpm run --dir=packages/shared test`, `pnpm run --dir=packages/sdk test`,
   `pnpm run --dir=packages/swap test` (swap needs Postgres via docker-compose, runs
