@@ -33,7 +33,12 @@ pnpm run --dir=packages/swap dev:perseverance  # Run against perseverance testne
 # Database migrations (swap package)
 pnpm run --dir=packages/swap migrate:dev       # Create migration
 pnpm run --dir=packages/swap migrate:deploy    # Apply migrations
+
+# Run the swap service against a local chainflip-backend localnet (see LOCALNET.md)
+pnpm localnet --apps swap
 ```
+
+> **Localnet:** to run the swap service against a local `chainflip-backend` localnet, see [LOCALNET.md](LOCALNET.md).
 
 ## Architecture Overview
 
