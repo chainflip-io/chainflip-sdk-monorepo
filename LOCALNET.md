@@ -4,7 +4,7 @@ This guide explains how to run the **sdk-monorepo** swap service against a local
 `chainflip-backend` localnet, using the `pnpm localnet` orchestrator added in
 [WEB-3578](https://linear.app/chainflip/issue/WEB-3578).
 
-> Part of the full local stack: **chainflip-backend → [web-services](../chainflip-web-services/LOCALNET.md) → sdk-monorepo → [frontend-monorepo](../chainflip-frontend-monorepo/LOCALNET.md)**.
+> Part of the full local stack: **chainflip-backend → [web-services](https://github.com/chainflip-io/chainflip-web-services/blob/main/LOCALNET.md) → sdk-monorepo → [frontend-monorepo](https://github.com/chainflip-io/chainflip-frontend-monorepo/blob/main/LOCALNET.md)**.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ This guide explains how to run the **sdk-monorepo** swap service against a local
 
    > The swap service reads its ingest data from the web-services `indexer-gateway` on `:8000`. Start
    > that first with `pnpm localnet --apps swap` in **chainflip-web-services** (see its
-   > [LOCALNET.md](../chainflip-web-services/LOCALNET.md)).
+   > [LOCALNET.md](https://github.com/chainflip-io/chainflip-web-services/blob/main/LOCALNET.md)).
 
 2. **Dependencies installed:** `pnpm install`.
 3. **Prisma models generated:** `pnpm -r exec prisma generate`.
@@ -98,5 +98,5 @@ exposes `migrate:deploy:localnet` = `dotenvx run -f .env.localnet -- prisma migr
 
 ## Related
 
-- **Backend services:** [chainflip-web-services/LOCALNET.md](../chainflip-web-services/LOCALNET.md)
-- **Frontend apps:** [chainflip-frontend-monorepo/LOCALNET.md](../chainflip-frontend-monorepo/LOCALNET.md)
+- **Backend services:** [chainflip-web-services/LOCALNET.md](https://github.com/chainflip-io/chainflip-web-services/blob/main/LOCALNET.md)
+- **Frontend apps:** [chainflip-frontend-monorepo/LOCALNET.md](https://github.com/chainflip-io/chainflip-frontend-monorepo/blob/main/LOCALNET.md)
