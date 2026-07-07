@@ -4,12 +4,12 @@ This guide explains how to run the **sdk-monorepo** swap service against a local
 `chainflip-backend` localnet, using the `pnpm localnet` orchestrator added in
 [WEB-3578](https://linear.app/chainflip/issue/WEB-3578).
 
-> Part of the full local stack: **chainflip-backend → [web-services](https://github.com/chainflip-io/chainflip-web-services/blob/main/LOCALNET.md) → sdk-monorepo → [frontend-monorepo](https://github.com/chainflip-io/chainflip-frontend-monorepo/blob/main/LOCALNET.md)**.
+> Part of the full local stack: **[chainflip-backend](https://github.com/chainflip-io/chainflip-backend#localnet) → [web-services](https://github.com/chainflip-io/chainflip-web-services/blob/main/LOCALNET.md) → sdk-monorepo → [frontend-monorepo](https://github.com/chainflip-io/chainflip-frontend-monorepo/blob/main/LOCALNET.md)**.
 
 ## Prerequisites
 
 1. **A running `chainflip-backend` localnet.** From your `chainflip-backend` checkout run
-   `./localnet/manage.sh` and pick `build-localnet`. It provides everything the swap service
+   `./localnet/manage.sh` and pick `1) build-localnet`. It provides everything the swap service
    connects to:
 
    | Dependency                   | Endpoint                                                         |
@@ -23,9 +23,9 @@ This guide explains how to run the **sdk-monorepo** swap service against a local
 
    The network name is `backspin`.
 
-2. **Dependencies installed:** `pnpm install`.
-3. **Prisma models generated:** `pnpm -r exec prisma generate`.
-4. **The swap DB migrated** (first run, or after schema changes) — see [Migrations](#migrations).
+2. **Network setup completed.** From your `chainflip-backend` checkout run `./localnet/manage.sh` and pick `6) bouncer`.
+3. **Dependencies installed:** `pnpm install`.
+4. **Migrate DBs:** Use `--migrate` option on first.
 
 ## Quick start
 
@@ -37,8 +37,8 @@ pnpm localnet --apps all --migrate
 pnpm localnet --apps swap
 ```
 
-This brings up the SDK's own `indexer-gateway` on **`:8000`** and the swap HTTP/processor service
-on **`:8081`**.
+This brings up the SDK's own `indexer-gateway` on **`:8000`**, plus the swap service as **two
+processes**.
 
 ## What can I start?
 
@@ -48,12 +48,12 @@ on **`:8081`**.
 pnpm localnet --list
 ```
 
-| Group / service   | Expands to             | Port   |
-| ----------------- | ---------------------- | ------ |
-| `all`             | indexer-gateway + swap | —      |
-| `swap`            | indexer-gateway + swap | —      |
-| `indexer-gateway` | indexer-gateway        | `8000` |
-| `sdk-swap`        | swap (service only)    | `8081` |
+| Group / service   | Expands to                                 | Port   |
+| ----------------- | ------------------------------------------ | ------ |
+| `all`             | indexer-gateway + swap                     | —      |
+| `swap`            | indexer-gateway + swap                     | —      |
+| `indexer-gateway` | indexer-gateway                            | `8000` |
+| `sdk-swap`        | swap: processor + HTTP server (no gateway) | `8081` |
 
 Friendly aliases: `sdk-swap` → `swap` (service), `indexer-gw` → `indexer-gateway`.
 
@@ -92,10 +92,20 @@ exposes `migrate:deploy:localnet` = `dotenvx run -f .env.localnet -- prisma migr
   `--retry-on-init-fail` (tolerates Postgres still coming up), and `--host 0.0.0.0` — the latter is
   required because PostGraphile's default `localhost` binds IPv6 `::1` only, which the swap service's
   IPv4 `127.0.0.1` `INGEST_GATEWAY_URL` cannot reach.
-- **swap** defines `dev:localnet` = `dotenvx run -f .env.localnet -- pnpm dev`. Its localnet config
-  (DB URL, RPC URLs, ingest gateway, ports, network) lives in `packages/swap/.env.localnet`. **To
-  change a port or endpoint, edit that file.** Key values: `INGEST_GATEWAY_URL=http://127.0.0.1:8000/graphql`
-  (the gateway above), `SWAPPING_APP_PORT=8081`, `START_PROCESSOR=true`, `START_HTTP_SERVICE=true`.
+- **swap** runs as **two processes**, so the block processor and the
+  HTTP server start/restart independently and log under separate labels (`swap-processor`,
+  `swap-server`):
+  - `dev:localnet:processor` → `START_PROCESSOR=true SWAPPING_APP_PORT=8181 …` — the block processor.
+    It's given a distinct port (`8181`) because in processor-only mode the service opens a small
+    liveness server on `SWAPPING_APP_PORT` (`src/index.ts`); parking it off `8081` avoids clashing
+    with the real HTTP server.
+  - `dev:localnet:server` → `START_HTTP_SERVICE=true …` — the HTTP/quote server on `8081`.
+  - `dev:localnet` (unchanged entrypoint) still runs **both in one process** (`START_PROCESSOR=true
+START_HTTP_SERVICE=true`) for anyone wanting the all-in-one.
+
+  `START_PROCESSOR` / `START_HTTP_SERVICE` are set by these scripts, **not** in `.env.localnet`
+  (otherwise a file value would leak into both processes). Everything else — `INGEST_GATEWAY_URL=http://127.0.0.1:8000/graphql`
+  (the gateway above), `SWAPPING_APP_PORT=8081`, DB/RPC/network — lives in `packages/swap/.env.localnet`.
 
 ## Troubleshooting
 
@@ -111,6 +121,7 @@ exposes `migrate:deploy:localnet` = `dotenvx run -f .env.localnet -- prisma migr
 
 ## Related
 
+- **Chainflip backend**: [chainflip-backend](https://github.com/chainflip-io/chainflip-backend#localnet)
 - **Backend services** (explorer, cache, LP, reporting — not required for the swap stack):
   [chainflip-web-services/LOCALNET.md](https://github.com/chainflip-io/chainflip-web-services/blob/main/LOCALNET.md)
 - **Frontend apps:** [chainflip-frontend-monorepo/LOCALNET.md](https://github.com/chainflip-io/chainflip-frontend-monorepo/blob/main/LOCALNET.md)

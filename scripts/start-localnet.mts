@@ -20,9 +20,13 @@ const rootDir = path.join(__dirname, '..');
 type ProcSpec = { label: string; dir: string; script: string };
 
 // One process spec per entry (under packages/). `dir` may be nested (e.g. indexer/gateway).
+// swap runs two processes: the block processor and the HTTP server (mirrors the web-services cache).
 const SERVICES = {
   'indexer-gateway': [{ label: 'indexer-gateway', dir: 'indexer/gateway', script: 'dev:localnet' }],
-  swap: [{ label: 'swap', dir: 'swap', script: 'dev:localnet' }],
+  swap: [
+    { label: 'swap-processor', dir: 'swap', script: 'dev:localnet:processor' },
+    { label: 'swap-server', dir: 'swap', script: 'dev:localnet:server' },
+  ],
 } satisfies Record<string, ProcSpec[]>;
 
 type ServiceKey = keyof typeof SERVICES;
