@@ -1,8 +1,7 @@
 # Running the SDK monorepo against a localnet
 
 This guide explains how to run the **sdk-monorepo** swap service against a locally running
-`chainflip-backend` localnet, using the `pnpm localnet` orchestrator added in
-[WEB-3578](https://linear.app/chainflip/issue/WEB-3578).
+`chainflip-backend` localnet, using the `pnpm localnet` orchestrator.
 
 > Part of the full local stack: **[chainflip-backend](https://github.com/chainflip-io/chainflip-backend#localnet) → [web-services](https://github.com/chainflip-io/chainflip-web-services/blob/main/LOCALNET.md) → sdk-monorepo → [frontend-monorepo](https://github.com/chainflip-io/chainflip-frontend-monorepo/blob/main/LOCALNET.md)**.
 
@@ -25,15 +24,15 @@ This guide explains how to run the **sdk-monorepo** swap service against a local
 
 2. **Network setup completed.** From your `chainflip-backend` checkout run `./localnet/manage.sh` and pick `6) bouncer`.
 3. **Dependencies installed:** `pnpm install`.
-4. **Migrate DBs:** Use `--migrate` option on first.
+4. **The swap DB migrated** (first run, or after schema changes) — see [Migrations](#migrations).
 
 ## Quick start
 
 ```bash
-# Migrate the swap DB, then start the indexer-gateway + swap service against the localnet
+# Migrate the swap DB, then start the indexer-gateway + swap service against a localnet (see LOCALNET.md)
 pnpm localnet --apps all --migrate
 
-# Or start the gateway + swap service (assumes the DB is already migrated)
+# Run the swap service + dependencies against a localnet (see LOCALNET.md)
 pnpm localnet --apps swap
 ```
 
