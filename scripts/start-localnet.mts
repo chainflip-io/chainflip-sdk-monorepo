@@ -19,21 +19,25 @@ const rootDir = path.join(__dirname, '..');
 
 type ProcSpec = { label: string; dir: string; script: string };
 
-// One process spec per entry (under packages/).
+// One process spec per entry (under packages/). `dir` may be nested (e.g. indexer/gateway).
 const SERVICES = {
+  'indexer-gateway': [{ label: 'indexer-gateway', dir: 'indexer/gateway', script: 'dev:localnet' }],
   swap: [{ label: 'swap', dir: 'swap', script: 'dev:localnet' }],
 } satisfies Record<string, ProcSpec[]>;
 
 type ServiceKey = keyof typeof SERVICES;
 
 // Surface groups expand to a set of services (deduped across groups when combined).
+// The swap service reads blocks from the indexer-gateway, so bring both up together.
 const GROUPS = {
-  all: ['swap'],
+  swap: ['indexer-gateway', 'swap'],
+  all: ['indexer-gateway', 'swap'],
 } satisfies Record<string, ServiceKey[]>;
 
 // Friendly aliases for individual services.
 const ALIASES: Record<string, ServiceKey> = {
   'sdk-swap': 'swap',
+  'indexer-gw': 'indexer-gateway',
 };
 
 const COLORS = [36, 32, 35, 33, 34, 31, 96, 92, 95, 93];

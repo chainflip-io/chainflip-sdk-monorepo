@@ -4,7 +4,8 @@
   "description": "services supporting the swapping app",
   "license": "MIT",
   "scripts": {
-    "start": "pnpm postgraphile --append-plugins postgraphile-plugin-connection-filter -c postgres://postgres:postgres@localhost:5432/squid_archive --port 8000 --dynamic-json"
+    "start": "pnpm postgraphile --append-plugins postgraphile-plugin-connection-filter -c \"$DATABASE_URL\" --host 0.0.0.0 --port \"$PORT\" --dynamic-json --watch --retry-on-init-fail",
+    "dev:localnet": "dotenvx run -f .env.localnet -- pnpm start"
   },
   "dependencies": {
     "postgraphile": "^4.14.1",
