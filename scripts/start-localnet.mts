@@ -74,7 +74,8 @@ const isService = (name: string): name is ServiceKey => name in SERVICES;
 
 function printList() {
   console.log('Groups:');
-  for (const [g, svcs] of Object.entries(GROUPS)) console.log(`  ${g.padEnd(10)} -> ${svcs.join(', ')}`);
+  for (const [g, svcs] of Object.entries(GROUPS))
+    console.log(`  ${g.padEnd(10)} -> ${svcs.join(', ')}`);
   console.log('\nServices:');
   for (const s of Object.keys(SERVICES)) console.log(`  ${s}`);
 }
@@ -101,11 +102,11 @@ function runToCompletion(cmd: string, cmdArgs: string[]): Promise<void> {
   });
 }
 
-type Managed = { current: ChildProcess; timer?: NodeJS.Timeout };
+type Managed = { current?: ChildProcess; timer?: NodeJS.Timeout };
 
 function startProc(spec: ProcSpec, c: number): Managed {
   const tag = color(c, `[${spec.label}]`);
-  const managed: Managed = { current: undefined as unknown as ChildProcess };
+  const managed: Managed = { current: undefined };
 
   const launch = () => {
     const child = spawn('pnpm', ['-C', `packages/${spec.dir}`, 'run', spec.script], {
@@ -125,7 +126,9 @@ function startProc(spec: ProcSpec, c: number): Managed {
     child.on('exit', (code) => {
       process.stdout.write(`${tag} ${color(90, `process exited (code ${code})`)}\n`);
       if (shuttingDown) return;
-      process.stdout.write(`${tag} ${color(33, `restarting in ${RESTART_DELAY_MS / 1000}s ...`)}\n`);
+      process.stdout.write(
+        `${tag} ${color(33, `restarting in ${RESTART_DELAY_MS / 1000}s ...`)}\n`,
+      );
       managed.timer = setTimeout(launch, RESTART_DELAY_MS);
     });
     managed.current = child;
@@ -172,10 +175,10 @@ const shutdown = () => {
   console.log(color(33, '\n> shutting down ...'));
   for (const m of managed) {
     if (m.timer) clearTimeout(m.timer);
-    m.current.kill('SIGINT');
+    m.current?.kill('SIGINT');
   }
   setTimeout(() => {
-    for (const m of managed) m.current.kill('SIGKILL');
+    for (const m of managed) m.current?.kill('SIGKILL');
     process.exit(0);
   }, 5000);
 };
