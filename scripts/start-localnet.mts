@@ -42,6 +42,12 @@ const color = (n: number, s: string) => `\x1b[${n}m${s}\x1b[0m`;
 // When a service process exits (crashes) unexpectedly, respawn it after this delay.
 const RESTART_DELAY_MS = 5000;
 
+// Circuit breaker: give up restarting a service after this many consecutive rapid crashes,
+// where "rapid" means it died before staying up for HEALTHY_UPTIME_MS. A process that survives
+// at least that long is considered recovered and its failure streak resets to zero.
+const MAX_RESTARTS = 5;
+const HEALTHY_UPTIME_MS = 10_000;
+
 // Flag set once shutdown begins so the exit handlers below don't respawn dying children.
 let shuttingDown = false;
 
@@ -107,8 +113,10 @@ type Managed = { current?: ChildProcess; timer?: NodeJS.Timeout };
 function startProc(spec: ProcSpec, c: number): Managed {
   const tag = color(c, `[${spec.label}]`);
   const managed: Managed = { current: undefined };
+  let failures = 0;
 
   const launch = () => {
+    const startedAt = Date.now();
     const child = spawn('pnpm', ['-C', `packages/${spec.dir}`, 'run', spec.script], {
       cwd: rootDir,
     });
@@ -126,8 +134,17 @@ function startProc(spec: ProcSpec, c: number): Managed {
     child.on('exit', (code) => {
       process.stdout.write(`${tag} ${color(90, `process exited (code ${code})`)}\n`);
       if (shuttingDown) return;
+      // Reset the streak if it stayed up long enough to be considered recovered.
+      if (Date.now() - startedAt >= HEALTHY_UPTIME_MS) failures = 0;
+      failures += 1;
+      if (failures > MAX_RESTARTS) {
+        process.stdout.write(
+          `${tag} ${color(31, `giving up after ${MAX_RESTARTS} consecutive rapid failures — restart manually`)}\n`,
+        );
+        return;
+      }
       process.stdout.write(
-        `${tag} ${color(33, `restarting in ${RESTART_DELAY_MS / 1000}s ...`)}\n`,
+        `${tag} ${color(33, `restarting in ${RESTART_DELAY_MS / 1000}s ... (attempt ${failures}/${MAX_RESTARTS})`)}\n`,
       );
       managed.timer = setTimeout(launch, RESTART_DELAY_MS);
     });
