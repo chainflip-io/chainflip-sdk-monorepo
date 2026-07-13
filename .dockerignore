@@ -2,8 +2,6 @@
 # container installs its own Linux-native binaries (prisma engines, esbuild, ...).
 node_modules
 **/node_modules
-dist
-**/dist
 **/*.tsbuildinfo
 
 .git
