@@ -68,7 +68,7 @@ console.log('getting input transaction');
 const inputTx = bitcoin.Transaction.fromHex(
   await rpcClient.command('getrawtransaction', inputUtxo.txId),
 );
-const txFeeSats = 5000;
+const txFeeSats = 5000n;
 
 console.log('creating transaction');
 const tx = new bitcoin.Psbt({ network })
@@ -80,18 +80,18 @@ const tx = new bitcoin.Psbt({ network })
   })
   .addOutput({
     address: vaultSwapData.depositAddress,
-    value: Number(quote.depositAmount),
+    value: BigInt(quote.depositAmount),
   })
   .addOutput({
     script: bitcoin.payments.embed({
       data: [Buffer.from(vaultSwapData.nulldataPayload.replace('0x', ''), 'hex')],
       network,
     }).output!,
-    value: 0,
+    value: 0n,
   })
   .addOutput({
     address: walletAddress,
-    value: inputTx.outs[inputUtxo.outIndex].value - Number(quote.depositAmount) - txFeeSats,
+    value: inputTx.outs[inputUtxo.outIndex].value - BigInt(quote.depositAmount) - txFeeSats,
   })
   .signInput(0, {
     publicKey: Buffer.from(keypair.publicKey),
