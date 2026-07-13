@@ -39,6 +39,18 @@ const ALIASES: Record<string, ServiceKey> = {
 const COLORS = [36, 32, 35, 33, 34, 31, 96, 92, 95, 93];
 const color = (n: number, s: string) => `\x1b[${n}m${s}\x1b[0m`;
 
+// When a service process exits (crashes) unexpectedly, respawn it after this delay.
+const RESTART_DELAY_MS = 5000;
+
+// Circuit breaker: give up restarting a service after this many consecutive rapid crashes,
+// where "rapid" means it died before staying up for HEALTHY_UPTIME_MS. A process that survives
+// at least that long is considered recovered and its failure streak resets to zero.
+const MAX_RESTARTS = 5;
+const HEALTHY_UPTIME_MS = 10_000;
+
+// Flag set once shutdown begins so the exit handlers below don't respawn dying children.
+let shuttingDown = false;
+
 const args = yargs(process.argv)
   .scriptName('localnet')
   .option('apps', {
@@ -68,7 +80,8 @@ const isService = (name: string): name is ServiceKey => name in SERVICES;
 
 function printList() {
   console.log('Groups:');
-  for (const [g, svcs] of Object.entries(GROUPS)) console.log(`  ${g.padEnd(10)} -> ${svcs.join(', ')}`);
+  for (const [g, svcs] of Object.entries(GROUPS))
+    console.log(`  ${g.padEnd(10)} -> ${svcs.join(', ')}`);
   console.log('\nServices:');
   for (const s of Object.keys(SERVICES)) console.log(`  ${s}`);
 }
@@ -95,24 +108,51 @@ function runToCompletion(cmd: string, cmdArgs: string[]): Promise<void> {
   });
 }
 
-function startProc(spec: ProcSpec, c: number): ChildProcess {
+type Managed = { current?: ChildProcess; timer?: NodeJS.Timeout };
+
+function startProc(spec: ProcSpec, c: number): Managed {
   const tag = color(c, `[${spec.label}]`);
-  const child = spawn('pnpm', ['-C', `packages/${spec.dir}`, 'run', spec.script], { cwd: rootDir });
-  const pipe = (stream: NodeJS.ReadableStream, out: NodeJS.WritableStream) => {
-    let buf = '';
-    stream.on('data', (d: Buffer) => {
-      buf += d.toString();
-      const lines = buf.split('\n');
-      buf = lines.pop() ?? '';
-      for (const l of lines) out.write(`${tag} ${l}\n`);
+  const managed: Managed = { current: undefined };
+  let failures = 0;
+
+  const launch = () => {
+    const startedAt = Date.now();
+    const child = spawn('pnpm', ['-C', `packages/${spec.dir}`, 'run', spec.script], {
+      cwd: rootDir,
     });
+    const pipe = (stream: NodeJS.ReadableStream, out: NodeJS.WritableStream) => {
+      let buf = '';
+      stream.on('data', (d: Buffer) => {
+        buf += d.toString();
+        const lines = buf.split('\n');
+        buf = lines.pop() ?? '';
+        for (const l of lines) out.write(`${tag} ${l}\n`);
+      });
+    };
+    pipe(child.stdout!, process.stdout);
+    pipe(child.stderr!, process.stderr);
+    child.on('exit', (code) => {
+      process.stdout.write(`${tag} ${color(90, `process exited (code ${code})`)}\n`);
+      if (shuttingDown) return;
+      // Reset the streak if it stayed up long enough to be considered recovered.
+      if (Date.now() - startedAt >= HEALTHY_UPTIME_MS) failures = 0;
+      failures += 1;
+      if (failures > MAX_RESTARTS) {
+        process.stdout.write(
+          `${tag} ${color(31, `giving up after ${MAX_RESTARTS} consecutive rapid failures — restart manually`)}\n`,
+        );
+        return;
+      }
+      process.stdout.write(
+        `${tag} ${color(33, `restarting in ${RESTART_DELAY_MS / 1000}s ... (attempt ${failures}/${MAX_RESTARTS})`)}\n`,
+      );
+      managed.timer = setTimeout(launch, RESTART_DELAY_MS);
+    });
+    managed.current = child;
   };
-  pipe(child.stdout!, process.stdout);
-  pipe(child.stderr!, process.stderr);
-  child.on('exit', (code) =>
-    process.stdout.write(`${tag} ${color(90, `process exited (code ${code})`)}\n`),
-  );
-  return child;
+
+  launch();
+  return managed;
 }
 
 if (args.list) {
@@ -144,16 +184,18 @@ if (unknown.length) {
 const specs = keys.flatMap((k) => SERVICES[k]);
 console.log(color(33, `> starting: ${specs.map((s) => s.label).join(', ')}`));
 
-const children = specs.map((spec, i) => startProc(spec, COLORS[i % COLORS.length]));
+const managed = specs.map((spec, i) => startProc(spec, COLORS[i % COLORS.length]));
 
-let shuttingDown = false;
 const shutdown = () => {
   if (shuttingDown) return;
   shuttingDown = true;
   console.log(color(33, '\n> shutting down ...'));
-  for (const c of children) c.kill('SIGINT');
+  for (const m of managed) {
+    if (m.timer) clearTimeout(m.timer);
+    m.current?.kill('SIGINT');
+  }
   setTimeout(() => {
-    for (const c of children) c.kill('SIGKILL');
+    for (const m of managed) m.current?.kill('SIGKILL');
     process.exit(0);
   }, 5000);
 };
