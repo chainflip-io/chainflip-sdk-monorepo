@@ -45,13 +45,19 @@ Add `--build` to (re)build the shared dev image.
 | swap            | 8081        | REST + WebSocket + block processor                                        |
 | indexer-gateway | —           | postgraphile over `squid_archive`; internal only (`indexer-gateway:8000`) |
 | ingest          | —           | squid `substrate-ingest` → `squid_archive`                                |
-| postgres        | —           | DBs `swap`, `squid_archive`; internal only (`postgres:5432`)              |
-| redis           | —           | internal only (`redis:6379`)                                              |
+| postgres        | 5443        | DBs `swap`, `squid_archive` (container port `5432`)                       |
+| redis           | 6399        | container port `6379`                                                     |
 
-Postgres, Redis, and the gateway are **not published to the host** — they'd collide with
-the backend localnet / the web-services localnet (which also runs an indexer-gateway on
-`:8000`). Containers reach each other by compose network name. For host DB access:
-`docker exec chainflip-sdk-localnet-postgres-1 psql -U postgres`.
+The gateway is internal only (would collide with the web-services localnet's own
+indexer-gateway on `:8000`). Postgres and Redis are published on **non-default** host
+ports to avoid colliding with the backend localnet (which binds 6379) and with the
+web-localnet stack (5442/6389). Containers still reach them as `postgres:5432` /
+`redis:6379` over the compose network.
+
+- Postgres: `postgresql://postgres:postgres@localhost:5443/swap`
+- Redis: `redis-cli -p 6399`
+
+Override the host ports with `SDK_LOCALNET_POSTGRES_PORT` / `SDK_LOCALNET_REDIS_PORT`.
 
 ## How it works
 

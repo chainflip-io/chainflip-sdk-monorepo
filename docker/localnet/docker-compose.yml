@@ -8,10 +8,6 @@
 #   docker compose -f docker/localnet/docker-compose.yml logs -f swap
 #
 # Infra (postgres, redis, ingest, indexer-gateway) has no profile, so it always starts.
-#
-# NOTE: the project name is deliberately distinct from the chainflip-backend localnet's
-# compose project (`chainflip-localnet`) so this stack never treats the backend's
-# node/broker/solana containers as orphans (and `--down --remove-orphans` can't touch them).
 name: chainflip-sdk-localnet
 
 # ── reusable fragments ────────────────────────────────────────────────────────
@@ -35,9 +31,11 @@ services:
     image: postgres:15.3
     restart: unless-stopped
     command: ["postgres", "-c", "max_connections=200"]
-    # Not published to the host by default — containers reach it as `postgres:5432`
-    # over the compose network, and publishing 5432 would collide with the backend
-    # localnet. For host access use `docker exec ... psql` or add a `ports:` mapping.
+    # Published on host 5443 (override with SDK_LOCALNET_POSTGRES_PORT) to avoid clashing
+    # with a default 5432 and with the web-localnet stack (5442). Containers still reach it
+    # as `postgres:5432` over the compose network.
+    ports:
+      - "${SDK_LOCALNET_POSTGRES_PORT:-5443}:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -54,8 +52,11 @@ services:
   redis:
     image: redis:7
     restart: unless-stopped
-    # Not published to the host by default — reached as `redis:6379` over the compose
-    # network. The backend localnet already binds host 6379, so publishing would clash.
+    # Published on host 6399 (override with SDK_LOCALNET_REDIS_PORT) — NOT 6379, which the
+    # backend localnet already binds, nor 6389 (web-localnet). Containers reach it as
+    # `redis:6379` over the compose network.
+    ports:
+      - "${SDK_LOCALNET_REDIS_PORT:-6399}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
