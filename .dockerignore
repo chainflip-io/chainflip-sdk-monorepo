@@ -17,12 +17,6 @@ test-ledger
 **/*.log
 dump.rdb
 
-# Local env/secret material — the container loads .env.localnet only.
 **/.env
-**/.env.keys
-**/.env.backspin
-**/.env.sisyphos
-**/.env.perseverance
-**/.env.mainnet
 
 .DS_Store
