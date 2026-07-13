@@ -1,0 +1,148 @@
+# SDK localnet stack — runs the swap service (and the ingest gateway it needs) in
+# isolated containers against a separately-running chainflip-backend localnet
+# (chain node :9944, broker :10997, solana :8899 on the host, via host.docker.internal).
+#
+# Usage (or via the `pnpm localnet:docker` wrapper):
+#   docker compose -f docker/localnet/docker-compose.yml --profile all up
+#   docker compose -f docker/localnet/docker-compose.yml --profile migrate run --rm migrate
+#   docker compose -f docker/localnet/docker-compose.yml logs -f swap
+#
+# Infra (postgres, redis, ingest, indexer-gateway) has no profile, so it always starts.
+#
+# NOTE: the project name is deliberately distinct from the chainflip-backend localnet's
+# compose project (`chainflip-localnet`) so this stack never treats the backend's
+# node/broker/solana containers as orphans (and `--down --remove-orphans` can't touch them).
+name: chainflip-sdk-localnet
+
+# ── reusable fragments ────────────────────────────────────────────────────────
+x-app: &app
+  build:
+    context: ../..
+    dockerfile: docker/localnet/Dockerfile
+  image: chainflip-sdk-localnet:dev
+  restart: unless-stopped
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  # ── infrastructure (always on) ───────────────────────────────────────────────
+  postgres:
+    image: postgres:15.3
+    restart: unless-stopped
+    command: ["postgres", "-c", "max_connections=200"]
+    # Not published to the host by default — containers reach it as `postgres:5432`
+    # over the compose network, and publishing 5432 would collide with the backend
+    # localnet. For host access use `docker exec ... psql` or add a `ports:` mapping.
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-dbs:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    # Not published to the host by default — reached as `redis:6379` over the compose
+    # network. The backend localnet already binds host 6379, so publishing would clash.
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Populates squid_archive from the host's backend node.
+  ingest:
+    image: ghcr.io/chainflip-io/squid-sdk/substrate-ingest:latest
+    restart: on-failure
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - "-e"
+      - "ws://host.docker.internal:9944"
+      - "-c"
+      - "20"
+      - "--out"
+      - "postgres://postgres:postgres@postgres:5432/squid_archive"
+
+  # GraphQL over squid_archive (postgraphile). This is swap's INGEST_GATEWAY_URL.
+  # The package's `start` script hardcodes localhost:5432, so the command is overridden
+  # here to reach the compose postgres and bind all interfaces.
+  indexer-gateway:
+    <<: *app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - "pnpm"
+      - "-C"
+      - "packages/indexer/gateway"
+      - "exec"
+      - "postgraphile"
+      - "--append-plugins"
+      - "postgraphile-plugin-connection-filter"
+      - "-c"
+      - "postgres://postgres:postgres@postgres:5432/squid_archive"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8000"
+      - "--dynamic-json"
+
+  # ── one-shot migrations (profile: migrate) ───────────────────────────────────
+  # Mirrors `pnpm localnet --migrate`. Runs the recursive migrate:deploy:localnet
+  # (only swap defines it), then exits. Idempotent.
+  migrate:
+    <<: *app
+    profiles: ["migrate"]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["pnpm", "migrate:deploy:localnet"]
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/swap
+
+  # ── app ──────────────────────────────────────────────────────────────────────
+  swap:
+    <<: *app
+    profiles: ["all"]
+    command: ["pnpm", "-C", "packages/swap", "run", "dev:localnet"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      indexer-gateway:
+        condition: service_started
+    ports:
+      - "8081:8081"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/swap
+      REDIS_URL: redis://redis:6379
+      INGEST_GATEWAY_URL: http://indexer-gateway:8000/graphql
+      RPC_NODE_HTTP_URL: http://host.docker.internal:9944
+      RPC_NODE_WSS_URL: ws://host.docker.internal:9944
+      RPC_BROKER_HTTPS_URL: http://host.docker.internal:10997
+      SOLANA_RPC_HTTP_URL: http://host.docker.internal:8899
+    volumes:
+      - ../../packages/swap/src:/app/packages/swap/src
+      - ../../packages/shared/src:/app/packages/shared/src
+      - ../../packages/swap/.env.localnet:/app/packages/swap/.env.localnet
+
+volumes:
+  pgdata:
