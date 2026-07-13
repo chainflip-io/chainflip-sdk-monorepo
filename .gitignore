@@ -10,3 +10,5 @@ coverage
 .husky
 *.tsbuildinfo
 dump.rdb
+
+.claude/private
