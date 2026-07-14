@@ -100,7 +100,12 @@ function compose(extra: string[]): Promise<void> {
   console.log(color(90, `> ${cmd} ${cmdArgs.join(' ')}`));
   return new Promise((res, rej) => {
     const child = spawn(cmd, cmdArgs, { cwd: rootDir, stdio: 'inherit' });
-    child.on('exit', (code) => (code === 0 ? res() : rej(new Error(`exit ${code}`))));
+    // On signal exit (SIGINT/SIGTERM) `code` is null and `signal` is set; report whichever.
+    child.on('exit', (code, signal) => {
+      if (code === 0) return res();
+      const reason = signal ? `signal ${signal}` : `exit ${code}`;
+      return rej(new Error(`${cmd} ${cmdArgs.join(' ')} failed: ${reason}`));
+    });
     child.on('error', rej);
   });
 }
@@ -175,6 +180,7 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(color(31, `localnet:docker failed: ${err.message}`));
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(color(31, `localnet:docker failed: ${message}`));
   process.exit(1);
 });

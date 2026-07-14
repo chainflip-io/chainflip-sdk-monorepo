@@ -66,7 +66,7 @@ services:
   # Populates squid_archive from the host's backend node.
   ingest:
     image: ghcr.io/chainflip-io/squid-sdk/substrate-ingest:latest
-    restart: on-failure
+    restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
