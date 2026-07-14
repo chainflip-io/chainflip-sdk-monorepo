@@ -1,0 +1,20 @@
+# Keep the host's (macOS) build artifacts out of the build context so the
+# container installs its own Linux-native binaries (prisma engines, esbuild, ...).
+node_modules
+**/node_modules
+**/*.tsbuildinfo
+
+.git
+.github
+.husky
+coverage
+**/coverage
+test-ledger
+
+*.log
+**/*.log
+dump.rdb
+
+**/.env
+
+.DS_Store
