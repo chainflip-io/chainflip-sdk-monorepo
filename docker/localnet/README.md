@@ -2,8 +2,8 @@
 
 Runs the SDK swap service (and the ingest gateway it depends on) in isolated
 containers against a **separately-running `chainflip-backend` localnet**, so each
-service's logs can be followed on their own. This is the Docker counterpart to
-`scripts/start-localnet.mts` (`pnpm localnet`).
+service's logs can be followed on their own. Driven by `scripts/start-localnet.mts`
+(`pnpm localnet`).
 
 ## Prerequisites
 
@@ -23,17 +23,20 @@ Postgres, Redis, the squid `substrate-ingest` sidecar, and the `indexer-gateway`
 
 ```bash
 # migrate the swap DB, then start everything
-pnpm localnet:docker --apps all --migrate
+pnpm localnet --apps all --migrate
 
 # detached, then follow the swap logs
-pnpm localnet:docker --apps all -d
+pnpm localnet --apps all -d
 docker compose -f docker/localnet/docker-compose.yml logs -f swap
 
 # list groups / services
-pnpm localnet:docker --list
+pnpm localnet --list
 
 # stop and remove the stack
-pnpm localnet:docker --down
+pnpm localnet --down
+
+# stop and wipe volumes for a clean DB (then re-run with --migrate)
+pnpm localnet --down --volumes
 ```
 
 Add `--build` to (re)build the shared dev image.
@@ -83,7 +86,7 @@ Override the host ports with `SDK_LOCALNET_POSTGRES_PORT` / `SDK_LOCALNET_REDIS_
 - changing `pnpm-lock.yaml`.
 
 ```bash
-pnpm localnet:docker --apps all --build
+pnpm localnet --apps all --build
 ```
 
 Editing TypeScript under `packages/swap/src` or `packages/shared/src` does **not**
@@ -94,5 +97,6 @@ require a rebuild.
 - `squid_archive` is populated by the `ingest` container from the host node; its schema
   is owned by `substrate-ingest`. Until it catches up, the gateway serves an empty
   schema and the swap processor has no blocks to read.
-- Wipe Postgres (re-run the DB init) with:
-  `docker compose -f docker/localnet/docker-compose.yml down -v`.
+- Wipe Postgres/Redis for a clean database with `pnpm localnet --down --volumes`
+  (removes the named volumes so the next `--migrate` re-applies from scratch), or the raw
+  equivalent `docker compose -f docker/localnet/docker-compose.yml down -v`.
