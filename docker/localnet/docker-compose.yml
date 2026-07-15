@@ -2,7 +2,7 @@
 # isolated containers against a separately-running chainflip-backend localnet
 # (chain node :9944, broker :10997, solana :8899 on the host, via host.docker.internal).
 #
-# Usage (or via the `pnpm localnet:docker` wrapper):
+# Usage (or via the `pnpm localnet` wrapper):
 #   docker compose -f docker/localnet/docker-compose.yml --profile all up
 #   docker compose -f docker/localnet/docker-compose.yml --profile migrate run --rm migrate
 #   docker compose -f docker/localnet/docker-compose.yml logs -f swap
