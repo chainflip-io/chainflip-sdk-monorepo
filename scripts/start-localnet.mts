@@ -1,55 +1,48 @@
-#!/usr/bin/env node --import=tsx --trace-uncaught --no-warnings
+#!/usr/bin/env node --import=tsx --no-warnings
 
 /* eslint-disable no-console */
-// Spin up selected sdk-monorepo apps against the running chainflip-backend localnet.
+// Spins up the selected sdk-monorepo apps as isolated Docker containers against a
+// separately-running chainflip-backend localnet. Each container's logs are followable on
+// their own:
 //
-//   pnpm localnet --apps swap                # the SDK swap service (:8081)
-//   pnpm localnet --apps all --migrate       # migrate the swap DB first, then start everything
-//   pnpm localnet --list                     # show available apps/groups
+//   pnpm localnet --apps swap                 # the SDK swap service (:8081)
+//   pnpm localnet --apps all --migrate        # migrate the swap DB first, then start
+//   pnpm localnet --apps all -d               # detached; then `... logs -f <service>`
+//   pnpm localnet --list                      # show available apps/groups
+//   pnpm localnet --down                      # stop and remove the stack
+//   pnpm localnet --down --volumes            # also wipe volumes (clean DB) so
+//                                             #   `--migrate` re-applies from scratch
 //
-// Apps may be surface groups or individual package names (comma- or space-separated).
-// Each app runs its `dev:localnet` script.
-import { spawn, type ChildProcess } from 'child_process';
+// Groups map to compose profiles; individual services are named explicitly on the
+// `up` command (compose starts a profiled service when named, even if its profile is
+// inactive). Infra (postgres, redis, ingest, indexer-gateway) has no profile and
+// always comes up.
+import { spawn } from 'child_process';
 import * as path from 'path';
 import * as url from 'url';
 import yargs from 'yargs/yargs';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
+const COMPOSE_FILE = 'docker/localnet/docker-compose.yml';
 
-type ProcSpec = { label: string; dir: string; script: string };
-
-// One process spec per entry (under packages/).
+// Individual service -> the compose service name(s) it maps to.
 const SERVICES = {
-  swap: [{ label: 'swap', dir: 'swap', script: 'dev:localnet' }],
-} satisfies Record<string, ProcSpec[]>;
+  swap: ['swap'],
+} satisfies Record<string, string[]>;
 
 type ServiceKey = keyof typeof SERVICES;
 
-// Surface groups expand to a set of services (deduped across groups when combined).
+// Surface groups — these names are compose profiles in docker-compose.yml.
 const GROUPS = {
   all: ['swap'],
 } satisfies Record<string, ServiceKey[]>;
 
-// Friendly aliases for individual services.
 const ALIASES: Record<string, ServiceKey> = {
   'sdk-swap': 'swap',
 };
 
-const COLORS = [36, 32, 35, 33, 34, 31, 96, 92, 95, 93];
 const color = (n: number, s: string) => `\x1b[${n}m${s}\x1b[0m`;
-
-// When a service process exits (crashes) unexpectedly, respawn it after this delay.
-const RESTART_DELAY_MS = 5000;
-
-// Circuit breaker: give up restarting a service after this many consecutive rapid crashes,
-// where "rapid" means it died before staying up for HEALTHY_UPTIME_MS. A process that survives
-// at least that long is considered recovered and its failure streak resets to zero.
-const MAX_RESTARTS = 5;
-const HEALTHY_UPTIME_MS = 10_000;
-
-// Flag set once shutdown begins so the exit handlers below don't respawn dying children.
-let shuttingDown = false;
 
 const args = yargs(process.argv)
   .scriptName('localnet')
@@ -65,6 +58,28 @@ const args = yargs(process.argv)
     default: false,
     description: 'Run migrate:deploy:localnet for all DBs before starting',
   })
+  .option('detach', {
+    alias: 'd',
+    type: 'boolean',
+    default: false,
+    description: 'Start containers in the background',
+  })
+  .option('build', {
+    type: 'boolean',
+    default: false,
+    description: 'Build/rebuild the shared dev image before starting',
+  })
+  .option('down', {
+    type: 'boolean',
+    default: false,
+    description: 'Stop and remove the stack (ignores --apps), then exit',
+  })
+  .option('volumes', {
+    alias: 'v',
+    type: 'boolean',
+    default: false,
+    description: 'With --down, also remove named volumes (wipes Postgres/Redis for a clean DB)',
+  })
   .option('list', {
     type: 'boolean',
     default: false,
@@ -72,6 +87,8 @@ const args = yargs(process.argv)
   })
   .example('$0 --apps swap', 'Start the SDK swap service')
   .example('$0 --apps all --migrate', 'Migrate the swap DB, then start everything')
+  .example('$0 --apps all -d', 'Start everything detached, then `logs -f swap`')
+  .example('$0 --down --volumes', 'Tear down and wipe volumes for a clean DB')
   .help()
   .parseSync();
 
@@ -79,125 +96,101 @@ const isGroup = (name: string): name is keyof typeof GROUPS => name in GROUPS;
 const isService = (name: string): name is ServiceKey => name in SERVICES;
 
 function printList() {
-  console.log('Groups:');
+  console.log('Groups (compose profiles):');
   for (const [g, svcs] of Object.entries(GROUPS))
     console.log(`  ${g.padEnd(10)} -> ${svcs.join(', ')}`);
   console.log('\nServices:');
   for (const s of Object.keys(SERVICES)) console.log(`  ${s}`);
 }
 
-function resolve(apps: string[]): { keys: ServiceKey[]; unknown: string[] } {
-  const keys: ServiceKey[] = [];
-  const unknown: string[] = [];
-  for (const app of apps) {
-    if (isGroup(app)) keys.push(...GROUPS[app]);
-    else if (isService(app)) keys.push(app);
-    else if (ALIASES[app]) keys.push(ALIASES[app]);
-    else unknown.push(app);
-  }
-  return { keys: [...new Set(keys)], unknown };
-}
-
-function runToCompletion(cmd: string, cmdArgs: string[]): Promise<void> {
+function compose(extra: string[]): Promise<void> {
+  const cmd = 'docker';
+  const cmdArgs = ['compose', '-f', COMPOSE_FILE, ...extra];
+  console.log(color(90, `> ${cmd} ${cmdArgs.join(' ')}`));
   return new Promise((res, rej) => {
     const child = spawn(cmd, cmdArgs, { cwd: rootDir, stdio: 'inherit' });
-    child.on('exit', (code) =>
-      code === 0 ? res() : rej(new Error(`${cmd} ${cmdArgs.join(' ')} -> exit ${code}`)),
-    );
+    // On signal exit (SIGINT/SIGTERM) `code` is null and `signal` is set; report whichever.
+    child.on('exit', (code, signal) => {
+      if (code === 0) return res();
+      const reason = signal ? `signal ${signal}` : `exit ${code}`;
+      return rej(new Error(`${cmd} ${cmdArgs.join(' ')} failed: ${reason}`));
+    });
     child.on('error', rej);
   });
 }
 
-type Managed = { current?: ChildProcess; timer?: NodeJS.Timeout };
-
-function startProc(spec: ProcSpec, c: number): Managed {
-  const tag = color(c, `[${spec.label}]`);
-  const managed: Managed = { current: undefined };
-  let failures = 0;
-
-  const launch = () => {
-    const startedAt = Date.now();
-    const child = spawn('pnpm', ['-C', `packages/${spec.dir}`, 'run', spec.script], {
-      cwd: rootDir,
-    });
-    const pipe = (stream: NodeJS.ReadableStream, out: NodeJS.WritableStream) => {
-      let buf = '';
-      stream.on('data', (d: Buffer) => {
-        buf += d.toString();
-        const lines = buf.split('\n');
-        buf = lines.pop() ?? '';
-        for (const l of lines) out.write(`${tag} ${l}\n`);
-      });
-    };
-    pipe(child.stdout!, process.stdout);
-    pipe(child.stderr!, process.stderr);
-    child.on('exit', (code) => {
-      process.stdout.write(`${tag} ${color(90, `process exited (code ${code})`)}\n`);
-      if (shuttingDown) return;
-      // Reset the streak if it stayed up long enough to be considered recovered.
-      if (Date.now() - startedAt >= HEALTHY_UPTIME_MS) failures = 0;
-      failures += 1;
-      if (failures > MAX_RESTARTS) {
-        process.stdout.write(
-          `${tag} ${color(31, `giving up after ${MAX_RESTARTS} consecutive rapid failures — restart manually`)}\n`,
-        );
-        return;
-      }
-      process.stdout.write(
-        `${tag} ${color(33, `restarting in ${RESTART_DELAY_MS / 1000}s ... (attempt ${failures}/${MAX_RESTARTS})`)}\n`,
-      );
-      managed.timer = setTimeout(launch, RESTART_DELAY_MS);
-    });
-    managed.current = child;
-  };
-
-  launch();
-  return managed;
-}
-
-if (args.list) {
-  printList();
-  process.exit(0);
-}
-
-if (args.migrate) {
-  console.log(color(33, '> running migrate:deploy:localnet for all DBs ...'));
-  await runToCompletion('pnpm', ['migrate:deploy:localnet']);
-}
-
-const apps = (args.apps ?? [])
-  .flatMap((a) => String(a).split(/[,\s]+/))
-  .map((s) => s.trim())
-  .filter(Boolean);
-
-if (apps.length === 0) {
-  console.error('No apps selected. Try: pnpm localnet --apps swap   (or --list)');
-  process.exit(1);
-}
-
-const { keys, unknown } = resolve(apps);
-if (unknown.length) {
-  console.error(`Unknown app(s): ${unknown.join(', ')}. Run --list to see options.`);
-  process.exit(1);
-}
-
-const specs = keys.flatMap((k) => SERVICES[k]);
-console.log(color(33, `> starting: ${specs.map((s) => s.label).join(', ')}`));
-
-const managed = specs.map((spec, i) => startProc(spec, COLORS[i % COLORS.length]));
-
-const shutdown = () => {
-  if (shuttingDown) return;
-  shuttingDown = true;
-  console.log(color(33, '\n> shutting down ...'));
-  for (const m of managed) {
-    if (m.timer) clearTimeout(m.timer);
-    m.current?.kill('SIGINT');
+async function main() {
+  if (args.list) {
+    printList();
+    return;
   }
-  setTimeout(() => {
-    for (const m of managed) m.current?.kill('SIGKILL');
-    process.exit(0);
-  }, 5000);
-};
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+
+  if (args.down) {
+    if (args.volumes) console.log(color(33, '> tearing down and removing volumes (clean DB) ...'));
+    await compose(['down', '--remove-orphans', ...(args.volumes ? ['--volumes'] : [])]);
+    return;
+  }
+
+  const apps = (args.apps ?? [])
+    .flatMap((a) => String(a).split(/[,\s]+/))
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (apps.length === 0) {
+    console.error('No apps selected. Try: pnpm localnet --apps swap   (or --list)');
+    process.exit(1);
+  }
+
+  // Resolve apps into compose profiles (for groups) and explicit service names.
+  const profiles = new Set<string>();
+  const serviceNames = new Set<string>();
+  const unknown: string[] = [];
+  for (const app of apps) {
+    if (isGroup(app)) profiles.add(app);
+    else if (isService(app)) SERVICES[app].forEach((n) => serviceNames.add(n));
+    else if (ALIASES[app]) SERVICES[ALIASES[app]].forEach((n) => serviceNames.add(n));
+    else unknown.push(app);
+  }
+  if (unknown.length) {
+    console.error(`Unknown app(s): ${unknown.join(', ')}. Run --list to see options.`);
+    process.exit(1);
+  }
+
+  if (args.build) {
+    console.log(color(33, '> building shared dev image ...'));
+    await compose(['build']);
+  }
+
+  if (args.migrate) {
+    console.log(color(33, '> running migrations (profile: migrate) ...'));
+    await compose(['--profile', 'migrate', 'run', '--rm', 'migrate']);
+  }
+
+  const profileArgs = [...profiles].flatMap((p) => ['--profile', p]);
+  const upArgs = ['up', ...(args.detach ? ['-d'] : []), ...serviceNames];
+  console.log(
+    color(
+      33,
+      `> starting: ${[...profiles]
+        .map((p) => `@${p}`)
+        .concat([...serviceNames])
+        .join(', ')}`,
+    ),
+  );
+  await compose([...profileArgs, ...upArgs]);
+
+  if (args.detach) {
+    console.log(
+      color(
+        36,
+        `\n> started. Follow a single service: docker compose -f ${COMPOSE_FILE} logs -f <service>`,
+      ),
+    );
+  }
+}
+
+main().catch((err) => {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(color(31, `localnet failed: ${message}`));
+  process.exit(1);
+});
