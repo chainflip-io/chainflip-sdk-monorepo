@@ -127,6 +127,7 @@ export default class QuoteRequest {
   private readonly ccmParams: ParsedQuoteParams['ccmParams'] | undefined;
   private readonly brokerCommissionBps: number | undefined;
   private readonly brokerIdSs58: string | undefined;
+  private readonly expectedResponseTimeMs: number | undefined;
   private dcaQuoteParams:
     | (DcaParams & { chunkSize: bigint; additionalSwapDurationSeconds: number })
     | null = null;
@@ -160,6 +161,7 @@ export default class QuoteRequest {
     this.ccmParams = params.ccmParams;
     this.brokerCommissionBps = params.brokerCommissionBps;
     this.brokerIdSs58 = params.brokerIdSs58;
+    this.expectedResponseTimeMs = params.expectedResponseTimeMs;
   }
 
   private async setDcaQuoteParams() {
@@ -658,6 +660,7 @@ export default class QuoteRequest {
       isInternalSwap: this.isOnChain,
       isVaultSwap: this.isVaultSwap,
       brokerIdSs58: this.brokerIdSs58 ?? null,
+      expectedResponseTimeMs: this.expectedResponseTimeMs ?? null,
       error: this.error?.message ?? null,
     };
   }

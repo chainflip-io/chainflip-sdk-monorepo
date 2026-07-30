@@ -45,6 +45,8 @@ export const quoteQuerySchema = z
     isVaultSwap: booleanString.optional(),
     isOnChain: booleanString.optional(),
     brokerIdSs58: chainflipAddress.optional(),
+    // collected for telemetry only: how long the client expects to wait for a response
+    expectedResponseTimeMs: numericString.transform((v) => Number(v)).optional(),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);
@@ -131,6 +133,7 @@ export const quoteQuerySchema = z
       isVaultSwap: args.isVaultSwap,
       isOnChain: args.isOnChain,
       brokerIdSs58: args.brokerIdSs58,
+      expectedResponseTimeMs: args.expectedResponseTimeMs,
     };
   });
 

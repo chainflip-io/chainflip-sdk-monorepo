@@ -47,6 +47,7 @@ const createRequest = (amount: bigint) =>
     isVaultSwap: false,
     pools: [],
     brokerIdSs58: 'cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7',
+    expectedResponseTimeMs: undefined,
   });
 
 describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
