@@ -184,6 +184,7 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "duration": "0.15",
         "error": null,
         "estimatedBoostFeeBps": undefined,
+        "expectedResponseTimeMs": null,
         "inputAmount": "0.01",
         "inputValueUsd": "1051.23",
         "isInternalSwap": false,
