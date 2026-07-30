@@ -47,6 +47,7 @@ const createRequest = (amount: bigint) =>
     isVaultSwap: false,
     pools: [],
     brokerIdSs58: 'cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7',
+    expectedResponseTimeMs: undefined,
   });
 
 describe(QuoteRequest.prototype['setDcaQuoteParams'], () => {
@@ -183,6 +184,7 @@ describe(QuoteRequest.prototype.toLogInfo, () => {
         "duration": "0.15",
         "error": null,
         "estimatedBoostFeeBps": undefined,
+        "expectedResponseTimeMs": null,
         "inputAmount": "0.01",
         "inputValueUsd": "1051.23",
         "isInternalSwap": false,
