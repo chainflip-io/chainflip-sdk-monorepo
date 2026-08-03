@@ -46,6 +46,7 @@ const validators: Record<
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
     Tron: validateTronAddress,
+    Bsc: validateEvmAddress,
   },
   perseverance: {
     Bitcoin: validateBitcoinTestnetAddress,
@@ -54,6 +55,7 @@ const validators: Record<
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
     Tron: validateTronAddress,
+    Bsc: validateEvmAddress,
   },
   sisyphos: {
     Bitcoin: validateBitcoinTestnetAddress,
@@ -62,6 +64,7 @@ const validators: Record<
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
     Tron: validateTronAddress,
+    Bsc: validateEvmAddress,
   },
   backspin: {
     Bitcoin: validateBitcoinRegtestAddress,
@@ -70,6 +73,7 @@ const validators: Record<
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
     Tron: validateTronAddress,
+    Bsc: validateEvmAddress,
   },
   localnet: {
     Bitcoin: validateBitcoinRegtestAddress,
@@ -78,6 +82,7 @@ const validators: Record<
     Solana: validateSolanaAddress,
     Assethub: validatePolkadotAddress,
     Tron: validateTronAddress,
+    Bsc: validateEvmAddress,
   },
 };
 

@@ -170,7 +170,8 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
       } else if (
         data.srcAsset.chain === 'Ethereum' ||
         data.srcAsset.chain === 'Arbitrum' ||
-        data.srcAsset.chain === 'Tron'
+        data.srcAsset.chain === 'Tron' ||
+        data.srcAsset.chain === 'Bsc'
       ) {
         extraParams = {
           chain: data.srcAsset.chain,
@@ -227,6 +228,7 @@ export async function requestSwapDepositAddress(
     case 'Bitcoin':
     case 'Solana':
     case 'Tron':
+    case 'Bsc':
       // these addresses come properly formatted
       break;
     default:

@@ -8,7 +8,7 @@ export const EncodedVaultSwapData = z.discriminatedUnion('chain', [
     depositAddress: z.string(),
   }),
   z.object({
-    chain: z.enum(['Ethereum', 'Arbitrum']),
+    chain: z.enum(['Ethereum', 'Arbitrum', 'Bsc']),
     value: z.string(),
     to: hexString,
     calldata: hexString,

@@ -33,6 +33,7 @@ export const createChainAssetMap = <T>(
     USDC: overrides?.Usdc === undefined ? defaultValue : overrides.Usdc,
     USDT: overrides?.Usdt === undefined ? defaultValue : overrides.Usdt,
     WBTC: overrides?.Wbtc === undefined ? defaultValue : overrides.Wbtc,
+    CBBTC: overrides?.Cbbtc === undefined ? defaultValue : overrides.Cbbtc,
   },
   Arbitrum: {
     ETH: overrides?.ArbEth === undefined ? defaultValue : overrides.ArbEth,
@@ -53,6 +54,10 @@ export const createChainAssetMap = <T>(
     TRX: overrides?.Trx === undefined ? defaultValue : overrides.Trx,
     USDT: overrides?.TrxUsdt === undefined ? defaultValue : overrides.TrxUsdt,
   },
+  Bsc: {
+    BNB: overrides?.Bnb === undefined ? defaultValue : overrides.Bnb,
+    USDT: overrides?.BscUsdt === undefined ? defaultValue : overrides.BscUsdt,
+  },
 });
 
 const createChainMap = <T>(defaultValue: T, overrides?: Partial<ChainMap<T>>): ChainMap<T> => ({
@@ -62,6 +67,7 @@ const createChainMap = <T>(defaultValue: T, overrides?: Partial<ChainMap<T>>): C
   Solana: overrides?.Solana ?? defaultValue,
   Assethub: overrides?.Assethub ?? defaultValue,
   Tron: overrides?.Tron ?? defaultValue,
+  Bsc: overrides?.Bsc ?? defaultValue,
 });
 
 export const swappingEnvironment = ({
@@ -272,6 +278,7 @@ export const boostPoolsDepth = (
 
 export const defaultLendingPoolConfig = {
   utilisation_rate: 0,
+  utilisation_cap: 90,
   current_interest_rate: 100,
   origination_fee: 10,
   liquidation_fee: 5,
