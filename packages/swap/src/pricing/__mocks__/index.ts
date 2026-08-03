@@ -19,6 +19,9 @@ const prices: InternalAssetMap<number> & { Dot: number } = {
   HubUsdt: 1,
   Trx: 0.25,
   TrxUsdt: 1,
+  Bnb: 600,
+  BscUsdt: 1,
+  Cbbtc: 65_000,
 };
 
 export const getAssetPrice = async (asset: ChainflipAsset): Promise<number | undefined> =>
