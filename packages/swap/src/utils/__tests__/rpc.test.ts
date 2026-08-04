@@ -29,11 +29,12 @@ describe(getLpBalances, () => {
   it('returns the balances for the given accounts', async () => {
     vi.spyOn(HttpClient.prototype, 'sendRequest').mockResolvedValueOnce({
       Bitcoin: { BTC: 1n },
-      Ethereum: { ETH: 2n, FLIP: 3n, USDC: 4n, USDT: 5n, WBTC: 14n },
+      Ethereum: { ETH: 2n, FLIP: 3n, USDC: 4n, USDT: 5n, WBTC: 14n, CBBTC: 19n },
       Arbitrum: { ETH: 6n, USDC: 7n, USDT: 15n },
       Solana: { SOL: 9n, USDC: 10n, USDT: 16n },
       Assethub: { DOT: 11n, USDT: 12n, USDC: 13n },
       Tron: { TRX: 17n, USDT: 18n },
+      Bsc: { BNB: 20n, USDT: 21n },
     } as ChainAssetMap<bigint>);
 
     const balances = await getLpBalances(new Set(['lp1']));
@@ -46,7 +47,10 @@ describe(getLpBalances, () => {
             "ArbEth": 6n,
             "ArbUsdc": 7n,
             "ArbUsdt": 15n,
+            "Bnb": 20n,
+            "BscUsdt": 21n,
             "Btc": 1n,
+            "Cbbtc": 19n,
             "Eth": 2n,
             "Flip": 3n,
             "HubDot": 11n,
@@ -102,6 +106,7 @@ describe(getSupplyPoolsDepth, () => {
           "liquidationFee": 5,
           "originationFee": 10,
           "totalAmount": 100000n,
+          "utilisationCap": 90,
           "utilisationRate": 0,
         },
       ]
