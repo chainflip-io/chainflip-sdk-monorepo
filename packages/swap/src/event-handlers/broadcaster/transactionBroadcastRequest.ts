@@ -4,6 +4,7 @@ import { arbitrumBroadcasterTransactionBroadcastRequest } from '@chainflip/proce
 import { solanaBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/180/solanaBroadcaster/transactionBroadcastRequest';
 import { assethubBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/190/assethubBroadcaster/transactionBroadcastRequest';
 import { tronBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/220/tronBroadcaster/transactionBroadcastRequest';
+import { bscBroadcasterTransactionBroadcastRequest } from '@chainflip/processor/230/bscBroadcaster/transactionBroadcastRequest';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { safeStringify } from '@/shared/functions.js';
@@ -16,6 +17,7 @@ const schemas = {
   Solana: solanaBroadcasterTransactionBroadcastRequest,
   Assethub: assethubBroadcasterTransactionBroadcastRequest,
   Tron: tronBroadcasterTransactionBroadcastRequest,
+  Bsc: bscBroadcasterTransactionBroadcastRequest,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type TransactionBroadcastRequestArgsMap = {

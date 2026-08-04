@@ -4,6 +4,8 @@ import { arbitrumIngressEgressInsufficientBoostLiquidity as arbitrumSchema210 } 
 import { ethereumIngressEgressInsufficientBoostLiquidity as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/insufficientBoostLiquidity';
 import { solanaIngressEgressInsufficientBoostLiquidity as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/insufficientBoostLiquidity';
 import { tronIngressEgressInsufficientBoostLiquidity as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/insufficientBoostLiquidity';
+import { bscIngressEgressInsufficientBoostLiquidity as bscSchema230 } from '@chainflip/processor/230/bscIngressEgress/insufficientBoostLiquidity';
+import { ethereumIngressEgressInsufficientBoostLiquidity as ethereumSchema230 } from '@chainflip/processor/230/ethereumIngressEgress/insufficientBoostLiquidity';
 import { assetConstants, ChainflipChain } from '@chainflip/utils/chainflip';
 import assert from 'assert';
 import z from 'zod';
@@ -12,10 +14,11 @@ import { EventHandlerArgs } from '../index.js';
 const schemas = {
   Arbitrum: arbitrumSchema210.strict(),
   Bitcoin: bitcoinSchema180.strict(),
-  Ethereum: ethereumSchema210.strict(),
+  Ethereum: z.union([ethereumSchema230.strict(), ethereumSchema210.strict()]),
   Solana: solanaSchema210.strict(),
   Assethub: assethubSchema190.strict(),
   Tron: tronSchema220.strict(),
+  Bsc: bscSchema230.strict(),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type InsufficientBoostLiquidityArgsMap = {

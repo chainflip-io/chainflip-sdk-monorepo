@@ -1,9 +1,9 @@
-import { swappingRefundedOnChain as schema210 } from '@chainflip/processor/210/swapping/refundedOnChain';
 import { swappingRefundedOnChain as schema220 } from '@chainflip/processor/220/swapping/refundedOnChain';
+import { swappingRefundedOnChain as schema230 } from '@chainflip/processor/230/swapping/refundedOnChain';
 import z from 'zod';
 import { EventHandlerArgs } from '../index.js';
 
-const swappingRefundedOnChain = z.union([schema220.strict(), schema210.strict()]);
+const swappingRefundedOnChain = z.union([schema230.strict(), schema220.strict()]);
 
 export type SwappingRefundedOnChainArgs = z.input<typeof swappingRefundedOnChain>;
 

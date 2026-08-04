@@ -1,21 +1,29 @@
-import { arbitrumIngressEgressBatchBroadcastRequested } from '@chainflip/processor/190/arbitrumIngressEgress/batchBroadcastRequested';
-import { assethubIngressEgressBatchBroadcastRequested } from '@chainflip/processor/190/assethubIngressEgress/batchBroadcastRequested';
-import { bitcoinIngressEgressBatchBroadcastRequested } from '@chainflip/processor/190/bitcoinIngressEgress/batchBroadcastRequested';
-import { ethereumIngressEgressBatchBroadcastRequested } from '@chainflip/processor/190/ethereumIngressEgress/batchBroadcastRequested';
-import { solanaIngressEgressBatchBroadcastRequested } from '@chainflip/processor/190/solanaIngressEgress/batchBroadcastRequested';
-import { tronIngressEgressBatchBroadcastRequested } from '@chainflip/processor/220/tronIngressEgress/batchBroadcastRequested';
+import { arbitrumIngressEgressBatchBroadcastRequested as arbitrumSchema220 } from '@chainflip/processor/220/arbitrumIngressEgress/batchBroadcastRequested';
+import { assethubIngressEgressBatchBroadcastRequested as assethubSchema220 } from '@chainflip/processor/220/assethubIngressEgress/batchBroadcastRequested';
+import { bitcoinIngressEgressBatchBroadcastRequested as bitcoinSchema220 } from '@chainflip/processor/220/bitcoinIngressEgress/batchBroadcastRequested';
+import { ethereumIngressEgressBatchBroadcastRequested as ethereumSchema220 } from '@chainflip/processor/220/ethereumIngressEgress/batchBroadcastRequested';
+import { solanaIngressEgressBatchBroadcastRequested as solanaSchema220 } from '@chainflip/processor/220/solanaIngressEgress/batchBroadcastRequested';
+import { tronIngressEgressBatchBroadcastRequested as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/batchBroadcastRequested';
+import { arbitrumIngressEgressBatchBroadcastRequested as arbitrumSchema230 } from '@chainflip/processor/230/arbitrumIngressEgress/batchBroadcastRequested';
+import { assethubIngressEgressBatchBroadcastRequested as assethubSchema230 } from '@chainflip/processor/230/assethubIngressEgress/batchBroadcastRequested';
+import { bitcoinIngressEgressBatchBroadcastRequested as bitcoinSchema230 } from '@chainflip/processor/230/bitcoinIngressEgress/batchBroadcastRequested';
+import { bscIngressEgressBatchBroadcastRequested as bscSchema230 } from '@chainflip/processor/230/bscIngressEgress/batchBroadcastRequested';
+import { ethereumIngressEgressBatchBroadcastRequested as ethereumSchema230 } from '@chainflip/processor/230/ethereumIngressEgress/batchBroadcastRequested';
+import { solanaIngressEgressBatchBroadcastRequested as solanaSchema230 } from '@chainflip/processor/230/solanaIngressEgress/batchBroadcastRequested';
+import { tronIngressEgressBatchBroadcastRequested as tronSchema230 } from '@chainflip/processor/230/tronIngressEgress/batchBroadcastRequested';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import z from 'zod';
 import logger from '../../utils/logger.js';
 import type { EventHandlerArgs } from '../index.js';
 
 const schemas = {
-  Arbitrum: arbitrumIngressEgressBatchBroadcastRequested,
-  Bitcoin: bitcoinIngressEgressBatchBroadcastRequested,
-  Ethereum: ethereumIngressEgressBatchBroadcastRequested,
-  Solana: solanaIngressEgressBatchBroadcastRequested,
-  Assethub: assethubIngressEgressBatchBroadcastRequested,
-  Tron: tronIngressEgressBatchBroadcastRequested,
+  Arbitrum: z.union([arbitrumSchema230, arbitrumSchema220]),
+  Bitcoin: z.union([bitcoinSchema230, bitcoinSchema220]),
+  Ethereum: z.union([ethereumSchema230, ethereumSchema220]),
+  Solana: z.union([solanaSchema230, solanaSchema220]),
+  Assethub: z.union([assethubSchema230, assethubSchema220]),
+  Tron: z.union([tronSchema230, tronSchema220]),
+  Bsc: bscSchema230,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type BatchBroadcastRequestedArgsMap = {

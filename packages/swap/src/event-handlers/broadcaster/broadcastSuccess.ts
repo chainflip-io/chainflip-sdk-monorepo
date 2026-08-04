@@ -4,6 +4,7 @@ import { arbitrumBroadcasterBroadcastSuccess } from '@chainflip/processor/141/ar
 import { solanaBroadcasterBroadcastSuccess } from '@chainflip/processor/160/solanaBroadcaster/broadcastSuccess';
 import { assethubBroadcasterBroadcastSuccess } from '@chainflip/processor/190/assethubBroadcaster/broadcastSuccess';
 import { tronBroadcasterBroadcastSuccess } from '@chainflip/processor/220/tronBroadcaster/broadcastSuccess';
+import { bscBroadcasterBroadcastSuccess } from '@chainflip/processor/230/bscBroadcaster/broadcastSuccess';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { formatTxRef } from '@/shared/common.js';
@@ -33,6 +34,10 @@ const schemas = {
   Tron: tronBroadcasterBroadcastSuccess.transform((args) => ({
     ...args,
     transactionRef: formatTxRef({ chain: 'Tron' as const, data: args.transactionRef }),
+  })),
+  Bsc: bscBroadcasterBroadcastSuccess.transform((args) => ({
+    ...args,
+    transactionRef: formatTxRef({ chain: 'Bsc' as const, data: args.transactionRef }),
   })),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 

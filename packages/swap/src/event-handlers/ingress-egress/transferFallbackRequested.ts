@@ -1,9 +1,16 @@
-import { assethubIngressEgressTransferFallbackRequested as assethub190 } from '@chainflip/processor/190/assethubIngressEgress/transferFallbackRequested';
-import { bitcoinIngressEgressTransferFallbackRequested as bitcoin190 } from '@chainflip/processor/190/bitcoinIngressEgress/transferFallbackRequested';
-import { arbitrumIngressEgressTransferFallbackRequested as arbitrum210 } from '@chainflip/processor/210/arbitrumIngressEgress/transferFallbackRequested';
-import { ethereumIngressEgressTransferFallbackRequested as ethereum210 } from '@chainflip/processor/210/ethereumIngressEgress/transferFallbackRequested';
-import { solanaIngressEgressTransferFallbackRequested as solana210 } from '@chainflip/processor/210/solanaIngressEgress/transferFallbackRequested';
+import { arbitrumIngressEgressTransferFallbackRequested as arbitrum220 } from '@chainflip/processor/220/arbitrumIngressEgress/transferFallbackRequested';
+import { assethubIngressEgressTransferFallbackRequested as assethub220 } from '@chainflip/processor/220/assethubIngressEgress/transferFallbackRequested';
+import { bitcoinIngressEgressTransferFallbackRequested as bitcoin220 } from '@chainflip/processor/220/bitcoinIngressEgress/transferFallbackRequested';
+import { ethereumIngressEgressTransferFallbackRequested as ethereum220 } from '@chainflip/processor/220/ethereumIngressEgress/transferFallbackRequested';
+import { solanaIngressEgressTransferFallbackRequested as solana220 } from '@chainflip/processor/220/solanaIngressEgress/transferFallbackRequested';
 import { tronIngressEgressTransferFallbackRequested as tron220 } from '@chainflip/processor/220/tronIngressEgress/transferFallbackRequested';
+import { arbitrumIngressEgressTransferFallbackRequested as arbitrum230 } from '@chainflip/processor/230/arbitrumIngressEgress/transferFallbackRequested';
+import { assethubIngressEgressTransferFallbackRequested as assethub230 } from '@chainflip/processor/230/assethubIngressEgress/transferFallbackRequested';
+import { bitcoinIngressEgressTransferFallbackRequested as bitcoin230 } from '@chainflip/processor/230/bitcoinIngressEgress/transferFallbackRequested';
+import { bscIngressEgressTransferFallbackRequested as bsc230 } from '@chainflip/processor/230/bscIngressEgress/transferFallbackRequested';
+import { ethereumIngressEgressTransferFallbackRequested as ethereum230 } from '@chainflip/processor/230/ethereumIngressEgress/transferFallbackRequested';
+import { solanaIngressEgressTransferFallbackRequested as solana230 } from '@chainflip/processor/230/solanaIngressEgress/transferFallbackRequested';
+import { tronIngressEgressTransferFallbackRequested as tron230 } from '@chainflip/processor/230/tronIngressEgress/transferFallbackRequested';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import logger from '../../utils/logger.js';
@@ -11,45 +18,52 @@ import { formatForeignChainAddress } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
 const schemas = {
-  Arbitrum: arbitrum210.strict().transform((args) => ({
+  Arbitrum: z.union([arbitrum230.strict(), arbitrum220.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Arb',
       value: args.destinationAddress,
     }),
   })),
-  Bitcoin: bitcoin190.transform((args) => ({
+  Bitcoin: z.union([bitcoin230, bitcoin220]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Btc',
       value: args.destinationAddress,
     }),
   })),
-  Ethereum: ethereum210.strict().transform((args) => ({
+  Ethereum: z.union([ethereum230.strict(), ethereum220.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Eth',
       value: args.destinationAddress,
     }),
   })),
-  Solana: solana210.strict().transform((args) => ({
+  Solana: z.union([solana230.strict(), solana220.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Sol',
       value: args.destinationAddress,
     }),
   })),
-  Assethub: assethub190.transform((args) => ({
+  Assethub: z.union([assethub230, assethub220]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Hub',
       value: args.destinationAddress,
     }),
   })),
-  Tron: tron220.transform((args) => ({
+  Tron: z.union([tron230, tron220]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Tron',
+      value: args.destinationAddress,
+    }),
+  })),
+  Bsc: bsc230.strict().transform((args) => ({
+    ...args,
+    destinationAddress: formatForeignChainAddress({
+      __kind: 'Bsc',
       value: args.destinationAddress,
     }),
   })),

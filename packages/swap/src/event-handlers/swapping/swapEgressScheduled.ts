@@ -1,9 +1,9 @@
-import { swappingSwapEgressScheduled as schema210 } from '@chainflip/processor/210/swapping/swapEgressScheduled';
 import { swappingSwapEgressScheduled as schema220 } from '@chainflip/processor/220/swapping/swapEgressScheduled';
+import { swappingSwapEgressScheduled as schema230 } from '@chainflip/processor/230/swapping/swapEgressScheduled';
 import { z } from 'zod';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([schema220.strict(), schema210.strict()]);
+const schema = z.union([schema230.strict(), schema220.strict()]);
 
 export type SwapEgressScheduledArgs = z.input<typeof schema>;
 

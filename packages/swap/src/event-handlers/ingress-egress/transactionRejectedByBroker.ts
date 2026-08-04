@@ -4,6 +4,7 @@ import { bitcoinIngressEgressTransactionRejectedByBroker } from '@chainflip/proc
 import { ethereumIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/ethereumIngressEgress/transactionRejectedByBroker';
 import { assethubIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/190/assethubIngressEgress/transactionRejectedByBroker';
 import { tronIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/220/tronIngressEgress/transactionRejectedByBroker';
+import { bscIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/230/bscIngressEgress/transactionRejectedByBroker';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
@@ -39,6 +40,10 @@ const schemaMap = {
   Tron: tronIngressEgressTransactionRejectedByBroker.transform((args) => ({
     ...args,
     txId: { chain: 'Tron' as const, data: args.txId },
+  })),
+  Bsc: bscIngressEgressTransactionRejectedByBroker.transform((args) => ({
+    ...args,
+    txId: { chain: 'Bsc' as const, data: args.txId },
   })),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 

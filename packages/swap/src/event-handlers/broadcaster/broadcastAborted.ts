@@ -4,6 +4,7 @@ import { arbitrumBroadcasterBroadcastAborted } from '@chainflip/processor/141/ar
 import { solanaBroadcasterBroadcastAborted } from '@chainflip/processor/150/solanaBroadcaster/broadcastAborted';
 import { assethubBroadcasterBroadcastAborted } from '@chainflip/processor/190/assethubBroadcaster/broadcastAborted';
 import { tronBroadcasterBroadcastAborted } from '@chainflip/processor/220/tronBroadcaster/broadcastAborted';
+import { bscBroadcasterBroadcastAborted } from '@chainflip/processor/230/bscBroadcaster/broadcastAborted';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { EventHandlerArgs } from '../index.js';
@@ -15,6 +16,7 @@ const schemas = {
   Solana: solanaBroadcasterBroadcastAborted,
   Assethub: assethubBroadcasterBroadcastAborted,
   Tron: tronBroadcasterBroadcastAborted,
+  Bsc: bscBroadcasterBroadcastAborted,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type BroadcastAbortedArgsMap = {

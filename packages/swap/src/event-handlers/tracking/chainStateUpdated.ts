@@ -4,6 +4,7 @@ import { solanaChainTrackingChainStateUpdated } from '@chainflip/processor/160/s
 import { arbitrumChainTrackingChainStateUpdated } from '@chainflip/processor/180/arbitrumChainTracking/chainStateUpdated';
 import { assethubChainTrackingChainStateUpdated } from '@chainflip/processor/190/assethubChainTracking/chainStateUpdated';
 import { tronChainTrackingChainStateUpdated } from '@chainflip/processor/220/tronChainTracking/chainStateUpdated';
+import { bscChainTrackingChainStateUpdated } from '@chainflip/processor/230/bscChainTracking/chainStateUpdated';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { EventHandlerArgs } from '../index.js';
@@ -15,6 +16,7 @@ const schemas = {
   Solana: solanaChainTrackingChainStateUpdated,
   Assethub: assethubChainTrackingChainStateUpdated,
   Tron: tronChainTrackingChainStateUpdated,
+  Bsc: bscChainTrackingChainStateUpdated,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type ChainStateUpdatedArgsMap = {
