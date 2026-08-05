@@ -49,12 +49,10 @@ const assethubSchema = z
     ...args,
     depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
   }));
-const tronSchema = z
-  .union([tronSchema230.strict(), tronSchema220.strict()])
-  .transform((args) => ({
-    ...args,
-    depositDetails: { chain: 'Tron' as const, data: args.depositDetails },
-  }));
+const tronSchema = z.union([tronSchema230.strict(), tronSchema220.strict()]).transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Tron' as const, data: args.depositDetails },
+}));
 const bscSchema = bscSchema230.strict().transform((args) => ({
   ...args,
   depositDetails: { chain: 'Bsc' as const, data: args.depositDetails },
