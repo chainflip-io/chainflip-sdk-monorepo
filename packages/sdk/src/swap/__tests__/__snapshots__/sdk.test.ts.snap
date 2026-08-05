@@ -342,7 +342,7 @@ exports[`SwapSDK > getAssets > returns the correct values for backspin 1`] = `
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "BSC USDT",
+    "name": "Binance Bridged USDT",
     "symbol": "USDT",
   },
 ]
@@ -607,7 +607,7 @@ exports[`SwapSDK > getAssets > returns the correct values for mainnet 1`] = `
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "BSC USDT",
+    "name": "Binance Bridged USDT",
     "symbol": "USDT",
   },
 ]
@@ -872,7 +872,7 @@ exports[`SwapSDK > getAssets > returns the correct values for perseverance 1`] =
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "BSC USDT",
+    "name": "Binance Bridged USDT",
     "symbol": "USDT",
   },
 ]
@@ -1137,7 +1137,7 @@ exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "BSC USDT",
+    "name": "Binance Bridged USDT",
     "symbol": "USDT",
   },
 ]
@@ -1326,7 +1326,7 @@ exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth 1
   },
   {
     "asset": "BTC",
-    "availableAmount": 0n,
+    "availableAmount": 9000n,
     "chain": "Bitcoin",
     "feeTierBps": 5,
     "poolType": "SUPPLY",
@@ -1345,7 +1345,7 @@ exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity filtere
   },
   {
     "asset": "BTC",
-    "availableAmount": 0n,
+    "availableAmount": 9000n,
     "chain": "Bitcoin",
     "feeTierBps": 5,
     "poolType": "SUPPLY",

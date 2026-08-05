@@ -25,7 +25,7 @@ const schemas = {
       value: args.destinationAddress,
     }),
   })),
-  Bitcoin: z.union([bitcoin230, bitcoin220]).transform((args) => ({
+  Bitcoin: z.union([bitcoin230.strict(), bitcoin220.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Btc',
@@ -46,14 +46,14 @@ const schemas = {
       value: args.destinationAddress,
     }),
   })),
-  Assethub: z.union([assethub230, assethub220]).transform((args) => ({
+  Assethub: z.union([assethub230.strict(), assethub220.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Hub',
       value: args.destinationAddress,
     }),
   })),
-  Tron: z.union([tron230, tron220]).transform((args) => ({
+  Tron: z.union([tron230.strict(), tron220.strict()]).transform((args) => ({
     ...args,
     destinationAddress: formatForeignChainAddress({
       __kind: 'Tron',

@@ -141,7 +141,7 @@ export const chainflipAssetToPriceAssetMap: InternalAssetMap<PriceAsset | null> 
   Sol: 'Sol',
   Usdc: 'Usdc',
   Usdt: 'Usdt',
-  Wbtc: 'Btc',
+  Wbtc: null,
   ArbUsdc: 'Usdc',
   ArbUsdt: 'Usdt',
   ArbEth: 'Eth',
@@ -154,8 +154,8 @@ export const chainflipAssetToPriceAssetMap: InternalAssetMap<PriceAsset | null> 
   Trx: null,
   TrxUsdt: 'Usdt',
   Bnb: null,
-  BscUsdt: 'Usdt',
-  Cbbtc: 'Btc',
+  BscUsdt: null, // Binance Bridged USDT is an un-official (yet most popular) version of the USDT asset.
+  Cbbtc: null,
 };
 
 export const SUPPLY_POOL_BOOST_FEE_BPS = 5;

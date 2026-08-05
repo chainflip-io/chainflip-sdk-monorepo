@@ -28,12 +28,15 @@ const arbitrumSchema = z
       args.depositAddress &&
       formatForeignChainAddress({ __kind: 'Arb', value: args.depositAddress }),
   }));
-const bitcoinSchema = z.union([bitcoinSchema230, bitcoinSchema220]).transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
-  depositAddress:
-    args.depositAddress && formatForeignChainAddress({ __kind: 'Btc', value: args.depositAddress }),
-}));
+const bitcoinSchema = z
+  .union([bitcoinSchema230.strict(), bitcoinSchema220.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
+    depositAddress:
+      args.depositAddress &&
+      formatForeignChainAddress({ __kind: 'Btc', value: args.depositAddress }),
+  }));
 const ethereumSchema = z
   .union([ethereumSchema230.strict(), ethereumSchema220.strict()])
   .transform((args) => ({
@@ -52,13 +55,16 @@ const solanaSchema = z
       args.depositAddress &&
       formatForeignChainAddress({ __kind: 'Sol', value: args.depositAddress }),
   }));
-const assethubSchema = z.union([assethubSchema230, assethubSchema220]).transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
-  depositAddress:
-    args.depositAddress && formatForeignChainAddress({ __kind: 'Hub', value: args.depositAddress }),
-}));
-const tronSchema = z.union([tronSchema230, tronSchema220]).transform((args) => ({
+const assethubSchema = z
+  .union([assethubSchema230.strict(), assethubSchema220.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
+    depositAddress:
+      args.depositAddress &&
+      formatForeignChainAddress({ __kind: 'Hub', value: args.depositAddress }),
+  }));
+const tronSchema = z.union([tronSchema230.strict(), tronSchema220.strict()]).transform((args) => ({
   ...args,
   depositDetails: { chain: 'Tron' as const, data: args.depositDetails },
   depositAddress:

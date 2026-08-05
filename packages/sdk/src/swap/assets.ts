@@ -46,7 +46,7 @@ const assetNames: Record<ChainflipAsset, string> = {
   Trx: 'Tron',
   TrxUsdt: 'Tron USDT',
   Bnb: 'BNB',
-  BscUsdt: 'BSC USDT',
+  BscUsdt: 'Binance Bridged USDT',
   Cbbtc: 'Coinbase Wrapped BTC',
 };
 

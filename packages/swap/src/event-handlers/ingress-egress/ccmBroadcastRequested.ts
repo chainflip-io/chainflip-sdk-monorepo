@@ -17,13 +17,13 @@ import logger from '../../utils/logger.js';
 import type { EventHandlerArgs } from '../index.js';
 
 const schemas = {
-  Arbitrum: z.union([arbitrumSchema230, arbitrumSchema220]),
-  Assethub: z.union([assethubSchema230, assethubSchema220]),
-  Bitcoin: z.union([bitcoinSchema230, bitcoinSchema220]),
-  Ethereum: z.union([ethereumSchema230, ethereumSchema220]),
-  Solana: z.union([solanaSchema230, solanaSchema220]),
-  Tron: z.union([tronSchema230, tronSchema220]),
-  Bsc: bscSchema230,
+  Arbitrum: z.union([arbitrumSchema230.strict(), arbitrumSchema220.strict()]),
+  Assethub: z.union([assethubSchema230.strict(), assethubSchema220.strict()]),
+  Bitcoin: z.union([bitcoinSchema230.strict(), bitcoinSchema220.strict()]),
+  Ethereum: z.union([ethereumSchema230.strict(), ethereumSchema220.strict()]),
+  Solana: z.union([solanaSchema230.strict(), solanaSchema220.strict()]),
+  Tron: z.union([tronSchema230.strict(), tronSchema220.strict()]),
+  Bsc: bscSchema230.strict(),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type CcmBroadcastRequestedArgsMap = {

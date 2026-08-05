@@ -278,7 +278,7 @@ export const boostPoolsDepth = (
 
 export const defaultLendingPoolConfig = {
   utilisation_rate: 0,
-  utilisation_cap: 90,
+  utilisation_cap: 90_000,
   current_interest_rate: 100,
   origination_fee: 10,
   liquidation_fee: 5,

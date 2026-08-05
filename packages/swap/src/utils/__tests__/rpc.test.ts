@@ -106,7 +106,7 @@ describe(getSupplyPoolsDepth, () => {
           "liquidationFee": 5,
           "originationFee": 10,
           "totalAmount": 100000n,
-          "utilisationCap": 90,
+          "utilisationCap": 90000,
           "utilisationRate": 0,
         },
       ]
