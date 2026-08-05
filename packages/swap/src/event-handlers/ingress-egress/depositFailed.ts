@@ -32,8 +32,8 @@ const argsMap = {
   Ethereum: z.union([ethereumSchema230.strict(), ethereumSchema220.strict()]),
   Solana: z.union([solanaSchema230.strict(), solanaSchema220.strict()]),
   Assethub: z.union([assetHubSchema230.strict(), assetHubSchema220.strict()]),
-  Tron: z.union([tronSchema230, tronSchema220]),
-  Bsc: bscSchema230,
+  Tron: z.union([tronSchema230.strict(), tronSchema220.strict()]),
+  Bsc: bscSchema230.strict(),
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type DepositFailedArgsMap = {
