@@ -124,8 +124,8 @@ importers:
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.3.0-dev.4
-        version: 2.3.0-dev.4
+        specifier: 2.3.0-dev.5
+        version: 2.3.0-dev.5
       '@chainflip/solana':
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
@@ -158,8 +158,8 @@ importers:
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(typescript@5.9.3)
       '@chainflip/rpc':
-        specifier: 2.3.0-dev.4
-        version: 2.3.0-dev.4
+        specifier: 2.3.0-dev.5
+        version: 2.3.0-dev.5
       '@chainflip/solana':
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -222,8 +222,8 @@ importers:
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1
       '@chainflip/rpc':
-        specifier: 2.3.0-dev.4
-        version: 2.3.0-dev.4
+        specifier: 2.3.0-dev.5
+        version: 2.3.0-dev.5
       '@chainflip/solana':
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -487,6 +487,9 @@ packages:
 
   '@chainflip/rpc@2.3.0-dev.4':
     resolution: {integrity: sha512-YfMWjJGRYfdDUM+GDFsnlWWSfxCvFb0WxwR9kij89RdgTlV+CUMuZjcNA/ENrKWEnz6gShMMJaeJm3hURwBmiw==}
+
+  '@chainflip/rpc@2.3.0-dev.5':
+    resolution: {integrity: sha512-CVRtHv9m/qqMMJoHEsrxCKbixaOwYthFLc5Q1spSzsncaqSjjKCm7AyTdTqTFc1vNZQU3emkLfC3XIw9RaRgjA==}
 
   '@chainflip/scale@2.3.0-dev.1':
     resolution: {integrity: sha512-Qk1agHOt075QQ3QUtytEaiGe4fs210+4LgReLUCA+6hGvR4HbGRvM8xkuACExENLen+61A/114YK2w1O2hCvFQ==}
@@ -6796,6 +6799,11 @@ snapshots:
       - supports-color
 
   '@chainflip/rpc@2.3.0-dev.4':
+    dependencies:
+      '@chainflip/utils': 2.3.0-dev.4
+      zod: 3.25.76
+
+  '@chainflip/rpc@2.3.0-dev.5':
     dependencies:
       '@chainflip/utils': 2.3.0-dev.4
       zod: 3.25.76

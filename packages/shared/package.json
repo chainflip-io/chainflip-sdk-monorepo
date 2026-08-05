@@ -20,7 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@chainflip/bitcoin": "2.3.0-dev.1",
-    "@chainflip/rpc": "2.3.0-dev.4",
+    "@chainflip/rpc": "2.3.0-dev.5",
     "@chainflip/utils": "2.3.0-dev.4",
     "@chainflip/solana": "2.3.0-dev.1",
     "@ts-rest/core": "^3.52.1",
