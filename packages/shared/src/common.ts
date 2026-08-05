@@ -4,6 +4,7 @@ import { type arbitrumBroadcasterBroadcastSuccess } from '@chainflip/processor/1
 import { type solanaBroadcasterBroadcastSuccess } from '@chainflip/processor/160/solanaBroadcaster/broadcastSuccess';
 import { type assethubBroadcasterBroadcastSuccess } from '@chainflip/processor/190/assethubBroadcaster/broadcastSuccess';
 import { type tronBroadcasterBroadcastSuccess } from '@chainflip/processor/220/tronBroadcaster/broadcastSuccess';
+import { type bscBroadcasterBroadcastSuccess } from '@chainflip/processor/230/bscBroadcaster/broadcastSuccess';
 import { unreachable } from '@chainflip/utils/assertion';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes, reverseBytes } from '@chainflip/utils/bytes';
@@ -21,6 +22,7 @@ type TxRefData = {
         Solana: typeof solanaBroadcasterBroadcastSuccess;
         Assethub: typeof assethubBroadcasterBroadcastSuccess;
         Tron: typeof tronBroadcasterBroadcastSuccess;
+        Bsc: typeof bscBroadcasterBroadcastSuccess;
       }[C]
     >['transactionRef'];
   };
@@ -30,6 +32,7 @@ export const formatTxRef = (txRef: TxRefData): string => {
   switch (txRef.chain) {
     case 'Arbitrum':
     case 'Ethereum':
+    case 'Bsc':
       return txRef.data;
     case 'Bitcoin':
       return reverseBytes(txRef.data.slice(2));

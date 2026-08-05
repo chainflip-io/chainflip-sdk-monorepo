@@ -1,9 +1,9 @@
-import { lendingPoolsBoostPoolCreated as schema210 } from '@chainflip/processor/210/lendingPools/boostPoolCreated';
 import { lendingPoolsBoostPoolCreated as schema220 } from '@chainflip/processor/220/lendingPools/boostPoolCreated';
+import { lendingPoolsBoostPoolCreated as schema230 } from '@chainflip/processor/230/lendingPools/boostPoolCreated';
 import { z } from 'zod';
 import { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([schema220.strict(), schema210.strict()]);
+const schema = z.union([schema230.strict(), schema220.strict()]);
 
 export const lendingPoolsBoostPoolCreated = async ({ prisma, event }: EventHandlerArgs) => {
   const {

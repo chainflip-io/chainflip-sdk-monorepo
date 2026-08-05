@@ -15,6 +15,7 @@ export const coinGeckoIdMap = {
   Btc: 'bitcoin',
   Usdt: 'tether',
   Wbtc: 'wrapped-bitcoin',
+  Cbbtc: 'coinbase-wrapped-btc',
   ArbEth: 'ethereum',
   ArbUsdc: 'usd-coin',
   ArbUsdt: 'tether',
@@ -26,6 +27,8 @@ export const coinGeckoIdMap = {
   HubUsdt: 'tether',
   Trx: 'tron',
   TrxUsdt: 'tether',
+  Bnb: 'binancecoin',
+  BscUsdt: 'binance-bridged-usdt-bnb-smart-chain',
 } as const satisfies Record<AnyChainflipAsset, string>;
 
 type CoingeckoId = (typeof coinGeckoIdMap)[AnyChainflipAsset];

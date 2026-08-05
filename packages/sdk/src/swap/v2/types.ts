@@ -266,7 +266,7 @@ export type VaultSwapResponse =
       depositAddress: string;
     }
   | {
-      chain: 'Ethereum' | 'Arbitrum';
+      chain: 'Ethereum' | 'Arbitrum' | 'Bsc';
       calldata: string;
       value: bigint;
       to: string;

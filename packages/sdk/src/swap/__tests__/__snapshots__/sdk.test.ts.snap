@@ -125,6 +125,19 @@ exports[`SwapSDK > getAssets > returns the correct values for backspin 1`] = `
     "symbol": "WBTC",
   },
   {
+    "asset": "CBBTC",
+    "chain": "Ethereum",
+    "chainflipId": "Cbbtc",
+    "contractAddress": "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E",
+    "decimals": 8,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Coinbase Wrapped BTC",
+    "symbol": "CBBTC",
+  },
+  {
     "asset": "FLIP",
     "chain": "Ethereum",
     "chainflipId": "Flip",
@@ -306,6 +319,32 @@ exports[`SwapSDK > getAssets > returns the correct values for backspin 1`] = `
     "name": "Assethub USDC",
     "symbol": "USDC",
   },
+  {
+    "asset": "BNB",
+    "chain": "Bsc",
+    "chainflipId": "Bnb",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "BNB",
+    "symbol": "BNB",
+  },
+  {
+    "asset": "USDT",
+    "chain": "Bsc",
+    "chainflipId": "BscUsdt",
+    "contractAddress": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Binance Bridged USDT",
+    "symbol": "USDT",
+  },
 ]
 `;
 
@@ -349,6 +388,19 @@ exports[`SwapSDK > getAssets > returns the correct values for mainnet 1`] = `
     "minimumSwapAmount": "0",
     "name": "WBTC",
     "symbol": "WBTC",
+  },
+  {
+    "asset": "CBBTC",
+    "chain": "Ethereum",
+    "chainflipId": "Cbbtc",
+    "contractAddress": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+    "decimals": 8,
+    "isMainnet": true,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Coinbase Wrapped BTC",
+    "symbol": "CBBTC",
   },
   {
     "asset": "FLIP",
@@ -532,6 +584,32 @@ exports[`SwapSDK > getAssets > returns the correct values for mainnet 1`] = `
     "name": "Assethub USDC",
     "symbol": "USDC",
   },
+  {
+    "asset": "BNB",
+    "chain": "Bsc",
+    "chainflipId": "Bnb",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": true,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "BNB",
+    "symbol": "BNB",
+  },
+  {
+    "asset": "USDT",
+    "chain": "Bsc",
+    "chainflipId": "BscUsdt",
+    "contractAddress": "0x55d398326f99059fF775485246999027B3197955",
+    "decimals": 18,
+    "isMainnet": true,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Binance Bridged USDT",
+    "symbol": "USDT",
+  },
 ]
 `;
 
@@ -575,6 +653,19 @@ exports[`SwapSDK > getAssets > returns the correct values for perseverance 1`] =
     "minimumSwapAmount": "0",
     "name": "WBTC",
     "symbol": "WBTC",
+  },
+  {
+    "asset": "CBBTC",
+    "chain": "Ethereum",
+    "chainflipId": "Cbbtc",
+    "contractAddress": "0xcbB7C0006F23900c38EB856149F799620fcb8A4a",
+    "decimals": 8,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Coinbase Wrapped BTC",
+    "symbol": "CBBTC",
   },
   {
     "asset": "FLIP",
@@ -758,6 +849,32 @@ exports[`SwapSDK > getAssets > returns the correct values for perseverance 1`] =
     "name": "Assethub USDC",
     "symbol": "USDC",
   },
+  {
+    "asset": "BNB",
+    "chain": "Bsc",
+    "chainflipId": "Bnb",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "BNB",
+    "symbol": "BNB",
+  },
+  {
+    "asset": "USDT",
+    "chain": "Bsc",
+    "chainflipId": "BscUsdt",
+    "contractAddress": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Binance Bridged USDT",
+    "symbol": "USDT",
+  },
 ]
 `;
 
@@ -801,6 +918,19 @@ exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
     "minimumSwapAmount": "0",
     "name": "WBTC",
     "symbol": "WBTC",
+  },
+  {
+    "asset": "CBBTC",
+    "chain": "Ethereum",
+    "chainflipId": "Cbbtc",
+    "contractAddress": "0xcbB7C0006F23900c38EB856149F799620fcb8A4a",
+    "decimals": 8,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Coinbase Wrapped BTC",
+    "symbol": "CBBTC",
   },
   {
     "asset": "FLIP",
@@ -983,6 +1113,32 @@ exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
     "minimumSwapAmount": "0",
     "name": "Assethub USDC",
     "symbol": "USDC",
+  },
+  {
+    "asset": "BNB",
+    "chain": "Bsc",
+    "chainflipId": "Bnb",
+    "contractAddress": undefined,
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "BNB",
+    "symbol": "BNB",
+  },
+  {
+    "asset": "USDT",
+    "chain": "Bsc",
+    "chainflipId": "BscUsdt",
+    "contractAddress": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+    "decimals": 18,
+    "isMainnet": false,
+    "maximumSwapAmount": null,
+    "minimumEgressAmount": "1",
+    "minimumSwapAmount": "0",
+    "name": "Binance Bridged USDT",
+    "symbol": "USDT",
   },
 ]
 `;
@@ -1170,7 +1326,7 @@ exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity depth 1
   },
   {
     "asset": "BTC",
-    "availableAmount": 100000n,
+    "availableAmount": 9000n,
     "chain": "Bitcoin",
     "feeTierBps": 5,
     "poolType": "SUPPLY",
@@ -1189,7 +1345,7 @@ exports[`SwapSDK > getBoostLiquidity > returns the boost pools liquidity filtere
   },
   {
     "asset": "BTC",
-    "availableAmount": 100000n,
+    "availableAmount": 9000n,
     "chain": "Bitcoin",
     "feeTierBps": 5,
     "poolType": "SUPPLY",
@@ -1310,6 +1466,14 @@ exports[`SwapSDK > getChains > returns the correct values for backspin 1`] = `
     "name": "Assethub",
     "requiredBlockConfirmations": undefined,
   },
+  {
+    "chain": "Bsc",
+    "evmChainId": 343,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Bsc",
+    "requiredBlockConfirmations": undefined,
+  },
 ]
 `;
 
@@ -1361,6 +1525,14 @@ exports[`SwapSDK > getChains > returns the correct values for mainnet 1`] = `
     "isMainnet": true,
     "maxRetryDurationBlocks": 10,
     "name": "Assethub",
+    "requiredBlockConfirmations": undefined,
+  },
+  {
+    "chain": "Bsc",
+    "evmChainId": 56,
+    "isMainnet": true,
+    "maxRetryDurationBlocks": 10,
+    "name": "Bsc",
     "requiredBlockConfirmations": undefined,
   },
 ]
@@ -1416,6 +1588,14 @@ exports[`SwapSDK > getChains > returns the correct values for perseverance 1`] =
     "name": "Assethub",
     "requiredBlockConfirmations": undefined,
   },
+  {
+    "chain": "Bsc",
+    "evmChainId": 97,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Bsc",
+    "requiredBlockConfirmations": undefined,
+  },
 ]
 `;
 
@@ -1467,6 +1647,14 @@ exports[`SwapSDK > getChains > returns the correct values for sisyphos 1`] = `
     "isMainnet": false,
     "maxRetryDurationBlocks": 10,
     "name": "Assethub",
+    "requiredBlockConfirmations": undefined,
+  },
+  {
+    "chain": "Bsc",
+    "evmChainId": 97,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Bsc",
     "requiredBlockConfirmations": undefined,
   },
 ]
@@ -1556,6 +1744,14 @@ exports[`SwapSDK > getChains > returns the filtered destination chains for the c
     "name": "Assethub",
     "requiredBlockConfirmations": undefined,
   },
+  {
+    "chain": "Bsc",
+    "evmChainId": 97,
+    "isMainnet": false,
+    "maxRetryDurationBlocks": 10,
+    "name": "Bsc",
+    "requiredBlockConfirmations": undefined,
+  },
 ]
 `;
 
@@ -1577,7 +1773,12 @@ exports[`SwapSDK > getSwapLimits > returns the swap limits based on the environm
     "Bitcoin": {
       "BTC": 1152921504606846976n,
     },
+    "Bsc": {
+      "BNB": null,
+      "USDT": null,
+    },
     "Ethereum": {
+      "CBBTC": null,
       "ETH": null,
       "FLIP": null,
       "USDC": 1152921504606846976n,
@@ -1608,7 +1809,12 @@ exports[`SwapSDK > getSwapLimits > returns the swap limits based on the environm
     "Bitcoin": {
       "BTC": 0n,
     },
+    "Bsc": {
+      "BNB": 0n,
+      "USDT": 0n,
+    },
     "Ethereum": {
+      "CBBTC": 0n,
       "ETH": 0n,
       "FLIP": 0n,
       "USDC": 0n,

@@ -1,9 +1,16 @@
-import { assethubIngressEgressDepositFinalised as assethubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositFinalised';
-import { bitcoinIngressEgressDepositFinalised as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
-import { arbitrumIngressEgressDepositFinalised as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/depositFinalised';
-import { ethereumIngressEgressDepositFinalised as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositFinalised';
-import { solanaIngressEgressDepositFinalised as solanaSchema210 } from '@chainflip/processor/210/solanaIngressEgress/depositFinalised';
+import { arbitrumIngressEgressDepositFinalised as arbitrumSchema220 } from '@chainflip/processor/220/arbitrumIngressEgress/depositFinalised';
+import { assethubIngressEgressDepositFinalised as assethubSchema220 } from '@chainflip/processor/220/assethubIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised as bitcoinSchema220 } from '@chainflip/processor/220/bitcoinIngressEgress/depositFinalised';
+import { ethereumIngressEgressDepositFinalised as ethereumSchema220 } from '@chainflip/processor/220/ethereumIngressEgress/depositFinalised';
+import { solanaIngressEgressDepositFinalised as solanaSchema220 } from '@chainflip/processor/220/solanaIngressEgress/depositFinalised';
 import { tronIngressEgressDepositFinalised as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/depositFinalised';
+import { arbitrumIngressEgressDepositFinalised as arbitrumSchema230 } from '@chainflip/processor/230/arbitrumIngressEgress/depositFinalised';
+import { assethubIngressEgressDepositFinalised as assethubSchema230 } from '@chainflip/processor/230/assethubIngressEgress/depositFinalised';
+import { bitcoinIngressEgressDepositFinalised as bitcoinSchema230 } from '@chainflip/processor/230/bitcoinIngressEgress/depositFinalised';
+import { bscIngressEgressDepositFinalised as bscSchema230 } from '@chainflip/processor/230/bscIngressEgress/depositFinalised';
+import { ethereumIngressEgressDepositFinalised as ethereumSchema230 } from '@chainflip/processor/230/ethereumIngressEgress/depositFinalised';
+import { solanaIngressEgressDepositFinalised as solanaSchema230 } from '@chainflip/processor/230/solanaIngressEgress/depositFinalised';
+import { tronIngressEgressDepositFinalised as tronSchema230 } from '@chainflip/processor/230/tronIngressEgress/depositFinalised';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import z from 'zod';
 import { assertUnreachable } from '@/shared/functions.js';
@@ -12,42 +19,63 @@ import logger from '../../utils/logger.js';
 import { formatForeignChainAddress, getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
-const arbitrumSchema = arbitrumSchema210.strict().transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
-  depositAddress:
-    args.depositAddress && formatForeignChainAddress({ __kind: 'Arb', value: args.depositAddress }),
-}));
-const bitcoinSchema = bitcoinSchema11200.transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
-  depositAddress:
-    args.depositAddress && formatForeignChainAddress({ __kind: 'Btc', value: args.depositAddress }),
-}));
-const ethereumSchema = ethereumSchema210.strict().transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
-  depositAddress:
-    args.depositAddress && formatForeignChainAddress({ __kind: 'Eth', value: args.depositAddress }),
-}));
-const solanaSchema = solanaSchema210.strict().transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
-  depositAddress:
-    args.depositAddress && formatForeignChainAddress({ __kind: 'Sol', value: args.depositAddress }),
-}));
-const assethubSchema = assethubSchema11200.transform((args) => ({
-  ...args,
-  depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
-  depositAddress:
-    args.depositAddress && formatForeignChainAddress({ __kind: 'Hub', value: args.depositAddress }),
-}));
-const tronSchema = tronSchema220.transform((args) => ({
+const arbitrumSchema = z
+  .union([arbitrumSchema230.strict(), arbitrumSchema220.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
+    depositAddress:
+      args.depositAddress &&
+      formatForeignChainAddress({ __kind: 'Arb', value: args.depositAddress }),
+  }));
+const bitcoinSchema = z
+  .union([bitcoinSchema230.strict(), bitcoinSchema220.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
+    depositAddress:
+      args.depositAddress &&
+      formatForeignChainAddress({ __kind: 'Btc', value: args.depositAddress }),
+  }));
+const ethereumSchema = z
+  .union([ethereumSchema230.strict(), ethereumSchema220.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
+    depositAddress:
+      args.depositAddress &&
+      formatForeignChainAddress({ __kind: 'Eth', value: args.depositAddress }),
+  }));
+const solanaSchema = z
+  .union([solanaSchema230.strict(), solanaSchema220.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
+    depositAddress:
+      args.depositAddress &&
+      formatForeignChainAddress({ __kind: 'Sol', value: args.depositAddress }),
+  }));
+const assethubSchema = z
+  .union([assethubSchema230.strict(), assethubSchema220.strict()])
+  .transform((args) => ({
+    ...args,
+    depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
+    depositAddress:
+      args.depositAddress &&
+      formatForeignChainAddress({ __kind: 'Hub', value: args.depositAddress }),
+  }));
+const tronSchema = z.union([tronSchema230.strict(), tronSchema220.strict()]).transform((args) => ({
   ...args,
   depositDetails: { chain: 'Tron' as const, data: args.depositDetails },
   depositAddress:
     args.depositAddress &&
     formatForeignChainAddress({ __kind: 'Tron', value: args.depositAddress }),
+}));
+const bscSchema = bscSchema230.strict().transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Bsc' as const, data: args.depositDetails },
+  depositAddress:
+    args.depositAddress && formatForeignChainAddress({ __kind: 'Bsc', value: args.depositAddress }),
 }));
 
 const depositFinalisedSchema = {
@@ -57,6 +85,7 @@ const depositFinalisedSchema = {
   Ethereum: ethereumSchema,
   Assethub: assethubSchema,
   Tron: tronSchema,
+  Bsc: bscSchema,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type DepositFinalisedArgsMap = {

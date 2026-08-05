@@ -27,6 +27,7 @@ const priceMap = {
   Usdt: 0.9996396835618839,
   Usdc: 0.9989897393887496,
   Wbtc: 70880.91563990324,
+  Cbbtc: 70880.91563990324,
   ArbEth: 3638.78272243294,
   ArbUsdc: 0.9989897393887496,
   ArbUsdt: 0.9996396835618839,
@@ -38,6 +39,8 @@ const priceMap = {
   HubUsdt: 0.9996396835618839,
   Trx: 0.25,
   TrxUsdt: 0.9996396835618839,
+  Bnb: 600.1234,
+  BscUsdt: 0.9996396835618839,
 } as const satisfies Record<AnyChainflipAsset, number>;
 
 describe(PriceCache, () => {

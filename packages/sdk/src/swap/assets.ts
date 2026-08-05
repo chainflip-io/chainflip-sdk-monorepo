@@ -20,6 +20,7 @@ const getTokenContractAddress = (asset: ChainflipAsset, network: ChainflipNetwor
     case 'HubUsdc':
     case 'HubUsdt':
     case 'Trx':
+    case 'Bnb':
       return undefined;
     default:
       return ADDRESSES[network][`${toUpperCase(asset)}_CONTRACT_ADDRESS`];
@@ -44,6 +45,9 @@ const assetNames: Record<ChainflipAsset, string> = {
   HubUsdt: 'Assethub USDT',
   Trx: 'Tron',
   TrxUsdt: 'Tron USDT',
+  Bnb: 'BNB',
+  BscUsdt: 'Binance Bridged USDT',
+  Cbbtc: 'Coinbase Wrapped BTC',
 };
 
 export const getAssetData = (

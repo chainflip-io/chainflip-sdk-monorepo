@@ -507,6 +507,7 @@ export class SwapSDK {
       case 'Arbitrum':
       case 'Ethereum':
       case 'Tron':
+      case 'Bsc':
         return { ...res.body, value: BigInt(res.body.value) };
       default:
         return res.body;

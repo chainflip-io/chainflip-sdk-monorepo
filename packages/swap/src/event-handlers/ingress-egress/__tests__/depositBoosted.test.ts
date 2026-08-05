@@ -1,6 +1,4 @@
-import { bitcoinIngressEgressDepositBoosted as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositBoosted';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { z } from 'zod';
 import prisma from '../../../client.js';
 import { check } from '../../__tests__/utils.js';
 import { depositBoosted, DepositBoostedArgsMap } from '../depositBoosted.js';
@@ -10,20 +8,20 @@ export const depositBoostedBtcMock = async ({
   amounts,
   channelId,
 }: {
-  action?: z.input<typeof bitcoinSchema11200>['action'];
-  amounts?: [[number, string]];
+  action?: DepositBoostedArgsMap['Bitcoin']['action'];
+  amounts?: DepositBoostedArgsMap['Bitcoin']['amounts'];
   channelId?: string;
 } = {}) => {
-  const args: z.input<typeof bitcoinSchema11200> = {
+  const args: DepositBoostedArgsMap['Bitcoin'] = {
     blockHeight: 120,
     asset: {
       __kind: 'Btc',
     },
-    amounts: amounts ?? [[5, '1000000']],
+    amounts: amounts ?? [[{ __kind: 'BoostPool' }, '1000000']],
     prewitnessedDepositId: '101',
     channelId: channelId ?? '1',
     ingressFee: '1000',
-    boostFee: '500',
+    boostFee: [[{ __kind: 'BoostPool' }, '500']],
     action,
     depositAddress: {
       value: '0x52890cc3438775253262c88df4ab47841581ac04',
@@ -91,7 +89,9 @@ describe('depositBoosted', () => {
   });
 
   it('updates the values for an existing swap', async () => {
-    const { event, block } = await depositBoostedBtcMock({ amounts: [[5, '1000000']] });
+    const { event, block } = await depositBoostedBtcMock({
+      amounts: [[{ __kind: 'BoostPool' }, '1000000']],
+    });
 
     await depositBoosted('Bitcoin')({ prisma, event, block });
 
@@ -107,7 +107,7 @@ describe('depositBoosted', () => {
   it('updates the values for an existing ccm swap', async () => {
     const { event, block } = await depositBoostedBtcMock({
       action: { __kind: 'CcmTransfer', swapRequestId: '1' },
-      amounts: [[5, '1000000']],
+      amounts: [[{ __kind: 'BoostPool' }, '1000000']],
     });
 
     await depositBoosted('Bitcoin')({ prisma, event, block });
@@ -154,8 +154,8 @@ describe('depositBoosted', () => {
             __kind: 'Swap',
             swapRequestId: '159',
           },
-          amounts: [[4, '10000000']],
-          boostFee: '4000',
+          amounts: [[{ __kind: 'BoostPool' }, '10000000']],
+          boostFee: [[{ __kind: 'BoostPool' }, '4000']],
           channelId: '7',
           ingressFee: '79',
           originType: {

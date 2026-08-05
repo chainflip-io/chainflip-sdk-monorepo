@@ -54,7 +54,12 @@ describe('getSwappingEnvironment', () => {
           "Bitcoin": {
             "BTC": 100,
           },
+          "Bsc": {
+            "BNB": 100,
+            "USDT": 100,
+          },
           "Ethereum": {
+            "CBBTC": 100,
             "ETH": 100,
             "FLIP": null,
             "USDC": null,
@@ -87,7 +92,12 @@ describe('getSwappingEnvironment', () => {
           "Bitcoin": {
             "BTC": 5000000000000000000n,
           },
+          "Bsc": {
+            "BNB": null,
+            "USDT": null,
+          },
           "Ethereum": {
+            "CBBTC": null,
             "ETH": null,
             "FLIP": null,
             "USDC": 5000000000000000000n,
@@ -118,7 +128,12 @@ describe('getSwappingEnvironment', () => {
           "Bitcoin": {
             "BTC": 0n,
           },
+          "Bsc": {
+            "BNB": 0n,
+            "USDT": 0n,
+          },
           "Ethereum": {
+            "CBBTC": 0n,
             "ETH": 0n,
             "FLIP": 0n,
             "USDC": 0n,
@@ -152,7 +167,12 @@ describe('getSwappingEnvironment', () => {
               "Bitcoin": {
                 "BTC": 100n,
               },
+              "Bsc": {
+                "BNB": 100n,
+                "USDT": 100n,
+              },
               "Ethereum": {
+                "CBBTC": 100n,
                 "ETH": 100n,
                 "FLIP": 100n,
                 "USDC": 100n,
@@ -189,7 +209,12 @@ describe('getSwappingEnvironment', () => {
               "Bitcoin": {
                 "BTC": 1000n,
               },
+              "Bsc": {
+                "BNB": 1000n,
+                "USDT": 1000n,
+              },
               "Ethereum": {
+                "CBBTC": 1000n,
                 "ETH": 1000n,
                 "FLIP": 1000n,
                 "USDC": 1000n,
@@ -230,196 +255,225 @@ describe('getIngressEgressEnvironment', () => {
     );
 
     expect(await getIngressEgressEnvironment({ network: 'perseverance' })).toMatchInlineSnapshot(`
-        {
-          "boostDelays": {
-            "Arbitrum": 0,
-            "Assethub": 0,
-            "Bitcoin": 0,
-            "Ethereum": 0,
-            "Solana": 0,
-            "Tron": 0,
+      {
+        "boostDelays": {
+          "Arbitrum": 0,
+          "Assethub": 0,
+          "Bitcoin": 0,
+          "Bsc": 0,
+          "Ethereum": 0,
+          "Solana": 0,
+          "Tron": 0,
+        },
+        "boostMinimumAddFundsAmounts": {
+          "Arbitrum": {
+            "ETH": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
           },
-          "boostMinimumAddFundsAmounts": {
-            "Arbitrum": {
-              "ETH": 0n,
-              "USDC": 0n,
-              "USDT": 0n,
-            },
-            "Assethub": {
-              "DOT": 0n,
-              "USDC": 0n,
-              "USDT": 0n,
-            },
-            "Bitcoin": {
-              "BTC": 100000n,
-            },
-            "Ethereum": {
-              "ETH": 0n,
-              "FLIP": 0n,
-              "USDC": 0n,
-              "USDT": 0n,
-              "WBTC": 0n,
-            },
-            "Solana": {
-              "SOL": 0n,
-              "USDC": 0n,
-              "USDT": 0n,
-            },
-            "Tron": {
-              "TRX": 0n,
-              "USDT": 0n,
-            },
+          "Assethub": {
+            "DOT": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
           },
-          "channelOpeningFees": {
-            "Arbitrum": 0n,
-            "Assethub": 0n,
-            "Bitcoin": 0n,
-            "Ethereum": 16n,
-            "Solana": 0n,
-            "Tron": 0n,
+          "Bitcoin": {
+            "BTC": 100000n,
           },
-          "egressFees": {
-            "Arbitrum": {
-              "ETH": 0n,
-              "USDC": 0n,
-              "USDT": 0n,
-            },
-            "Assethub": {
-              "DOT": 0n,
-              "USDC": 0n,
-              "USDT": 0n,
-            },
-            "Bitcoin": {
-              "BTC": 0n,
-            },
-            "Ethereum": {
-              "ETH": 0n,
-              "FLIP": 0n,
-              "USDC": 0n,
-              "USDT": 0n,
-              "WBTC": 0n,
-            },
-            "Solana": {
-              "SOL": 0n,
-              "USDC": 0n,
-              "USDT": 0n,
-            },
-            "Tron": {
-              "TRX": 0n,
-              "USDT": 0n,
-            },
+          "Bsc": {
+            "BNB": 0n,
+            "USDT": 0n,
           },
-          "ingressDelays": {
-            "Arbitrum": 0,
-            "Assethub": 0,
-            "Bitcoin": 0,
-            "Ethereum": 0,
-            "Solana": 10,
-            "Tron": 0,
+          "Ethereum": {
+            "CBBTC": 0n,
+            "ETH": 0n,
+            "FLIP": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+            "WBTC": 0n,
           },
-          "ingressFees": {
-            "Arbitrum": {
-              "ETH": 5000000000000000000n,
-              "USDC": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-            },
-            "Assethub": {
-              "DOT": 5000000000000000000n,
-              "USDC": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-            },
-            "Bitcoin": {
-              "BTC": 5000000000000000000n,
-            },
-            "Ethereum": {
-              "ETH": 5000000000000000000n,
-              "FLIP": 5000000000000000000n,
-              "USDC": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-              "WBTC": 5000000000000000000n,
-            },
-            "Solana": {
-              "SOL": 5000000000000000000n,
-              "USDC": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-            },
-            "Tron": {
-              "TRX": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-            },
+          "Solana": {
+            "SOL": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
           },
-          "minimumDepositAmounts": {
-            "Arbitrum": {
-              "ETH": 5000000000000000000n,
-              "USDC": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-            },
-            "Assethub": {
-              "DOT": 5000000000000000000n,
-              "USDC": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-            },
-            "Bitcoin": {
-              "BTC": 5000000000000000000n,
-            },
-            "Ethereum": {
-              "ETH": 5000000000000000000n,
-              "FLIP": 5000000000000000000n,
-              "USDC": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-              "WBTC": 5000000000000000000n,
-            },
-            "Solana": {
-              "SOL": 5000000000000000000n,
-              "USDC": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-            },
-            "Tron": {
-              "TRX": 5000000000000000000n,
-              "USDT": 5000000000000000000n,
-            },
+          "Tron": {
+            "TRX": 0n,
+            "USDT": 0n,
           },
-          "minimumEgressAmounts": {
-            "Arbitrum": {
-              "ETH": 1n,
-              "USDC": 1n,
-              "USDT": 1n,
-            },
-            "Assethub": {
-              "DOT": 1n,
-              "USDC": 1n,
-              "USDT": 1n,
-            },
-            "Bitcoin": {
-              "BTC": 600n,
-            },
-            "Ethereum": {
-              "ETH": 1n,
-              "FLIP": 1n,
-              "USDC": 1n,
-              "USDT": 1n,
-              "WBTC": 1n,
-            },
-            "Solana": {
-              "SOL": 1n,
-              "USDC": 1n,
-              "USDT": 1n,
-            },
-            "Tron": {
-              "TRX": 1n,
-              "USDT": 1n,
-            },
+        },
+        "channelOpeningFees": {
+          "Arbitrum": 0n,
+          "Assethub": 0n,
+          "Bitcoin": 0n,
+          "Bsc": 0n,
+          "Ethereum": 16n,
+          "Solana": 0n,
+          "Tron": 0n,
+        },
+        "egressFees": {
+          "Arbitrum": {
+            "ETH": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
           },
-          "witnessSafetyMargins": {
-            "Arbitrum": 1,
-            "Assethub": null,
-            "Bitcoin": 2,
-            "Ethereum": 1,
-            "Solana": 1,
-            "Tron": null,
+          "Assethub": {
+            "DOT": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
           },
-        }
-      `);
+          "Bitcoin": {
+            "BTC": 0n,
+          },
+          "Bsc": {
+            "BNB": 0n,
+            "USDT": 0n,
+          },
+          "Ethereum": {
+            "CBBTC": 0n,
+            "ETH": 0n,
+            "FLIP": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+            "WBTC": 0n,
+          },
+          "Solana": {
+            "SOL": 0n,
+            "USDC": 0n,
+            "USDT": 0n,
+          },
+          "Tron": {
+            "TRX": 0n,
+            "USDT": 0n,
+          },
+        },
+        "ingressDelays": {
+          "Arbitrum": 0,
+          "Assethub": 0,
+          "Bitcoin": 0,
+          "Bsc": 0,
+          "Ethereum": 0,
+          "Solana": 10,
+          "Tron": 0,
+        },
+        "ingressFees": {
+          "Arbitrum": {
+            "ETH": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Assethub": {
+            "DOT": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Bitcoin": {
+            "BTC": 5000000000000000000n,
+          },
+          "Bsc": {
+            "BNB": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Ethereum": {
+            "CBBTC": 5000000000000000000n,
+            "ETH": 5000000000000000000n,
+            "FLIP": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+            "WBTC": 5000000000000000000n,
+          },
+          "Solana": {
+            "SOL": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Tron": {
+            "TRX": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+        },
+        "minimumDepositAmounts": {
+          "Arbitrum": {
+            "ETH": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Assethub": {
+            "DOT": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Bitcoin": {
+            "BTC": 5000000000000000000n,
+          },
+          "Bsc": {
+            "BNB": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Ethereum": {
+            "CBBTC": 5000000000000000000n,
+            "ETH": 5000000000000000000n,
+            "FLIP": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+            "WBTC": 5000000000000000000n,
+          },
+          "Solana": {
+            "SOL": 5000000000000000000n,
+            "USDC": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+          "Tron": {
+            "TRX": 5000000000000000000n,
+            "USDT": 5000000000000000000n,
+          },
+        },
+        "minimumEgressAmounts": {
+          "Arbitrum": {
+            "ETH": 1n,
+            "USDC": 1n,
+            "USDT": 1n,
+          },
+          "Assethub": {
+            "DOT": 1n,
+            "USDC": 1n,
+            "USDT": 1n,
+          },
+          "Bitcoin": {
+            "BTC": 600n,
+          },
+          "Bsc": {
+            "BNB": 1n,
+            "USDT": 1n,
+          },
+          "Ethereum": {
+            "CBBTC": 1n,
+            "ETH": 1n,
+            "FLIP": 1n,
+            "USDC": 1n,
+            "USDT": 1n,
+            "WBTC": 1n,
+          },
+          "Solana": {
+            "SOL": 1n,
+            "USDC": 1n,
+            "USDT": 1n,
+          },
+          "Tron": {
+            "TRX": 1n,
+            "USDT": 1n,
+          },
+        },
+        "witnessSafetyMargins": {
+          "Arbitrum": 1,
+          "Assethub": null,
+          "Bitcoin": 2,
+          "Bsc": null,
+          "Ethereum": 1,
+          "Solana": 1,
+          "Tron": null,
+        },
+      }
+    `);
     spy.mock.calls[0][1][0].id = '1';
     expect(spy.mock.calls).toMatchSnapshot();
   });
@@ -467,6 +521,7 @@ describe('getAllSupplyPoolsDepth', () => {
           "liquidationFee": 5,
           "originationFee": 10,
           "totalAmount": 100000n,
+          "utilisationCap": 90000,
           "utilisationRate": 0,
         },
       ]

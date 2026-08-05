@@ -1,5 +1,5 @@
-import { swappingSwapRequested as schema210 } from '@chainflip/processor/210/swapping/swapRequested';
 import { swappingSwapRequested as schema220 } from '@chainflip/processor/220/swapping/swapRequested';
+import { swappingSwapRequested as schema230 } from '@chainflip/processor/230/swapping/swapRequested';
 import * as base58 from '@chainflip/utils/base58';
 import {
   assetConstants,
@@ -18,7 +18,7 @@ import { Prisma } from '../../client.js';
 import { formatForeignChainAddress } from '../common.js';
 import type { EventHandlerArgs } from '../index.js';
 
-const schema = z.union([schema220.strict(), schema210.strict()]);
+const schema = z.union([schema230.strict(), schema220.strict()]);
 
 type RequestType = z.output<typeof schema>['requestType'];
 type Origin = z.output<typeof schema>['origin'];

@@ -1,16 +1,16 @@
-import { assethubIngressEgressDepositBoosted as assethubSchema11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositBoosted';
-import { bitcoinIngressEgressDepositBoosted as bitcoinSchema11200 } from '@chainflip/processor/11200/bitcoinIngressEgress/depositBoosted';
-import { arbitrumIngressEgressDepositBoosted as arbitrumSchema210 } from '@chainflip/processor/210/arbitrumIngressEgress/depositBoosted';
-import { ethereumIngressEgressDepositBoosted as ethereumSchema210 } from '@chainflip/processor/210/ethereumIngressEgress/depositBoosted';
-import {
-  solanaIngressEgressDepositBoosted as solanaSchema210,
-  solanaIngressEgressDepositBoosted as solanaSchema220,
-} from '@chainflip/processor/210/solanaIngressEgress/depositBoosted';
 import { arbitrumIngressEgressDepositBoosted as arbitrumSchema220 } from '@chainflip/processor/220/arbitrumIngressEgress/depositBoosted';
 import { assethubIngressEgressDepositBoosted as assethubSchema220 } from '@chainflip/processor/220/assethubIngressEgress/depositBoosted';
 import { bitcoinIngressEgressDepositBoosted as bitcoinSchema220 } from '@chainflip/processor/220/bitcoinIngressEgress/depositBoosted';
 import { ethereumIngressEgressDepositBoosted as ethereumSchema220 } from '@chainflip/processor/220/ethereumIngressEgress/depositBoosted';
+import { solanaIngressEgressDepositBoosted as solanaSchema220 } from '@chainflip/processor/220/solanaIngressEgress/depositBoosted';
 import { tronIngressEgressDepositBoosted as tronSchema220 } from '@chainflip/processor/220/tronIngressEgress/depositBoosted';
+import { arbitrumIngressEgressDepositBoosted as arbitrumSchema230 } from '@chainflip/processor/230/arbitrumIngressEgress/depositBoosted';
+import { assethubIngressEgressDepositBoosted as assethubSchema230 } from '@chainflip/processor/230/assethubIngressEgress/depositBoosted';
+import { bitcoinIngressEgressDepositBoosted as bitcoinSchema230 } from '@chainflip/processor/230/bitcoinIngressEgress/depositBoosted';
+import { bscIngressEgressDepositBoosted as bscSchema230 } from '@chainflip/processor/230/bscIngressEgress/depositBoosted';
+import { ethereumIngressEgressDepositBoosted as ethereumSchema230 } from '@chainflip/processor/230/ethereumIngressEgress/depositBoosted';
+import { solanaIngressEgressDepositBoosted as solanaSchema230 } from '@chainflip/processor/230/solanaIngressEgress/depositBoosted';
+import { tronIngressEgressDepositBoosted as tronSchema230 } from '@chainflip/processor/230/tronIngressEgress/depositBoosted';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
@@ -20,38 +20,42 @@ import { getDepositTxRef } from '../common.js';
 import { EventHandlerArgs } from '../index.js';
 
 const arbitrumSchema = z
-  .union([arbitrumSchema220.strict(), arbitrumSchema210.strict()])
+  .union([arbitrumSchema230.strict(), arbitrumSchema220.strict()])
   .transform((args) => ({
     ...args,
     depositDetails: { chain: 'Arbitrum' as const, data: args.depositDetails },
   }));
 const bitcoinSchema = z
-  .union([bitcoinSchema220.strict(), bitcoinSchema11200.strict()])
+  .union([bitcoinSchema230.strict(), bitcoinSchema220.strict()])
   .transform((args) => ({
     ...args,
     depositDetails: { chain: 'Bitcoin' as const, data: args.depositDetails },
   }));
 const ethereumSchema = z
-  .union([ethereumSchema220.strict(), ethereumSchema210.strict()])
+  .union([ethereumSchema230.strict(), ethereumSchema220.strict()])
   .transform((args) => ({
     ...args,
     depositDetails: { chain: 'Ethereum' as const, data: args.depositDetails },
   }));
 const solanaSchema = z
-  .union([solanaSchema220.strict(), solanaSchema210.strict()])
+  .union([solanaSchema230.strict(), solanaSchema220.strict()])
   .transform((args) => ({
     ...args,
     depositDetails: { chain: 'Solana' as const, data: args.depositDetails },
   }));
 const assethubSchema = z
-  .union([assethubSchema220.strict(), assethubSchema11200.strict()])
+  .union([assethubSchema230.strict(), assethubSchema220.strict()])
   .transform((args) => ({
     ...args,
     depositDetails: { chain: 'Assethub' as const, data: args.depositDetails },
   }));
-const tronSchema = tronSchema220.transform((args) => ({
+const tronSchema = z.union([tronSchema230.strict(), tronSchema220.strict()]).transform((args) => ({
   ...args,
   depositDetails: { chain: 'Tron' as const, data: args.depositDetails },
+}));
+const bscSchema = bscSchema230.strict().transform((args) => ({
+  ...args,
+  depositDetails: { chain: 'Bsc' as const, data: args.depositDetails },
 }));
 
 const schemas = {
@@ -61,6 +65,7 @@ const schemas = {
   Solana: solanaSchema,
   Assethub: assethubSchema,
   Tron: tronSchema,
+  Bsc: bscSchema,
 } as const satisfies Record<ChainflipChain, z.ZodTypeAny>;
 
 export type DepositBoostedArgsMap = {

@@ -3720,6 +3720,7 @@ describe(SwapSDK, () => {
           "Arbitrum": 0n,
           "Assethub": 0n,
           "Bitcoin": 0n,
+          "Bsc": 0n,
           "Ethereum": 16n,
           "Solana": 0n,
           "Tron": 0n,

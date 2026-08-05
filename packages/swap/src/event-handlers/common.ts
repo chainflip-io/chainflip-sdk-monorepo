@@ -4,8 +4,9 @@ import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/1120
 import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/11200/ethereumIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/11200/solanaIngressEgress/depositFinalised';
-import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/220/common';
 import { tronIngressEgressDepositFinalised } from '@chainflip/processor/220/tronIngressEgress/depositFinalised';
+import { bscIngressEgressDepositFinalised } from '@chainflip/processor/230/bscIngressEgress/depositFinalised';
+import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/230/common';
 import * as base58 from '@chainflip/utils/base58';
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { POLKADOT_SS58_PREFIX } from '@chainflip/utils/consts';
@@ -93,6 +94,7 @@ export type DepositDetailsData = {
       Solana: z.output<typeof solanaIngressEgressDepositFinalised> | { depositDetails: undefined };
       Assethub: z.output<typeof assethubIngressEgressDepositFinalised>;
       Tron: z.output<typeof tronIngressEgressDepositFinalised>;
+      Bsc: z.output<typeof bscIngressEgressDepositFinalised>;
     }[C]['depositDetails'];
   };
 }[ChainflipChain];
@@ -108,7 +110,8 @@ export const getDepositTxRef = (
   switch (depositDetails.chain) {
     case 'Arbitrum':
     case 'Ethereum':
-    case 'Tron': {
+    case 'Tron':
+    case 'Bsc': {
       const hash = depositDetails.data?.txHashes?.at(0);
       if (!hash) return undefined;
       return formatTxRef({ chain: depositDetails.chain, data: hash });
@@ -134,6 +137,7 @@ export const formatForeignChainAddress = (address: ForeignChainAddress): string 
   switch (address.__kind) {
     case 'Eth':
     case 'Arb':
+    case 'Bsc':
       return address.value;
     case 'Sol':
       return base58.encode(address.value);
