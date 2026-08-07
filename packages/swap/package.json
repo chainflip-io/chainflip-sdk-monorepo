@@ -63,7 +63,7 @@
     "@chainflip/bitcoin": "2.3.0-dev.1",
     "@chainflip/processor": "2.3.0-dev.4",
     "@chainflip/rpc": "2.3.0-dev.5",
-    "@chainflip/utils": "2.3.0-dev.4",
+    "@chainflip/utils": "2.3.0-dev.5",
     "@chainflip/redis": "2.3.0-dev.1",
     "@chainflip/solana": "2.3.0-dev.1",
     "@polkadot/api": "^15.10.2",

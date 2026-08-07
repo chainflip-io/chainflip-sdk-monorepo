@@ -130,8 +130,8 @@ importers:
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
-        specifier: 2.3.0-dev.4
-        version: 2.3.0-dev.4
+        specifier: 2.3.0-dev.5
+        version: 2.3.0-dev.5
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@26.0.0)(zod@3.25.76)
@@ -164,8 +164,8 @@ importers:
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.3.0-dev.4
-        version: 2.3.0-dev.4
+        specifier: 2.3.0-dev.5
+        version: 2.3.0-dev.5
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@26.0.0)(zod@3.25.76)
@@ -228,8 +228,8 @@ importers:
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.3.0-dev.4
-        version: 2.3.0-dev.4
+        specifier: 2.3.0-dev.5
+        version: 2.3.0-dev.5
       '@polkadot/api':
         specifier: ^15.10.2
         version: 15.10.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -499,6 +499,9 @@ packages:
 
   '@chainflip/utils@2.3.0-dev.4':
     resolution: {integrity: sha512-CFm4D9VXqBPDTkGKijC3ksIKtE5HubK7QM0ZYSdzyqENn5ITNcnDpZu0NnL2D73e+8UeqMNZEZae59EXn8qEng==}
+
+  '@chainflip/utils@2.3.0-dev.5':
+    resolution: {integrity: sha512-QqYcVregcdaguMZluOSImBftLzdcnGiaDskKEJ0Dm9k5tWDZ/mFvksf/WtRi2le/rzZll1J9dpVupt+jYQ2Uaw==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -6844,6 +6847,13 @@ snapshots:
       - utf-8-validate
 
   '@chainflip/utils@2.3.0-dev.4':
+    dependencies:
+      '@date-fns/utc': 2.1.1
+      '@noble/hashes': 2.2.0
+      bignumber.js: 11.1.5
+      date-fns: 4.4.0
+
+  '@chainflip/utils@2.3.0-dev.5':
     dependencies:
       '@date-fns/utc': 2.1.1
       '@noble/hashes': 2.2.0
