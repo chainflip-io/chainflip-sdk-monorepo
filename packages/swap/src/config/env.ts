@@ -25,6 +25,11 @@ const urlWithProtocol = <T extends string>(protocol: T) =>
 const httpUrl = urlWithProtocol('http');
 const wsUrl = urlWithProtocol('ws');
 const redisUrl = urlWithProtocol('redis');
+const postgresUrl = envVar
+  .url()
+  .refine((url): url is `postgres://${string}` | `postgresql://${string}` =>
+    /^postgres(ql)?:\/\//.test(url),
+  );
 
 const optionalBoolean = envVar.optional().transform((value) => value?.toUpperCase() === 'TRUE');
 
@@ -102,7 +107,7 @@ export default z
     CHAINFLIP_NETWORK: chainflipNetwork,
     QUOTE_TIMEOUT: optionalNumber(1000),
     NODE_ENV: nodeEnv.default('production'),
-    INGEST_GATEWAY_URL: httpUrl,
+    INDEXER_DATABASE_URL: postgresUrl,
     PROCESSOR_BATCH_SIZE: optionalNumber(50),
     PROCESSOR_TRANSACTION_TIMEOUT: optionalNumber(10_000),
     REDIS_URL: redisUrl.optional(),

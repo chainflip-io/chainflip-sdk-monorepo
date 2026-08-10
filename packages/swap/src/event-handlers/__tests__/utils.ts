@@ -8,11 +8,10 @@ import {
 } from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import assert from 'assert';
-import { GraphQLClient } from 'graphql-request';
 import { vi, expect } from 'vitest';
 import prisma, { SwapDepositChannel } from '../../client.js';
-import { GET_CALL } from '../../gql/query.js';
-import processBlocks, { Call, Event } from '../../processBlocks.js';
+import { type Event, IndexerClient } from '../../indexer.js';
+import processBlocks from '../../processBlocks.js';
 import { BroadcastSuccessArgsMap } from '../broadcaster/broadcastSuccess.js';
 import { TransactionBroadcastRequestArgsMap } from '../broadcaster/transactionBroadcastRequest.js';
 import { events as eventNames } from '../index.js';
@@ -58,7 +57,7 @@ export const networkDepositReceivedBtcMock = {
   block: {
     specId: 'test@160',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
   },
   event: {
     args: {
@@ -80,7 +79,7 @@ export const swapDepositAddressReadyMocked = {
   block: {
     specId: 'test@160',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
   event: {
@@ -124,7 +123,7 @@ export const swapDepositAddressReadyCcmParamsMocked = {
   block: {
     specId: 'test@180',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
     hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
   },
   event: {
@@ -172,7 +171,7 @@ export const swapRequestCompletedMock = {
   block: {
     specId: 'test@200',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
     hash: '0x123',
   },
   event: {
@@ -214,7 +213,7 @@ export const swapRequestCompletedMock = {
 export const transactionBroadcastRequestBtcMock = {
   block: {
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
   },
   eventContext: {
     kind: 'event',
@@ -237,7 +236,7 @@ export const transactionBroadcastRequestBtcMock = {
 export const transactionBroadcastRequestBtcMockV2 = {
   block: {
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
   },
   eventContext: {
     kind: 'event',
@@ -261,7 +260,7 @@ export const swapEgressScheduledMock = {
   block: {
     specId: 'test@160',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
     hash: '0x123',
   },
   event: {
@@ -305,7 +304,7 @@ export const refundEgressScheduledMock = {
   block: {
     specId: 'test@11000',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
     hash: '0x123',
   },
   event: {
@@ -350,7 +349,7 @@ export const swapEgressIgnoredMock = {
   block: {
     specId: 'test@160',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
     hash: '0x123',
   },
   event: {
@@ -382,7 +381,7 @@ export const refundEgressIgnoredMock = {
   block: {
     specId: 'test@160',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
     hash: '0x123',
   },
   event: {
@@ -414,7 +413,7 @@ export const batchBroadcastRequestedMock = {
   block: {
     specId: 'test@160',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
   },
   event: {
     args: check<BatchBroadcastRequestedArgsMap['Ethereum']>({
@@ -453,7 +452,7 @@ export const broadcastSuccessMock = <C extends ChainflipChain>(
     block: {
       specId: 'test@160',
       height: 120,
-      timestamp: 1670337105000,
+      timestamp: '2022-12-06T14:31:45.000Z',
     },
     event: {
       args: {
@@ -469,7 +468,7 @@ export const broadcastAbortedMock = {
   block: {
     specId: 'test@160',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
   },
   event: {
     args: { broadcastId: 62 },
@@ -482,7 +481,7 @@ export const newPoolCreatedMock = {
   block: {
     specId: 'test@160',
     height: 120,
-    timestamp: 1670337105000,
+    timestamp: '2022-12-06T14:31:45.000Z',
   },
   event: {
     args: check<NewPoolCreatedArgs>({
@@ -527,7 +526,12 @@ export const buildDepositFailedEvent = <T extends DepositFailedArgs>(args: T) =>
   const { chain } = assetConstants[asset];
 
   return {
-    block: { specId: 'test@11000', timestamp: 1670337093000, height: 100, hash: '0x123' },
+    block: {
+      specId: 'test@11000',
+      timestamp: '2022-12-06T14:31:33.000Z',
+      height: 100,
+      hash: '0x123',
+    },
     event: { args, indexInBlock: 0, name: `${chain}IngressEgress.DepositFailed` },
   };
 };
@@ -564,7 +568,6 @@ type RegularAndReadonlyArray<T> = T[] | readonly T[];
 
 export const processEvents = async (
   events: RegularAndReadonlyArray<Event & { id: string }>,
-  calls: (Call & { id: string })[] = [],
   version = '11000',
 ) => {
   const eventMap = events
@@ -587,13 +590,15 @@ export const processEvents = async (
 
   let previousHeight = startingHeight + 1;
 
-  vi.spyOn(GraphQLClient.prototype, 'request').mockImplementation(async (...args) => {
-    if (JSON.stringify(args[0]) === JSON.stringify(GET_CALL)) {
-      const [, vars] = args as unknown as [unknown, Record<string, unknown> | undefined];
+  const buildBlock = (height: number, blockEvents: Event[]) => ({
+    height,
+    hash: `0x${height.toString(16).padStart(64, '0')}`,
+    specId: `test@${version}`,
+    timestamp: new Date(height * 6000).toISOString(),
+    events: blockEvents,
+  });
 
-      return { call: { args: calls.find((c) => c.id === vars?.id) } };
-    }
-
+  vi.spyOn(IndexerClient.prototype, 'getBlocks').mockImplementation(async () => {
     const batch = blocksIt.next();
     if (batch.done) throw new Error('done');
     const [height, blockEvents] = batch.value;
@@ -601,24 +606,12 @@ export const processEvents = async (
     const dummyBlockLength = height - previousHeight - 1;
     previousHeight = height;
 
-    return {
-      blocks: {
-        nodes: [
-          ...Array.from({ length: dummyBlockLength }, (_, i) => ({
-            height: height - dummyBlockLength + i,
-            specId: `test@${version}`,
-            timestamp: new Date(height * 6000).toISOString(),
-            events: { nodes: [] },
-          })),
-          {
-            height,
-            specId: `test@${version}`,
-            timestamp: new Date(height * 6000).toISOString(),
-            events: { nodes: blockEvents },
-          },
-        ],
-      },
-    };
+    return [
+      ...Array.from({ length: dummyBlockLength }, (_, i) =>
+        buildBlock(height - dummyBlockLength + i, []),
+      ),
+      buildBlock(height, blockEvents),
+    ];
   });
 
   await expect(processBlocks()).rejects.toThrow('done');

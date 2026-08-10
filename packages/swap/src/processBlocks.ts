@@ -1,34 +1,22 @@
 import assert from 'assert';
-import { GraphQLClient } from 'graphql-request';
 import { performance } from 'perf_hooks';
 import { setTimeout as sleep } from 'timers/promises';
 import prisma from './client.js';
 import env from './config/env.js';
 import { handlerMap, swapEventNames } from './event-handlers/index.js';
-import { GetBatchQuery, GetCallQuery } from './gql/generated/graphql.js';
-import { GET_BATCH } from './gql/query.js';
+import indexerClient, { type Block } from './indexer.js';
 import { handleExit } from './utils/function.js';
 import logger, { inspectError } from './utils/logger.js';
-
-const client = new GraphQLClient(env.INGEST_GATEWAY_URL);
-
-export type Block = NonNullable<GetBatchQuery['blocks']>['nodes'][number];
-export type Event = Block['events']['nodes'][number];
-export type Call = NonNullable<GetCallQuery['call']>['args'];
 
 const fetchBlocks = async (height: number): Promise<Block[]> => {
   const start = performance.now();
   for (let i = 0; i < 5; i += 1) {
     try {
-      const batch = await client.request(GET_BATCH, {
+      const blocks = await indexerClient.getBlocks(
         height,
-        limit: env.PROCESSOR_BATCH_SIZE,
-        swapEvents: swapEventNames,
-      });
-
-      const blocks = batch.blocks?.nodes;
-
-      assert(blocks !== undefined, 'blocks is undefined');
+        env.PROCESSOR_BATCH_SIZE,
+        swapEventNames,
+      );
 
       logger.info('blocks fetched', {
         height,
@@ -100,7 +88,7 @@ export default async function processBlocks() {
 
       await prisma.$transaction(
         async (txClient) => {
-          for (const event of block.events.nodes) {
+          for (const event of block.events) {
             const eventHandler = handlerMap.getHandler(event.name, block.specId);
             if (!eventHandler) {
               throw new Error(`unexpected event: "${event.name}" for specId: "${block.specId}"`);

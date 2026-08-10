@@ -15,8 +15,7 @@
 //
 // Groups map to compose profiles; individual services are named explicitly on the
 // `up` command (compose starts a profiled service when named, even if its profile is
-// inactive). Infra (postgres, redis, ingest, indexer-gateway) has no profile and
-// always comes up.
+// inactive). Infra (postgres, redis, ingest) has no profile and always comes up.
 import { spawn } from 'child_process';
 import * as path from 'path';
 import * as url from 'url';

@@ -179,7 +179,7 @@ describe('account creation swap', () => {
   const channelId = '86-Solana-85';
 
   it('gets deposit channel info', async () => {
-    await processEvents(events.slice(0, 1), [], '200');
+    await processEvents(events.slice(0, 1), '200');
 
     const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
@@ -219,7 +219,7 @@ describe('account creation swap', () => {
   });
 
   it('gets in progress swap info', async () => {
-    await processEvents(events.slice(0, 4), [], '200');
+    await processEvents(events.slice(0, 4), '200');
 
     const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
@@ -297,7 +297,7 @@ describe('account creation swap', () => {
   });
 
   it('gets completed swap info', async () => {
-    await processEvents(events, [], '200');
+    await processEvents(events, '200');
 
     const { body, status } = await request(server).get(`/v2/swaps/${channelId}`);
 
@@ -362,7 +362,7 @@ describe('account creation swap', () => {
   });
 
   it('gets the swap info by swap request id', async () => {
-    await processEvents(events, [], '200');
+    await processEvents(events, '200');
 
     const { body, status } = await request(server).get(`/v2/swaps/368`);
 

@@ -18,7 +18,7 @@ export const insufficientBoostLiquidityMock = ({
   ({
     block: {
       height: 120,
-      timestamp: 1670337105000,
+      timestamp: '2022-12-06T14:31:45.000Z',
     },
     event: {
       args: check<InsufficientBoostLiquidityArgsMap[typeof chain]>({

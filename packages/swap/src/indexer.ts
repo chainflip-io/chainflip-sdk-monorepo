@@ -1,0 +1,60 @@
+import pg from 'pg';
+import env from './config/env.js';
+
+export type Event = {
+  name: string;
+  indexInBlock: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  args: any;
+};
+
+export type Block = {
+  height: number;
+  hash: string;
+  timestamp: string;
+  specId: string;
+  events: Event[];
+};
+
+// `timestamp` is rendered as an ISO string rather than returned as a `timestamptz`
+// so the value does not pass through the process's local time zone.
+const GET_BLOCKS = `
+  SELECT
+    b.height,
+    b.hash,
+    to_char(b."timestamp" AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS "timestamp",
+    b.spec_id AS "specId",
+    COALESCE(e.events, '[]'::json) AS events
+  FROM (
+    SELECT id, height, hash, "timestamp", spec_id
+    FROM block
+    WHERE height >= $1
+    ORDER BY height ASC
+    LIMIT $2
+  ) b
+  LEFT JOIN LATERAL (
+    SELECT json_agg(
+      json_build_object('name', ev.name, 'args', ev.args, 'indexInBlock', ev.index_in_block)
+      ORDER BY ev.index_in_block ASC
+    ) AS events
+    FROM event ev
+    WHERE ev.block_id = b.id AND ev.name = ANY($3::text[])
+  ) e ON TRUE
+  ORDER BY b.height ASC
+`;
+
+export class IndexerClient {
+  private readonly pool: pg.Pool;
+
+  constructor(connectionString: string) {
+    this.pool = new pg.Pool({ connectionString });
+  }
+
+  async getBlocks(height: number, limit: number, eventNames: string[]): Promise<Block[]> {
+    const { rows } = await this.pool.query<Block>(GET_BLOCKS, [height, limit, eventNames]);
+
+    return rows;
+  }
+}
+
+export default new IndexerClient(env.INDEXER_DATABASE_URL);

@@ -12,7 +12,7 @@ describe(lendingPoolsBoostPoolCreated, () => {
         prisma: txClient,
         block: {
           height: 120,
-          timestamp: 1670337105000,
+          timestamp: '2022-12-06T14:31:45.000Z',
         } as any,
         event: {
           args: {

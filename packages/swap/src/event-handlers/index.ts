@@ -2,6 +2,7 @@ import { HandlerMap } from '@chainflip/processor';
 import type { Semver } from '@chainflip/processor/types';
 import { ChainflipChain, chainflipChains } from '@chainflip/utils/chainflip';
 import type { Prisma } from '@prisma/swapping';
+import type { Block, Event } from '../indexer.js';
 import broadcastAborted from './broadcaster/broadcastAborted.js';
 import broadcastSuccess from './broadcaster/broadcastSuccess.js';
 import transactionBroadcastRequest from './broadcaster/transactionBroadcastRequest.js';
@@ -32,13 +33,6 @@ import swapRequested from './swapping/swapRequested.js';
 import swapRescheduled from './swapping/swapRescheduled.js';
 import swapScheduled from './swapping/swapScheduled.js';
 import chainStateUpdated from './tracking/chainStateUpdated.js';
-import type { GetBatchQuery } from '../gql/generated/graphql.js';
-
-// client-preset v6 no longer emits raw schema types (`Block`, `Event`); derive
-// them from the GetBatch operation type instead.
-// use `plugins: ['typescript']` in case we need full schema types again
-type Block = NonNullable<GetBatchQuery['blocks']>['nodes'][number];
-type Event = Block['events']['nodes'][number];
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
 type GenericPalletEventMap<Pallet extends string, Event extends string> = {
