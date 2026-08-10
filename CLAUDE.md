@@ -45,13 +45,13 @@ packages/
 ├── swap/       # Private backend service (Express + Prisma + WebSocket)
 ├── shared/     # @chainflip-io/shared - Shared types, schemas, utilities
 ├── examples/   # Usage examples
-└── indexer/    # GraphQL gateway (postgraphile)
+└── indexer/    # docker-compose for the squid archive (postgres + substrate-ingest)
 ```
 
 ### Package Relationships
 
 - **SDK** imports from `@/shared/*` and communicates with the **swap** backend via REST API
-- **Swap service** imports from `@/shared/*`, queries blockchain data from Ingest Gateway (GraphQL), and uses Prisma for PostgreSQL
+- **Swap service** imports from `@/shared/*`, queries blockchain data directly from the squid archive database (`INDEXER_DATABASE_URL`), and uses Prisma for PostgreSQL
 - **Shared** contains Zod schemas, validation, chain-specific utilities, and contract ABIs - cannot import from other packages
 
 ### Key Path Aliases

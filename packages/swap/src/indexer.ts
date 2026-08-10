@@ -1,5 +1,7 @@
 import pg from 'pg';
 import env from './config/env.js';
+import { handleExit } from './utils/function.js';
+import logger, { inspectError } from './utils/logger.js';
 
 export type Event = {
   name: string;
@@ -48,6 +50,9 @@ export class IndexerClient {
 
   constructor(connectionString: string) {
     this.pool = new pg.Pool({ connectionString });
+    this.pool.on('error', (error) => {
+      logger.error('indexer pool error', { error: inspectError(error) });
+    });
   }
 
   async getBlocks(height: number, limit: number, eventNames: string[]): Promise<Block[]> {
@@ -55,6 +60,14 @@ export class IndexerClient {
 
     return rows;
   }
+
+  end() {
+    return this.pool.end();
+  }
 }
 
-export default new IndexerClient(env.INDEXER_DATABASE_URL);
+const indexerClient = new IndexerClient(env.INDEXER_DATABASE_URL);
+
+handleExit(() => indexerClient.end());
+
+export default indexerClient;

@@ -1,6 +1,6 @@
 # Shared dev image for the SDK localnet stack.
 #
-# Both the swap service and the indexer-gateway run from this single image;
+# The swap service and the one-shot migrate job run from this single image;
 # docker-compose supplies a per-service `command`. There is no compile step — the
 # swap service runs via `tsx watch` (its `dev:localnet` script), matching
 # scripts/start-localnet.mts.
