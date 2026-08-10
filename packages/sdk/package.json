@@ -1,6 +1,6 @@
 {
   "name": "@chainflip/sdk",
-  "version": "2.2.1",
+  "version": "2.3.0-dev.1",
   "description": "",
   "exports": {
     "./swap": {
@@ -69,7 +69,7 @@
     "@chainflip/bitcoin": "2.3.0-dev.1",
     "@chainflip/rpc": "2.3.0-dev.5",
     "@chainflip/solana": "2.3.0-dev.1",
-    "@chainflip/utils": "2.3.0-dev.4",
+    "@chainflip/utils": "2.3.0-dev.5",
     "@ts-rest/core": "^3.52.1",
     "axios": "^1.15.0",
     "bignumber.js": "^9.3.0",
