@@ -18,9 +18,16 @@ export type Block = {
   events: Event[];
 };
 
-// `timestamp` is rendered as an ISO string rather than returned as a `timestamptz`
-// so the value does not pass through the process's local time zone.
-const GET_BLOCKS = `
+type ArchiveState = {
+  lastArchivedBlock: number | null;
+  hasArchiveTable: boolean;
+};
+
+const GET_WATERMARK = `SELECT last_archived_block FROM archive_progress WHERE id = 1`;
+const NO_ARCHIVE_TABLE = new Set(['42P01', '42501']); // 42P01: table does not exist, 42501: permission denied
+
+// TODO(indexer-migration): remove legacy after indexer migration
+const getBlocksQuery = (schema: 'partitioned' | 'legacy') => `
   SELECT
     b.height,
     b.hash,
@@ -40,7 +47,9 @@ const GET_BLOCKS = `
       ORDER BY ev.index_in_block ASC
     ) AS events
     FROM event ev
-    WHERE ev.block_id = b.id AND ev.name = ANY($3::text[])
+    WHERE ev.block_id = b.id
+      ${schema === 'partitioned' ? 'AND ev.block_height = b.height' : ''}
+      AND ev.name = ANY($3::text[])
   ) e ON TRUE
   ORDER BY b.height ASC
 `;
@@ -48,7 +57,11 @@ const GET_BLOCKS = `
 export class IndexerClient {
   private readonly pool: pg.Pool;
 
-  constructor(connectionString: string, timeout: number) {
+  constructor(
+    connectionString: string,
+    timeout: number,
+    private readonly watermarkCacheTtl = 60_000,
+  ) {
     this.pool = new pg.Pool({
       connectionString,
       connectionTimeoutMillis: timeout,
@@ -60,9 +73,40 @@ export class IndexerClient {
     });
   }
 
-  async getBlocks(height: number, limit: number, eventNames: string[]): Promise<Block[]> {
+  private cachedState: (ArchiveState & { readAt: number }) | undefined;
+
+  private async getArchiveState(): Promise<ArchiveState> {
+    const cached = this.cachedState;
+    if (cached && Date.now() - cached.readAt < this.watermarkCacheTtl) return cached;
+
+    let state: ArchiveState;
     try {
-      const { rows } = await this.pool.query<Block>(GET_BLOCKS, [height, limit, eventNames]);
+      const { rows } = await this.pool.query<{ last_archived_block: string | null }>(GET_WATERMARK);
+      const raw = rows[0]?.last_archived_block ?? null;
+      state = { lastArchivedBlock: raw === null ? null : Number(raw), hasArchiveTable: true };
+    } catch (error) {
+      if (!NO_ARCHIVE_TABLE.has((error as { code?: string }).code ?? '')) throw error;
+      state = { lastArchivedBlock: null, hasArchiveTable: false };
+    }
+
+    this.cachedState = { ...state, readAt: Date.now() };
+    return state;
+  }
+
+  async getBlocks(height: number, limit: number, eventNames: string[]): Promise<Block[]> {
+    const { lastArchivedBlock, hasArchiveTable } = await this.getArchiveState();
+    if (lastArchivedBlock !== null && height <= lastArchivedBlock) {
+      throw new Error(
+        `block ${height} is at or below the archive watermark ${lastArchivedBlock}: it exists ` +
+          `only in the S3 Iceberg archive, not the hot indexer database`,
+      );
+    }
+
+    try {
+      const { rows } = await this.pool.query<Block>(
+        hasArchiveTable ? getBlocksQuery('partitioned') : getBlocksQuery('legacy'),
+        [height, limit, eventNames],
+      );
       return rows;
     } catch (error) {
       logger.error('failed to fetch blocks', {
