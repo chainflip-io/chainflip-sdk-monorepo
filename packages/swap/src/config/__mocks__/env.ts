@@ -11,6 +11,7 @@ export default {
   NODE_ENV: 'test',
   CHAINALYSIS_API_KEY: undefined,
   INDEXER_DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/squid_archive',
+  INDEXER_QUERY_TIMEOUT: 10_000,
   PROCESSOR_BATCH_SIZE: 50,
   PROCESSOR_TRANSACTION_TIMEOUT: 10_000,
   REDIS_URL: 'redis://localhost:6379',

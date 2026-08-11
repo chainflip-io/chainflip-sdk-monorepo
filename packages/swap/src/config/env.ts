@@ -108,6 +108,7 @@ export default z
     QUOTE_TIMEOUT: optionalNumber(1000),
     NODE_ENV: nodeEnv.default('production'),
     INDEXER_DATABASE_URL: postgresUrl,
+    INDEXER_QUERY_TIMEOUT: optionalNumber(10_000),
     PROCESSOR_BATCH_SIZE: optionalNumber(50),
     PROCESSOR_TRANSACTION_TIMEOUT: optionalNumber(10_000),
     REDIS_URL: redisUrl.optional(),

@@ -48,8 +48,13 @@ const GET_BLOCKS = `
 export class IndexerClient {
   private readonly pool: pg.Pool;
 
-  constructor(connectionString: string) {
-    this.pool = new pg.Pool({ connectionString });
+  constructor(connectionString: string, timeout: number) {
+    this.pool = new pg.Pool({
+      connectionString,
+      connectionTimeoutMillis: timeout,
+      statement_timeout: timeout,
+      query_timeout: timeout * 2,
+    });
     this.pool.on('error', (error) => {
       logger.error('indexer pool error', { error: inspectError(error) });
     });
@@ -66,7 +71,7 @@ export class IndexerClient {
   }
 }
 
-const indexerClient = new IndexerClient(env.INDEXER_DATABASE_URL);
+const indexerClient = new IndexerClient(env.INDEXER_DATABASE_URL, env.INDEXER_QUERY_TIMEOUT);
 
 handleExit(() => indexerClient.end());
 
