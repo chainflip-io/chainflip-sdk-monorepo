@@ -153,7 +153,7 @@ exports[`networkStatus > checks the chain's safe mode (deposit_channel_creation_
       "depositChannelCreationEnabled": false,
       "depositChannelDepositsEnabled": false,
       "egressEnabled": false,
-      "livePriceProtectionEnabled": false,
+      "livePriceProtectionEnabled": true,
       "vaultSwapDepositsEnabled": false,
     },
     {
@@ -162,7 +162,7 @@ exports[`networkStatus > checks the chain's safe mode (deposit_channel_creation_
       "depositChannelCreationEnabled": false,
       "depositChannelDepositsEnabled": false,
       "egressEnabled": false,
-      "livePriceProtectionEnabled": false,
+      "livePriceProtectionEnabled": true,
       "vaultSwapDepositsEnabled": false,
     },
     {
@@ -341,7 +341,7 @@ exports[`networkStatus > checks the chain's safe mode (deposit_channel_witnessin
       "depositChannelCreationEnabled": false,
       "depositChannelDepositsEnabled": false,
       "egressEnabled": false,
-      "livePriceProtectionEnabled": false,
+      "livePriceProtectionEnabled": true,
       "vaultSwapDepositsEnabled": false,
     },
     {
@@ -350,7 +350,7 @@ exports[`networkStatus > checks the chain's safe mode (deposit_channel_witnessin
       "depositChannelCreationEnabled": false,
       "depositChannelDepositsEnabled": false,
       "egressEnabled": false,
-      "livePriceProtectionEnabled": false,
+      "livePriceProtectionEnabled": true,
       "vaultSwapDepositsEnabled": false,
     },
     {
@@ -529,7 +529,7 @@ exports[`networkStatus > checks the chain's safe mode (vault_deposit_witnessing_
       "depositChannelCreationEnabled": false,
       "depositChannelDepositsEnabled": false,
       "egressEnabled": false,
-      "livePriceProtectionEnabled": false,
+      "livePriceProtectionEnabled": true,
       "vaultSwapDepositsEnabled": false,
     },
     {
@@ -538,7 +538,7 @@ exports[`networkStatus > checks the chain's safe mode (vault_deposit_witnessing_
       "depositChannelCreationEnabled": false,
       "depositChannelDepositsEnabled": false,
       "egressEnabled": false,
-      "livePriceProtectionEnabled": false,
+      "livePriceProtectionEnabled": true,
       "vaultSwapDepositsEnabled": false,
     },
     {
@@ -717,7 +717,7 @@ exports[`networkStatus > returns everything when possible (default) 1`] = `
       "depositChannelCreationEnabled": true,
       "depositChannelDepositsEnabled": true,
       "egressEnabled": true,
-      "livePriceProtectionEnabled": false,
+      "livePriceProtectionEnabled": true,
       "vaultSwapDepositsEnabled": true,
     },
     {
@@ -726,7 +726,7 @@ exports[`networkStatus > returns everything when possible (default) 1`] = `
       "depositChannelCreationEnabled": true,
       "depositChannelDepositsEnabled": true,
       "egressEnabled": true,
-      "livePriceProtectionEnabled": false,
+      "livePriceProtectionEnabled": true,
       "vaultSwapDepositsEnabled": true,
     },
     {

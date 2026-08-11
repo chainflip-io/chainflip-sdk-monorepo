@@ -1,9 +1,4 @@
-import {
-  ChainflipChain,
-  ChainflipNetwork,
-  InternalAssetMap,
-  type PriceAsset,
-} from '@chainflip/utils/chainflip';
+import { ChainflipChain, ChainflipNetwork } from '@chainflip/utils/chainflip';
 
 const ETHEREUM_EVM_CHAIN_ID: Record<ChainflipNetwork, number> = {
   backspin: 10997, // backspin ethereum
@@ -134,28 +129,5 @@ export const MIN_TICK = -887272;
 export const MAX_TICK = -MIN_TICK;
 
 export const FULL_TICK_RANGE = { start: MIN_TICK, end: MAX_TICK };
-
-export const chainflipAssetToPriceAssetMap: InternalAssetMap<PriceAsset | null> = {
-  Btc: 'Btc',
-  Eth: 'Eth',
-  Sol: 'Sol',
-  Usdc: 'Usdc',
-  Usdt: 'Usdt',
-  Wbtc: null,
-  ArbUsdc: 'Usdc',
-  ArbUsdt: 'Usdt',
-  ArbEth: 'Eth',
-  SolUsdc: 'Usdc',
-  SolUsdt: 'Usdt',
-  Flip: null,
-  HubDot: null,
-  HubUsdc: null,
-  HubUsdt: null,
-  Trx: null,
-  TrxUsdt: 'Usdt',
-  Bnb: null,
-  BscUsdt: null, // Binance Bridged USDT is an un-official (yet most popular) version of the USDT asset.
-  Cbbtc: null,
-};
 
 export const SUPPLY_POOL_BOOST_FEE_BPS = 5;

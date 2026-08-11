@@ -257,7 +257,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -266,7 +266,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -451,7 +451,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -460,7 +460,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -646,7 +646,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -655,7 +655,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -841,7 +841,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -850,7 +850,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -1055,7 +1055,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -1064,7 +1064,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -1252,7 +1252,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -1261,7 +1261,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -1449,7 +1449,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {
@@ -1458,7 +1458,7 @@ describe('networkStatus', () => {
             "depositChannelCreationEnabled": false,
             "depositChannelDepositsEnabled": false,
             "egressEnabled": false,
-            "livePriceProtectionEnabled": false,
+            "livePriceProtectionEnabled": true,
             "vaultSwapDepositsEnabled": false,
           },
           {

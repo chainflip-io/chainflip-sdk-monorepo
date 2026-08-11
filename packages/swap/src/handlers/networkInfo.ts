@@ -1,10 +1,13 @@
 import { HttpClient } from '@chainflip/rpc';
 import { RpcMethod, RpcRequest, RpcResult } from '@chainflip/rpc/common';
-import { assetConstants, getInternalAsset } from '@chainflip/utils/chainflip';
+import {
+  assetConstants,
+  chainflipAssetToPriceAssetMap,
+  getInternalAsset,
+} from '@chainflip/utils/chainflip';
 import { uncapitalize } from '@chainflip/utils/string';
 import { z } from 'zod';
 import type { NetworkInfo } from '@/shared/api/networkInfo.js';
-import { chainflipAssetToPriceAssetMap } from '@/shared/consts.js';
 import { MultiCache, Fetcher } from '@/shared/dataStructures.js';
 import { isNotNullish } from '@/shared/guards.js';
 import env from '../config/env.js';
