@@ -80,6 +80,28 @@ services:
       - '--out'
       - 'postgres://postgres:postgres@postgres:5432/squid_archive'
 
+  archive-ready:
+    image: postgres:15.3
+    profiles: ['all']
+    restart: 'no'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingest:
+        condition: service_started
+    entrypoint:
+      - 'sh'
+      - '-c'
+      # $$ escapes compose's own interpolation
+      - |
+        until [ "$$(psql 'postgres://postgres:postgres@postgres:5432/squid_archive' -tAc \
+          "SELECT to_regclass('public.block') IS NOT NULL AND to_regclass('public.event') IS NOT NULL")" = t ]
+        do
+          echo 'waiting for substrate-ingest to create the archive schema...'
+          sleep 2
+        done
+        echo 'archive schema is ready'
+
   # ── one-shot migrations (profile: migrate) ───────────────────────────────────
   # Mirrors `pnpm localnet --migrate`. Runs the recursive migrate:deploy:localnet
   # (only swap defines it), then exits. Idempotent.
@@ -104,6 +126,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      archive-ready:
+        condition: service_completed_successfully
     ports:
       - '8081:8081'
     environment:

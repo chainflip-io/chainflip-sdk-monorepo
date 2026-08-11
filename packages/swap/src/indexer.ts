@@ -61,9 +61,18 @@ export class IndexerClient {
   }
 
   async getBlocks(height: number, limit: number, eventNames: string[]): Promise<Block[]> {
-    const { rows } = await this.pool.query<Block>(GET_BLOCKS, [height, limit, eventNames]);
-
-    return rows;
+    try {
+      const { rows } = await this.pool.query<Block>(GET_BLOCKS, [height, limit, eventNames]);
+      return rows;
+    } catch (error) {
+      logger.error('failed to fetch blocks', {
+        error: inspectError(error),
+        height,
+        limit,
+        eventCount: eventNames.length,
+      });
+      throw error;
+    }
   }
 
   end() {

@@ -44,12 +44,13 @@ Add `--build` to (re)build the shared dev image.
 
 ## Services & ports
 
-| Service  | Port (host) | Notes                                               |
-| -------- | ----------- | --------------------------------------------------- |
-| swap     | 8081        | REST + WebSocket + block processor                  |
-| ingest   | —           | squid `substrate-ingest` → `squid_archive`          |
-| postgres | 5443        | DBs `swap`, `squid_archive` (container port `5432`) |
-| redis    | 6399        | container port `6379`                               |
+| Service       | Port (host) | Notes                                                  |
+| ------------- | ----------- | ------------------------------------------------------ |
+| swap          | 8081        | REST + WebSocket + block processor                     |
+| archive-ready | —           | one-shot; blocks `swap` until the archive tables exist |
+| ingest        | —           | squid `substrate-ingest` → `squid_archive`             |
+| postgres      | 5443        | DBs `swap`, `squid_archive` (container port `5432`)    |
+| redis         | 6399        | container port `6379`                                  |
 
 Postgres and Redis are published on **non-default** host ports to avoid colliding with
 the backend localnet (which binds 6379) and with the web-localnet stack (5442/6389).
@@ -90,8 +91,11 @@ require a rebuild.
 ## Notes
 
 - `squid_archive` is populated by the `ingest` container from the host node; its schema
-  is owned by `substrate-ingest`. Until it catches up, the swap processor has no blocks
-  to read.
+  is owned by `substrate-ingest` and is created lazily on the first write. `swap` therefore
+  waits on `archive-ready`, which polls until `block` and `event` exist — on a fresh volume
+  expect `swap` to sit in `Created` for a few seconds while that happens. If it never
+  starts, check `docker compose … logs archive-ready`: the usual cause is that the host
+  `chainflip-backend` localnet is not up, so `ingest` has nothing to write.
 - Wipe Postgres/Redis for a clean database with `pnpm localnet --down --volumes`
   (removes the named volumes so the next `--migrate` re-applies from scratch), or the raw
   equivalent `docker compose -f docker/localnet/docker-compose.yml down -v`.
