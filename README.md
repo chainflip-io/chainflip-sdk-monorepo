@@ -2,7 +2,7 @@
 
 # Running the SDK swap service against a localnet
 
-This runs the SDK swap service (and the ingest gateway it depends on) in Docker against a
+This runs the SDK swap service (and the squid archive it reads from) in Docker against a
 **separately-running `chainflip-backend` localnet**, exposing the swap REST/WebSocket API
 on `:8081`. Postgres, Redis and the squid `substrate-ingest` sidecar are provided by the
 stack, so you don't need them on the host.
