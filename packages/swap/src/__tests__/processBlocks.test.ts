@@ -1,9 +1,8 @@
-import { GraphQLClient } from 'graphql-request';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import prisma from '../client.js';
 import { check, DOT_ADDRESS } from '../event-handlers/__tests__/utils.js';
 import { ChainStateUpdatedArgsMap } from '../event-handlers/tracking/chainStateUpdated.js';
-import { GetBatchQuery } from '../gql/generated/graphql.js';
+import { IndexerClient } from '../indexer.js';
 import processBlocks from '../processBlocks.js';
 
 describe(processBlocks, () => {
@@ -34,42 +33,37 @@ describe(processBlocks, () => {
       update: { height: 1 },
     });
 
-    const requestSpy = vi
-      .spyOn(GraphQLClient.prototype, 'request')
-      .mockResolvedValueOnce({
-        blocks: {
-          nodes: [
+    const getBlocksSpy = vi
+      .spyOn(IndexerClient.prototype, 'getBlocks')
+      .mockResolvedValueOnce([
+        {
+          height: 150,
+          timestamp: '2024-08-26T00:00:00.000Z',
+          hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
+          specId: 'chainflip-node@100',
+          events: [
             {
-              height: 150,
-              timestamp: '2024-08-26T00:00:00.000Z',
-              hash: '0x6c35d3e08b00e979961976cefc79f9594e8ae12f8cc4e9cabfd4796a1994ccd8',
-              specId: 'chainflip-node@100',
-              events: {
-                nodes: [
-                  {
-                    name: 'BitcoinChainTracking.ChainStateUpdated',
-                    args: check<ChainStateUpdatedArgsMap['Bitcoin']>({
-                      newChainState: {
-                        blockHeight: 1000,
-                        trackedData: {
-                          btcFeeInfo: {
-                            satsPerKilobyte: 10,
-                          },
-                        },
-                      },
-                    }),
+              name: 'BitcoinChainTracking.ChainStateUpdated',
+              indexInBlock: 0,
+              args: check<ChainStateUpdatedArgsMap['Bitcoin']>({
+                newChainState: {
+                  blockHeight: 1000,
+                  trackedData: {
+                    btcFeeInfo: {
+                      satsPerKilobyte: 10,
+                    },
                   },
-                ],
-              },
+                },
+              }),
             },
           ],
         },
-      } as GetBatchQuery)
+      ])
       // terminate the loop
       .mockRejectedValue(Error('clean exit'));
 
     await expect(processBlocks()).rejects.toThrow('clean exit');
-    expect(requestSpy).toHaveBeenCalledTimes(
+    expect(getBlocksSpy).toHaveBeenCalledTimes(
       1 + // once successfully for the first block
         5, // five failures while we abort the loop
     );

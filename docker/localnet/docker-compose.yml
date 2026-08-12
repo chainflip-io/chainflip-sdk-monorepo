@@ -1,4 +1,4 @@
-# SDK localnet stack — runs the swap service (and the ingest gateway it needs) in
+# SDK localnet stack — runs the swap service (and the squid archive it reads from) in
 # isolated containers against a separately-running chainflip-backend localnet
 # (chain node :9944, broker :10997, solana :8899 on the host, via host.docker.internal).
 #
@@ -7,7 +7,7 @@
 #   docker compose -f docker/localnet/docker-compose.yml --profile migrate run --rm migrate
 #   docker compose -f docker/localnet/docker-compose.yml logs -f swap
 #
-# Infra (postgres, redis, ingest, indexer-gateway) has no profile, so it always starts.
+# Infra (postgres, redis, ingest) has no profile, so it always starts.
 name: chainflip-sdk-localnet
 
 # ── reusable fragments ────────────────────────────────────────────────────────
@@ -18,7 +18,7 @@ x-app: &app
   image: chainflip-sdk-localnet:dev
   restart: unless-stopped
   extra_hosts:
-    - "host.docker.internal:host-gateway"
+    - 'host.docker.internal:host-gateway'
   depends_on:
     postgres:
       condition: service_healthy
@@ -30,12 +30,12 @@ services:
   postgres:
     image: postgres:15.3
     restart: unless-stopped
-    command: ["postgres", "-c", "max_connections=200"]
+    command: ['postgres', '-c', 'max_connections=200']
     # Published on host 5443 (override with SDK_LOCALNET_POSTGRES_PORT) to avoid clashing
     # with a default 5432 and with the web-localnet stack (5442). Containers still reach it
     # as `postgres:5432` over the compose network.
     ports:
-      - "${SDK_LOCALNET_POSTGRES_PORT:-5443}:5432"
+      - '${SDK_LOCALNET_POSTGRES_PORT:-5443}:5432'
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -44,7 +44,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init-dbs:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -56,86 +56,84 @@ services:
     # backend localnet already binds, nor 6389 (web-localnet). Containers reach it as
     # `redis:6379` over the compose network.
     ports:
-      - "${SDK_LOCALNET_REDIS_PORT:-6399}:6379"
+      - '${SDK_LOCALNET_REDIS_PORT:-6399}:6379'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 10
 
-  # Populates squid_archive from the host's backend node.
+  # Populates squid_archive from the host's backend node. This is swap's INDEXER_DATABASE_URL.
   ingest:
     image: ghcr.io/chainflip-io/squid-sdk/substrate-ingest:latest
     restart: unless-stopped
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       postgres:
         condition: service_healthy
     command:
-      - "-e"
-      - "ws://host.docker.internal:9944"
-      - "-c"
-      - "20"
-      - "--out"
-      - "postgres://postgres:postgres@postgres:5432/squid_archive"
+      - '-e'
+      - 'ws://host.docker.internal:9944'
+      - '-c'
+      - '20'
+      - '--out'
+      - 'postgres://postgres:postgres@postgres:5432/squid_archive'
 
-  # GraphQL over squid_archive (postgraphile). This is swap's INGEST_GATEWAY_URL.
-  # The package's `start` script hardcodes localhost:5432, so the command is overridden
-  # here to reach the compose postgres and bind all interfaces.
-  indexer-gateway:
-    <<: *app
+  archive-ready:
+    image: postgres:15.3
+    profiles: ['all']
+    restart: 'no'
     depends_on:
       postgres:
         condition: service_healthy
-    command:
-      - "pnpm"
-      - "-C"
-      - "packages/indexer/gateway"
-      - "exec"
-      - "postgraphile"
-      - "--append-plugins"
-      - "postgraphile-plugin-connection-filter"
-      - "-c"
-      - "postgres://postgres:postgres@postgres:5432/squid_archive"
-      - "--host"
-      - "0.0.0.0"
-      - "--port"
-      - "8000"
-      - "--dynamic-json"
+      ingest:
+        condition: service_started
+    entrypoint:
+      - 'sh'
+      - '-c'
+      # $$ escapes compose's own interpolation
+      - |
+        until [ "$$(psql 'postgres://postgres:postgres@postgres:5432/squid_archive' -tAc \
+          "SELECT to_regclass('public.block') IS NOT NULL AND to_regclass('public.event') IS NOT NULL")" = t ]
+        do
+          echo 'waiting for substrate-ingest to create the archive schema...'
+          sleep 2
+        done
+        echo 'archive schema is ready'
 
   # ── one-shot migrations (profile: migrate) ───────────────────────────────────
   # Mirrors `pnpm localnet --migrate`. Runs the recursive migrate:deploy:localnet
   # (only swap defines it), then exits. Idempotent.
   migrate:
     <<: *app
-    profiles: ["migrate"]
-    restart: "no"
+    profiles: ['migrate']
+    restart: 'no'
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["pnpm", "migrate:deploy:localnet"]
+    command: ['pnpm', 'migrate:deploy:localnet']
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/swap
 
   # ── app ──────────────────────────────────────────────────────────────────────
   swap:
     <<: *app
-    profiles: ["all"]
-    command: ["pnpm", "-C", "packages/swap", "run", "dev:localnet"]
+    profiles: ['all']
+    command: ['pnpm', '-C', 'packages/swap', 'run', 'dev:localnet']
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-      indexer-gateway:
-        condition: service_started
+      archive-ready:
+        condition: service_completed_successfully
     ports:
-      - "8081:8081"
+      - '8081:8081'
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/swap
       REDIS_URL: redis://redis:6379
-      INGEST_GATEWAY_URL: http://indexer-gateway:8000/graphql
+      INDEXER_DATABASE_URL: postgresql://postgres:postgres@postgres:5432/squid_archive
       RPC_NODE_HTTP_URL: http://host.docker.internal:9944
       RPC_NODE_WSS_URL: ws://host.docker.internal:9944
       RPC_BROKER_HTTPS_URL: http://host.docker.internal:10997

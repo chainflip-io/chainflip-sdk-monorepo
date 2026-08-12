@@ -61,7 +61,7 @@ describe(swapAborted, () => {
       block: {
         hash: '0x123',
         height: 42,
-        timestamp: new Date('2024-08-23 13:10:06.000+00'),
+        timestamp: '2024-08-23T13:10:06.000Z',
         specId: 'test@160',
       },
       event: {

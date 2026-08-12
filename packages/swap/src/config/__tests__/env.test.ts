@@ -8,7 +8,7 @@ describe('env', () => {
       RPC_NODE_HTTP_URL: 'https://chainflip.rpc',
       RPC_NODE_WSS_URL: 'wss://chainflip.rpc',
       RPC_BROKER_HTTPS_URL: 'https://broker.rpc',
-      INGEST_GATEWAY_URL: 'https://ingest.gateway',
+      INDEXER_DATABASE_URL: 'postgresql://user:pass@indexer.db:5432/squid_archive',
     };
   });
 
@@ -53,7 +53,8 @@ describe('env', () => {
           "HubDot",
         },
         "GET_ENVIRONMENT_CACHE_TTL": 6000,
-        "INGEST_GATEWAY_URL": "https://ingest.gateway",
+        "INDEXER_DATABASE_URL": "postgresql://user:pass@indexer.db:5432/squid_archive",
+        "INDEXER_QUERY_TIMEOUT": 10000,
         "LIQUIDITY_WARNING_THRESHOLD": -5,
         "MAINTENANCE_MODE": false,
         "MAX_CHANNELS_OPEN_PER_ADDRESS": 25,
@@ -139,7 +140,8 @@ describe('env', () => {
           "HubDot",
         },
         "GET_ENVIRONMENT_CACHE_TTL": 6000,
-        "INGEST_GATEWAY_URL": "https://ingest.gateway",
+        "INDEXER_DATABASE_URL": "postgresql://user:pass@indexer.db:5432/squid_archive",
+        "INDEXER_QUERY_TIMEOUT": 10000,
         "LIQUIDITY_WARNING_THRESHOLD": -5,
         "MAINTENANCE_MODE": false,
         "MAX_CHANNELS_OPEN_PER_ADDRESS": 25,

@@ -466,7 +466,7 @@ describe('account creation swap', () => {
   });
 
   it('gets the swap info by swap request id', async () => {
-    await processEvents(events, [], '200');
+    await processEvents(events, '200');
 
     const { body, status } = await request(server).get(`/v2/swaps/1052770`);
 

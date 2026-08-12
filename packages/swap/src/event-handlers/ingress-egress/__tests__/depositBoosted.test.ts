@@ -70,7 +70,7 @@ export const depositBoostedBtcMock = async ({
   return {
     block: {
       height: 120,
-      timestamp: 1670337105000,
+      timestamp: '2022-12-06T14:31:45.000Z',
       hash: '0x123',
       specId: 'test@150',
     },
@@ -141,7 +141,7 @@ describe('depositBoosted', () => {
       prisma,
       block: {
         height: 120,
-        timestamp: 1670337105000,
+        timestamp: '2022-12-06T14:31:45.000Z',
         hash: '0x123',
         specId: 'test@150',
       },
@@ -223,7 +223,7 @@ describe('depositBoosted', () => {
       prisma,
       block: {
         height: 120,
-        timestamp: 1670337105000,
+        timestamp: '2022-12-06T14:31:45.000Z',
         hash: '0x123',
         specId: 'test@150',
       },

@@ -24,14 +24,14 @@ describe(swapRequestCompleted, () => {
         nativeId: BigInt(event.args.swapRequestId),
         depositAmount: '10000000000',
         swapInputAmount: '10000000000',
-        depositFinalisedAt: new Date(block.timestamp - 12000),
+        depositFinalisedAt: new Date(Date.parse(block.timestamp) - 12000),
         depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
         destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
         requestType: 'REGULAR',
         originType: 'VAULT',
-        swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedAt: new Date(Date.parse(block.timestamp) - 12000),
         swapRequestedBlockIndex: '92-398',
         swaps: {
           createMany: {
@@ -72,14 +72,14 @@ describe(swapRequestCompleted, () => {
         nativeId: BigInt(event.args.swapRequestId),
         depositAmount: '30000000000',
         swapInputAmount: '30000000000',
-        depositFinalisedAt: new Date(block.timestamp - 12000),
+        depositFinalisedAt: new Date(Date.parse(block.timestamp) - 12000),
         depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
         destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
         requestType: 'REGULAR',
         originType: 'VAULT',
-        swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedAt: new Date(Date.parse(block.timestamp) - 12000),
         swapRequestedBlockIndex: '92-398',
         swaps: {
           createMany: {
@@ -168,14 +168,14 @@ describe(swapRequestCompleted, () => {
         nativeId: BigInt(event.args.swapRequestId),
         depositAmount: '10000000000',
         swapInputAmount: '10000000000',
-        depositFinalisedAt: new Date(block.timestamp - 12000),
+        depositFinalisedAt: new Date(Date.parse(block.timestamp) - 12000),
         depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
         destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
         requestType: 'REGULAR',
         originType: 'VAULT',
-        swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedAt: new Date(Date.parse(block.timestamp) - 12000),
         swapRequestedBlockIndex: '92-398',
         swaps: {
           createMany: {
@@ -217,7 +217,7 @@ describe(swapRequestCompleted, () => {
   });
 
   it.each([
-    ['fresh', () => vi.useFakeTimers({ now: block.timestamp + 30_000 })],
+    ['fresh', () => vi.useFakeTimers({ now: Date.parse(block.timestamp) + 30_000 })],
     ['stale', noop],
   ])(
     'updates a %s swap request and associated quote if swap was (partially) refunded',
@@ -250,14 +250,14 @@ describe(swapRequestCompleted, () => {
           nativeId: BigInt(event.args.swapRequestId),
           depositAmount: '10000000000',
           swapInputAmount: '10000000000',
-          depositFinalisedAt: new Date(block.timestamp - 12000),
+          depositFinalisedAt: new Date(Date.parse(block.timestamp) - 12000),
           depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
           srcAsset: 'Eth',
           destAsset: 'HubDot',
           destAddress: DOT_ADDRESS,
           requestType: 'REGULAR',
           originType: 'VAULT',
-          swapRequestedAt: new Date(block.timestamp - 12000),
+          swapRequestedAt: new Date(Date.parse(block.timestamp) - 12000),
           swapRequestedBlockIndex: '92-398',
           swaps: {
             createMany: {
@@ -321,14 +321,14 @@ describe(swapRequestCompleted, () => {
         nativeId: BigInt(event.args.swapRequestId),
         depositAmount: '10000000000',
         swapInputAmount: '10000000000',
-        depositFinalisedAt: new Date(block.timestamp - 12000),
+        depositFinalisedAt: new Date(Date.parse(block.timestamp) - 12000),
         depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
         destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
         requestType: 'REGULAR',
         originType: 'VAULT',
-        swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedAt: new Date(Date.parse(block.timestamp) - 12000),
         swapRequestedBlockIndex: '92-398',
         liquidationSwapInfo: {
           create: {
@@ -383,14 +383,14 @@ describe(swapRequestCompleted, () => {
         nativeId: BigInt(event.args.swapRequestId),
         depositAmount: '10000000000',
         swapInputAmount: '10000000000',
-        depositFinalisedAt: new Date(block.timestamp - 12000),
+        depositFinalisedAt: new Date(Date.parse(block.timestamp) - 12000),
         depositFinalisedBlockIndex: `${block.height - 100}-${event.indexInBlock}`,
         srcAsset: 'Eth',
         destAsset: 'HubDot',
         destAddress: DOT_ADDRESS,
         requestType: 'REGULAR',
         originType: 'VAULT',
-        swapRequestedAt: new Date(block.timestamp - 12000),
+        swapRequestedAt: new Date(Date.parse(block.timestamp) - 12000),
         swapRequestedBlockIndex: '92-398',
         liquidationSwapInfo: {
           create: {
