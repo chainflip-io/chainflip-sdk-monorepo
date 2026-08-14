@@ -1,10 +1,11 @@
 import * as bitcoin from '@chainflip/bitcoin';
 import { arbitrumIngressEgressDepositFinalised } from '@chainflip/processor/11200/arbitrumIngressEgress/depositFinalised';
-import { assethubIngressEgressDepositFinalised } from '@chainflip/processor/11200/assethubIngressEgress/depositFinalised';
+import { assethubIngressEgressDepositFinalised as assethubDepositFinalised11200 } from '@chainflip/processor/11200/assethubIngressEgress/depositFinalised';
 import { bitcoinIngressEgressDepositFinalised } from '@chainflip/processor/11200/bitcoinIngressEgress/depositFinalised';
 import { ethereumIngressEgressDepositFinalised } from '@chainflip/processor/11200/ethereumIngressEgress/depositFinalised';
 import { solanaIngressEgressDepositFinalised } from '@chainflip/processor/11200/solanaIngressEgress/depositFinalised';
 import { tronIngressEgressDepositFinalised } from '@chainflip/processor/220/tronIngressEgress/depositFinalised';
+import { assethubIngressEgressDepositFinalised as assethubDepositFinalised230 } from '@chainflip/processor/230/assethubIngressEgress/depositFinalised';
 import { bscIngressEgressDepositFinalised } from '@chainflip/processor/230/bscIngressEgress/depositFinalised';
 import { cfChainsAddressForeignChainAddress } from '@chainflip/processor/230/common';
 import * as base58 from '@chainflip/utils/base58';
@@ -92,7 +93,9 @@ export type DepositDetailsData = {
       Ethereum: z.output<typeof ethereumIngressEgressDepositFinalised>;
       Arbitrum: z.output<typeof arbitrumIngressEgressDepositFinalised>;
       Solana: z.output<typeof solanaIngressEgressDepositFinalised> | { depositDetails: undefined };
-      Assethub: z.output<typeof assethubIngressEgressDepositFinalised>;
+      Assethub:
+        | z.output<typeof assethubDepositFinalised11200>
+        | z.output<typeof assethubDepositFinalised230>;
       Tron: z.output<typeof tronIngressEgressDepositFinalised>;
       Bsc: z.output<typeof bscIngressEgressDepositFinalised>;
     }[C]['depositDetails'];
@@ -118,12 +121,19 @@ export const getDepositTxRef = (
     }
     case 'Bitcoin':
       return formatTxRef({ chain: depositDetails.chain, data: depositDetails.data.id.txId });
-    case 'Assethub':
+    case 'Assethub': {
+      const { data } = depositDetails;
+      // spec 230 replaced the bare extrinsic index with a { blockNumber, extrinsicIndex } pair,
+      // which lets us build a ref even when the event carries no block height
+      if (typeof data === 'object') return formatTxRef({ chain: depositDetails.chain, data });
+
+      // TODO(2.3): Remove this once we no longer support spec 220
       if (blockHeight === undefined) return undefined;
       return formatTxRef({
         chain: depositDetails.chain,
-        data: { blockNumber: Number(blockHeight), extrinsicIndex: depositDetails.data },
+        data: { blockNumber: Number(blockHeight), extrinsicIndex: data },
       });
+    }
     case 'Solana':
       return undefined;
     default:
