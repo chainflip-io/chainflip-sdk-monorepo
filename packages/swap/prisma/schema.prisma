@@ -521,25 +521,6 @@ model Factor {
   @@schema("private")
 }
 
-enum ThirdPartyProtocol {
-  lifi
-  squid
-
-  @@schema("public")
-}
-
-model ThirdPartySwap {
-  id            BigInt             @id @default(autoincrement())
-  uuid          String             @unique
-  protocol      ThirdPartyProtocol
-  routeResponse Json
-  txHash        String
-  txLink        String
-  createdAt     DateTime           @default(now())
-
-  @@schema("public")
-}
-
 model Pool {
   id                        Int           @id @default(autoincrement())
   baseAsset                 InternalAsset

@@ -14,7 +14,6 @@ import { handleError, maintenanceMode, quoteMiddleware } from './routes/middlewa
 import { createIpBlacklist } from './routes/middlewares/ipBlacklist.js';
 import { createNotFoundRateLimit } from './routes/middlewares/notFoundRateLimit.js';
 import { createQuoteRateLimit } from './routes/middlewares/quoteRateLimit.js';
-import thirdPartySwap from './routes/thirdPartySwap.js';
 import quoteRouterV2 from './routes/v2/quote.js';
 import swapV2 from './routes/v2/swap.js';
 import { lastUpdateHeader } from './utils/intercept.js';
@@ -55,7 +54,6 @@ app.use(
   express.json(),
   swapV2,
 );
-app.use('/third-party-swap', maintenanceMode, express.json(), thirdPartySwap);
 
 app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
