@@ -207,8 +207,8 @@ importers:
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1(typescript@5.9.3)
       '@chainflip/processor':
-        specifier: 2.3.0-dev.4
-        version: 2.3.0-dev.4
+        specifier: 2.3.1
+        version: 2.3.1
       '@chainflip/redis':
         specifier: 2.3.0-dev.1
         version: 2.3.0-dev.1
@@ -427,8 +427,8 @@ packages:
   '@chainflip/bitcoin@2.3.0-dev.1':
     resolution: {integrity: sha512-Srg+QfP6U2jDrQ/1q/lTgJHY0oCLCZc9InkqIqRPkVR8H0gkXoSX4uLQLyvfC9O9sE5i3qcXslASb/7eiSBxEQ==}
 
-  '@chainflip/processor@2.3.0-dev.4':
-    resolution: {integrity: sha512-HqHUkwv+T2pJjqWu10O46whL8szLZ9FMQ6+pakQpHzgRugHFQ/s2/fO3/G8WYYzE/3u3UqJ9c6HTF8yYU0wGnA==}
+  '@chainflip/processor@2.3.1':
+    resolution: {integrity: sha512-WYR2sYtlNA5EJmOQVf1vjVJT3FeGEwKSrv687UpRYyxEg4m9fI5SOe8qYA9udqsxckAd5CrT2WjkpZVgU2YaJw==}
 
   '@chainflip/redis@2.3.0-dev.1':
     resolution: {integrity: sha512-F9R6ND+TBpqo174g21S3sztoBj2oHyHjyZ74NJZ++ZLus8puFMePzY0YIfLlF6vXGzxQiZSpjOKHupLvDE6YhA==}
@@ -5736,7 +5736,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@2.3.0-dev.4':
+  '@chainflip/processor@2.3.1':
     dependencies:
       '@chainflip/rpc': 2.3.0-dev.4
       '@chainflip/utils': 2.3.0-dev.4
