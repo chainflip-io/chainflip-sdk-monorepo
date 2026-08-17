@@ -2,8 +2,9 @@ import { solanaIngressEgressTransactionRejectedByBroker } from '@chainflip/proce
 import { arbitrumIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/arbitrumIngressEgress/transactionRejectedByBroker';
 import { bitcoinIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/bitcoinIngressEgress/transactionRejectedByBroker';
 import { ethereumIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/170/ethereumIngressEgress/transactionRejectedByBroker';
-import { assethubIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/190/assethubIngressEgress/transactionRejectedByBroker';
+import { assethubIngressEgressTransactionRejectedByBroker as assethubSchema190 } from '@chainflip/processor/190/assethubIngressEgress/transactionRejectedByBroker';
 import { tronIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/220/tronIngressEgress/transactionRejectedByBroker';
+import { assethubIngressEgressTransactionRejectedByBroker as assethubSchema230 } from '@chainflip/processor/230/assethubIngressEgress/transactionRejectedByBroker';
 import { bscIngressEgressTransactionRejectedByBroker } from '@chainflip/processor/230/bscIngressEgress/transactionRejectedByBroker';
 import * as base58 from '@chainflip/utils/base58';
 import { hexToBytes } from '@chainflip/utils/bytes';
@@ -33,7 +34,7 @@ const schemaMap = {
     ...args,
     txId: { chain: 'Solana' as const, data: args.txId },
   })),
-  Assethub: assethubIngressEgressTransactionRejectedByBroker.transform((args) => ({
+  Assethub: z.union([assethubSchema230.strict(), assethubSchema190.strict()]).transform((args) => ({
     ...args,
     txId: { chain: 'Assethub' as const, data: args.txId },
   })),
