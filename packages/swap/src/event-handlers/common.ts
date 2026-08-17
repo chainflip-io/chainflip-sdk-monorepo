@@ -125,7 +125,7 @@ export const getDepositTxRef = (
       const { data } = depositDetails;
       // spec 230 replaced the bare extrinsic index with a { blockNumber, extrinsicIndex } pair,
       // which lets us build a ref even when the event carries no block height
-      if (typeof data === 'object') return formatTxRef({ chain: depositDetails.chain, data });
+      if (typeof data !== 'number') return formatTxRef({ chain: depositDetails.chain, data });
 
       // TODO(2.3): Remove this once we no longer support spec 220
       if (blockHeight === undefined) return undefined;
