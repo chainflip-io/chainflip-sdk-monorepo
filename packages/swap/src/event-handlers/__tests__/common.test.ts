@@ -13,7 +13,10 @@ describe(getDepositTxRef, () => {
 
   it('prefers the spec 230 deposit details over the event block height', () => {
     expect(
-      getDepositTxRef({ chain: 'Assethub', data: { blockNumber: 9876543, extrinsicIndex: 2 } }, 111n),
+      getDepositTxRef(
+        { chain: 'Assethub', data: { blockNumber: 9876543, extrinsicIndex: 2 } },
+        111n,
+      ),
     ).toBe('9876543-2');
   });
 
