@@ -37,9 +37,6 @@ which it is deprecated.
 
 - `enabledFeatures.dca` option has been removed from `SwapSDKOptions`. DCA is
   now enabled by default at the protocol level.
-- The deprecated `dcaEnabled` query param has been removed from `/v2/quote`. Use
-  `dcaV2Enabled` instead. Requests still sending `dcaEnabled` are accepted, but
-  the param is ignored and no DCA quote is returned.
 - The deprecated fields `brokerCommissionBps`, `affiliateBrokers`, and
   `fillOrKillParams` have been removed from the `depositChannel` property of the swap status response. They are avaialable at the root level of the response.
 
