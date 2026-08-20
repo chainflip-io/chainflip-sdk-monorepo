@@ -44,4 +44,36 @@ describe('quoteQuerySchema', () => {
       }),
     ).not.toThrowError();
   });
+
+  it('throws if the source and destination assets are the same', () => {
+    expect(() =>
+      quoteQuerySchema.parse({
+        srcChain: 'Ethereum',
+        srcAsset: 'FLIP',
+        destChain: 'Ethereum',
+        destAsset: 'FLIP',
+        amount: '1000000000000',
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(`
+      [ZodError: [
+        {
+          "message": "srcAsset and destAsset cannot be the same",
+          "code": "custom",
+          "path": []
+        }
+      ]]
+    `);
+  });
+
+  it('allows the same asset on different chains', () => {
+    expect(() =>
+      quoteQuerySchema.parse({
+        srcChain: 'Ethereum',
+        srcAsset: 'USDC',
+        destChain: 'Arbitrum',
+        destAsset: 'USDC',
+        amount: '1000000000000',
+      }),
+    ).not.toThrowError();
+  });
 });
