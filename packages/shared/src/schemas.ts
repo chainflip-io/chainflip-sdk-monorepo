@@ -70,6 +70,15 @@ export const quoteQuerySchema = z
       hadError = true;
     }
 
+    if (srcAsset === destAsset) {
+      ctx.addIssue({
+        message: `srcAsset and destAsset cannot be the same`,
+        code: z.ZodIssueCode.custom,
+      });
+
+      hadError = true;
+    }
+
     if (args.ccmGasBudget !== undefined && args.ccmMessageLengthBytes === undefined) {
       ctx.addIssue({
         message: `ccmMessageLengthBytes must be set if ccmGasBudget is set`,
