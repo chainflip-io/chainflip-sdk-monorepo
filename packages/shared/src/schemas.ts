@@ -44,6 +44,7 @@ export const quoteQuerySchema = z
     dcaV2Enabled: booleanString.default('false'),
     isVaultSwap: booleanString.optional(),
     isOnChain: booleanString.optional(),
+    brokerAccount: chainflipAddress.optional(),
     brokerIdSs58: chainflipAddress.optional(),
     expectedResponseTimeMs: numericString.transform((v) => Number(v)).optional(),
   })
@@ -131,7 +132,7 @@ export const quoteQuerySchema = z
       dcaV2Enabled: args.dcaV2Enabled,
       isVaultSwap: args.isVaultSwap,
       isOnChain: args.isOnChain,
-      brokerIdSs58: args.brokerIdSs58,
+      brokerIdSs58: args.brokerAccount ?? args.brokerIdSs58,
       expectedResponseTimeMs: args.expectedResponseTimeMs,
     };
   });
