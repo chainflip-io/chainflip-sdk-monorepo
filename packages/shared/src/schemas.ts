@@ -6,7 +6,6 @@ import {
 } from '@chainflip/utils/chainflip';
 import { hexEncodeNumber } from '@chainflip/utils/number';
 import { z } from 'zod';
-import { isNotNullish } from './guards.js';
 import {
   chain,
   hexStringWithMaxByteSize,
@@ -65,15 +64,6 @@ export const quoteQuerySchema = z
     if (destAsset === null) {
       ctx.addIssue({
         message: `invalid asset and chain combination: ${JSON.stringify({ asset: args.destAsset, chain: args.destChain })}`,
-        code: z.ZodIssueCode.custom,
-      });
-
-      hadError = true;
-    }
-
-    if (isNotNullish(srcAsset) && isNotNullish(destAsset) && srcAsset === destAsset) {
-      ctx.addIssue({
-        message: `srcAsset and destAsset cannot be the same`,
         code: z.ZodIssueCode.custom,
       });
 
