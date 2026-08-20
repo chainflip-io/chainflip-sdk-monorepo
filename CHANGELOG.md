@@ -7,6 +7,22 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Added
+
+- `/v2/quote` now accepts the broker account under the `brokerAccount` query
+  param, matching the `brokerAccount` option on `getQuoteV2` and the field name
+  used by the deposit channel and vault swap endpoints. Integrators calling the
+  REST API directly should send `brokerAccount`; SDK users keep passing
+  `brokerAccount` to `getQuoteV2` (or `SwapSDKOptions`) and need no changes.
+
+### Deprecated
+
+- The `brokerIdSs58` query param on `/v2/quote` is deprecated in favour of
+  `brokerAccount`. It is still accepted, since SDK versions 2.2.0 - 2.3.x send
+  the broker account under that name. If both are set, `brokerAccount` wins.
+
 ## 2.2.0
 
 ### Added
@@ -21,6 +37,9 @@ which it is deprecated.
 
 - `enabledFeatures.dca` option has been removed from `SwapSDKOptions`. DCA is
   now enabled by default at the protocol level.
+- The deprecated `dcaEnabled` query param has been removed from `/v2/quote`. Use
+  `dcaV2Enabled` instead. Requests still sending `dcaEnabled` are accepted, but
+  the param is ignored and no DCA quote is returned.
 - The deprecated fields `brokerCommissionBps`, `affiliateBrokers`, and
   `fillOrKillParams` have been removed from the `depositChannel` property of the swap status response. They are avaialable at the root level of the response.
 
