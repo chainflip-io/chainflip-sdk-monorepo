@@ -7,22 +7,6 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
-## Unreleased
-
-### Added
-
-- `/v2/quote` now accepts the broker account under the `brokerAccount` query
-  param, matching the `brokerAccount` option on `getQuoteV2` and the field name
-  used by the deposit channel and vault swap endpoints. Integrators calling the
-  REST API directly should send `brokerAccount`; SDK users keep passing
-  `brokerAccount` to `getQuoteV2` (or `SwapSDKOptions`) and need no changes.
-
-### Deprecated
-
-- The `brokerIdSs58` query param on `/v2/quote` is deprecated in favour of
-  `brokerAccount`. It is still accepted, since SDK versions 2.2.0 - 2.3.x send
-  the broker account under that name. If both are set, `brokerAccount` wins.
-
 ## 2.2.0
 
 ### Added

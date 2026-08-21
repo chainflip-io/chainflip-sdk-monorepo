@@ -67,12 +67,12 @@ describe('quoteQuerySchema', () => {
     });
   });
 
-  it('prefers `brokerAccount` when both names are set', () => {
+  it('prefers `brokerIdSs58` when both names are set', () => {
     expect(
       quoteQuerySchema.parse({
         ...baseParams,
-        brokerAccount: brokerAddress,
-        brokerIdSs58: 'cFLdvBS9Gq9iqB8Zdb5cmnWgmhqvEojQYGMBquDz7xRiSvsJV',
+        brokerAccount: 'cFLdvBS9Gq9iqB8Zdb5cmnWgmhqvEojQYGMBquDz7xRiSvsJV',
+        brokerIdSs58: brokerAddress,
       }),
     ).toMatchObject({ brokerIdSs58: brokerAddress });
   });
