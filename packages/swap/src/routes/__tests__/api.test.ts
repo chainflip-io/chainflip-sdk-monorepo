@@ -1018,4 +1018,54 @@ describe('openAccountCreationDepositChannel', () => {
     `,
     );
   });
+
+  it('ss58 encodes the hex encoded address returned for Assethub', async () => {
+    await prisma.chainTracking.create({
+      data: {
+        chain: 'Assethub',
+        height: 27000n,
+        blockTrackedAt: new Date('2023-11-09T10:00:00.000Z'),
+        eventWitnessedBlock: 1,
+      },
+    });
+
+    const response: ChannelInfo = {
+      issued_block: 53948,
+      channel_id: 3,
+      address: '0xb72845b75b44e7e2ee29a390e9cf2e71291f2a1823299eedf5d016662fdb96cf',
+      requested_for: 'cFHsUq1uK5opJudRDczt7w4baiRDHR6Kdezw77u2JnRnCGKcs',
+      deposit_chain_expiry_block: 27208n,
+      channel_opening_fee: 0n,
+      refund_address: '15DQWnuLk3QbeYnUE7R5d35u3JXgPt6VxoJtZxa2xYHcQZue',
+    };
+
+    vi.spyOn(HttpClient.prototype, 'sendRequest').mockResolvedValueOnce(response);
+
+    const result = await client.openAccountCreationDepositChannel({
+      body: {
+        asset: { asset: 'DOT', chain: 'Assethub' },
+        refundAddress: '15DQWnuLk3QbeYnUE7R5d35u3JXgPt6VxoJtZxa2xYHcQZue',
+        signatureData: {
+          Ethereum: {
+            signature: '0x1234567890',
+            signer: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+            sigType: 'Eip712',
+          },
+        },
+        transactionMetadata: {
+          nonce: 0,
+          expiryBlock: 55000,
+        },
+        boostFeeBps: 30,
+      },
+    });
+
+    expect(result.status).toBe(201);
+    expect(result.body).toMatchObject({
+      depositAddress: '1599j8DFFZutdkvmxe81QNCpjNWAmmLD5pHSYph6gPVbp6av',
+    });
+    expect(await prisma.accountCreationDepositChannel.findFirst()).toMatchObject({
+      depositAddress: '1599j8DFFZutdkvmxe81QNCpjNWAmmLD5pHSYph6gPVbp6av',
+    });
+  });
 });

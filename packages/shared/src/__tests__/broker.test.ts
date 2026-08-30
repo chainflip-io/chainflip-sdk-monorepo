@@ -1642,3 +1642,30 @@ describe(broker.requestCfParametersEncoding, () => {
     expect(result).toStrictEqual('0x1234');
   });
 });
+
+describe(broker.formatBrokerDepositAddress, () => {
+  it('ss58 encodes hex encoded Assethub addresses', () => {
+    expect(
+      broker.formatBrokerDepositAddress(
+        'Assethub',
+        '0xb72845b75b44e7e2ee29a390e9cf2e71291f2a1823299eedf5d016662fdb96cf',
+      ),
+    ).toBe('1599j8DFFZutdkvmxe81QNCpjNWAmmLD5pHSYph6gPVbp6av');
+  });
+
+  it('leaves already encoded Assethub addresses alone', () => {
+    expect(
+      broker.formatBrokerDepositAddress(
+        'Assethub',
+        '1599j8DFFZutdkvmxe81QNCpjNWAmmLD5pHSYph6gPVbp6av',
+      ),
+    ).toBe('1599j8DFFZutdkvmxe81QNCpjNWAmmLD5pHSYph6gPVbp6av');
+  });
+
+  it.each(['Ethereum', 'Arbitrum', 'Bitcoin', 'Solana', 'Tron', 'Bsc'] as const)(
+    'returns %s addresses as they come',
+    (chain) => {
+      expect(broker.formatBrokerDepositAddress(chain, '0xcafebabe')).toBe('0xcafebabe');
+    },
+  );
+});
