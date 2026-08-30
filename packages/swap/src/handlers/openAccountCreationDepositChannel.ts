@@ -3,6 +3,7 @@ import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { getAccountCreationDepositChannelSchema } from '@/shared/api/openAccountCreationDepositChannel.js';
 import { DepositChannelInfo } from '@/shared/api/openSwapDepositChannel.js';
+import { formatBrokerDepositAddress } from '@/shared/broker.js';
 import prisma from '../client.js';
 import env from '../config/env.js';
 import { calculateExpiryTime } from '../utils/function.js';
@@ -41,7 +42,7 @@ export const openAccountCreationDepositChannel = async (
       asset: getInternalAsset(params.asset),
       chain: params.asset.chain,
       channelId: result.channel_id,
-      depositAddress: result.address,
+      depositAddress: formatBrokerDepositAddress(params.asset.chain, result.address),
       createdAt: new Date(),
       maxBoostFeeBps: params.boostFeeBps,
       depositChainExpiryBlock: result.deposit_chain_expiry_block,

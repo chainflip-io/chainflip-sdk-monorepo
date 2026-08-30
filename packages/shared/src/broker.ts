@@ -2,7 +2,11 @@ import { HttpClient } from '@chainflip/rpc';
 import { AssetAndChain } from '@chainflip/rpc/parsers';
 import { unreachable } from '@chainflip/utils/assertion';
 import { bytesToHex } from '@chainflip/utils/bytes';
-import { ChainflipNetwork, UncheckedAssetAndChain } from '@chainflip/utils/chainflip';
+import {
+  ChainflipChain,
+  ChainflipNetwork,
+  UncheckedAssetAndChain,
+} from '@chainflip/utils/chainflip';
 import * as ss58 from '@chainflip/utils/ss58';
 import { isHex } from '@chainflip/utils/string';
 import { priceX128ToPrice } from '@chainflip/utils/tickMath';
@@ -195,6 +199,24 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
       return { ...data, extraParams };
     });
 
+export const formatBrokerDepositAddress = (chain: ChainflipChain, address: string): string => {
+  switch (chain) {
+    case 'Assethub':
+      return isHex(address) ? ss58.encode({ data: address, ss58Format: DOT_PREFIX }) : address;
+    case 'Ethereum':
+    case 'Arbitrum':
+    case 'Bitcoin':
+    case 'Solana':
+    case 'Tron':
+    case 'Bsc':
+      // these addresses come properly formatted
+      return address;
+    default:
+      // TODO remove casting to never when polkadot chain is fully removed
+      return unreachable(chain as never, 'unexpected chain');
+  }
+};
+
 export async function requestSwapDepositAddress(
   request: DepositAddressRequest,
   opts: { url: string },
@@ -217,24 +239,7 @@ export async function requestSwapDepositAddress(
     params.dcaParams,
   );
 
-  switch (params.srcAsset.chain) {
-    case 'Assethub':
-      if (isHex(response.address)) {
-        response.address = ss58.encode({ data: response.address, ss58Format: DOT_PREFIX });
-      }
-      break;
-    case 'Ethereum':
-    case 'Arbitrum':
-    case 'Bitcoin':
-    case 'Solana':
-    case 'Tron':
-    case 'Bsc':
-      // these addresses come properly formatted
-      break;
-    default:
-      // TODO remove casting to never when polkadot chain is fully removed
-      return unreachable(params.srcAsset as never, 'unexpected chain');
-  }
+  response.address = formatBrokerDepositAddress(params.srcAsset.chain, response.address);
 
   return transformKeysToCamelCase(response);
 }
