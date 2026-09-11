@@ -40,14 +40,16 @@ export const getQuoteV2: BackendQuery<
     ...(quoteRequest.brokerAccount && { brokerIdSs58: quoteRequest.brokerAccount }),
   };
 
-  const { data } = await axios.get<Quote[]>('/v2/quote', {
+  const { data, headers } = await axios.get<Quote[]>('/v2/quote', {
     baseURL: baseUrl,
     params,
     signal,
     headers: CF_SDK_VERSION_HEADERS,
   });
 
-  return { ...quoteRequest, quotes: data };
+  const quoteRequestId = headers?.['x-request-id'] as string | undefined;
+
+  return { ...quoteRequest, quotes: data, ...(quoteRequestId && { quoteRequestId }) };
 };
 
 export const getStatusV2: BackendQuery<SwapStatusRequest, SwapStatusResponseV2> = async (

@@ -150,6 +150,32 @@ describe('ApiService', () => {
 
       expect(mockedGet.mock.lastCall?.[1]?.signal).not.toBeUndefined();
     });
+
+    it('returns the quote request id from the response headers', async () => {
+      mockedGet.mockReset();
+      mockedGet.mockResolvedValueOnce({
+        data: [],
+        headers: { 'x-request-id': 'd0f40bc5-1a6a-4b8f-8ad8-1a5b1c5b9c8e' },
+      });
+
+      const route = await getQuoteV2(
+        'https://swapperoo.org',
+        { ...mockRoute, dcaV2Enabled: false },
+        {},
+      );
+
+      expect(route.quoteRequestId).toBe('d0f40bc5-1a6a-4b8f-8ad8-1a5b1c5b9c8e');
+    });
+
+    it('omits the quote request id if the header is missing', async () => {
+      const route = await getQuoteV2(
+        'https://swapperoo.org',
+        { ...mockRoute, dcaV2Enabled: false },
+        {},
+      );
+
+      expect(route).not.toHaveProperty('quoteRequestId');
+    });
   });
 
   describe(getStatusV2, () => {

@@ -19,7 +19,7 @@ import swapV2 from './routes/v2/swap.js';
 import { lastUpdateHeader } from './utils/intercept.js';
 import logger, { logStorage } from './utils/logger.js';
 
-const app = express().use(cors());
+const app = express().use(cors({ exposedHeaders: ['x-request-id'] }));
 const server = createServer(app);
 const io = new Server(server).use(authenticate);
 const quoter = new Quoter(io);
@@ -34,6 +34,7 @@ app.use((req, res, next) => {
     query: req.query,
     body: req.body,
   };
+  res.setHeader('x-request-id', info.reqId);
   logger.info('request received', info);
 
   res.on('finish', () => {
