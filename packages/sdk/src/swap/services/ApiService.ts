@@ -47,9 +47,9 @@ export const getQuoteV2: BackendQuery<
     headers: CF_SDK_VERSION_HEADERS,
   });
 
-  const quoteRequestId = headers?.['x-request-id'] as string | undefined;
+  const requestId = headers?.['x-request-id'] as string | undefined;
 
-  return { ...quoteRequest, quotes: data, ...(quoteRequestId && { quoteRequestId }) };
+  return { ...quoteRequest, quotes: data, ...(requestId && { requestId }) };
 };
 
 export const getStatusV2: BackendQuery<SwapStatusRequest, SwapStatusResponseV2> = async (

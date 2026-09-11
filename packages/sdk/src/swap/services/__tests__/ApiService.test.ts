@@ -164,7 +164,7 @@ describe('ApiService', () => {
         {},
       );
 
-      expect(route.quoteRequestId).toBe('d0f40bc5-1a6a-4b8f-8ad8-1a5b1c5b9c8e');
+      expect(route.requestId).toBe('d0f40bc5-1a6a-4b8f-8ad8-1a5b1c5b9c8e');
     });
 
     it('omits the quote request id if the header is missing', async () => {
@@ -174,7 +174,7 @@ describe('ApiService', () => {
         {},
       );
 
-      expect(route).not.toHaveProperty('quoteRequestId');
+      expect(route).not.toHaveProperty('requestId');
     });
   });
 
