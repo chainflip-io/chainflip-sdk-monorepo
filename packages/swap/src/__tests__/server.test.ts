@@ -26,6 +26,15 @@ describe('server', () => {
     it('gets the fees', async () => {
       expect((await request(app).get('/healthcheck')).text).toBe('OK');
     });
+
+    it('returns the request id in a header that browsers can read', async () => {
+      const response = await request(app).get('/healthcheck');
+
+      expect(response.headers['x-request-id']).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      );
+      expect(response.headers['access-control-expose-headers']).toBe('x-request-id');
+    });
   });
 
   describe('socket.io', () => {

@@ -57,6 +57,7 @@ export interface QuoteRequest extends ChainsAndAssets {
 
 export interface QuoteResponseV2 extends QuoteRequest {
   quotes: Quote[];
+  requestId?: string;
 }
 
 export type FillOrKillParamsWithSlippage = Omit<FillOrKillParamsWithMinPrice, 'minPrice'> & {
