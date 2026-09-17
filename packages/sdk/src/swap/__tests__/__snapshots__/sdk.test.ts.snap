@@ -342,7 +342,7 @@ exports[`SwapSDK > getAssets > returns the correct values for backspin 1`] = `
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "Binance Bridged USDT",
+    "name": "BNB Chain USDT",
     "symbol": "USDT",
   },
 ]
@@ -607,7 +607,7 @@ exports[`SwapSDK > getAssets > returns the correct values for mainnet 1`] = `
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "Binance Bridged USDT",
+    "name": "BNB Chain USDT",
     "symbol": "USDT",
   },
 ]
@@ -872,7 +872,7 @@ exports[`SwapSDK > getAssets > returns the correct values for perseverance 1`] =
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "Binance Bridged USDT",
+    "name": "BNB Chain USDT",
     "symbol": "USDT",
   },
 ]
@@ -1137,7 +1137,7 @@ exports[`SwapSDK > getAssets > returns the correct values for sisyphos 1`] = `
     "maximumSwapAmount": null,
     "minimumEgressAmount": "1",
     "minimumSwapAmount": "0",
-    "name": "Binance Bridged USDT",
+    "name": "BNB Chain USDT",
     "symbol": "USDT",
   },
 ]
