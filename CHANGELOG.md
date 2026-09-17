@@ -15,7 +15,7 @@ which it is deprecated.
   - `BNB Chain` - Internal symbol: `Bsc`
 - New assets on `BNB Chain`:
   - BNB - Internal symbol: `Bnb`
-  - Binance Bridged USDT - Internal symbol: `BscUsdt`
+  - BNB Chain USDT - Internal symbol: `BscUsdt`
 - New assets on `Ethereum`:
   - Coinbase Wrapped BTC - Internal symbol: `Cbbtc`
 
