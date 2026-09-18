@@ -112,6 +112,7 @@ export default z
     PROCESSOR_BATCH_SIZE: optionalNumber(50),
     PROCESSOR_TRANSACTION_TIMEOUT: optionalNumber(10_000),
     REDIS_URL: redisUrl.optional(),
+    REDIS_URL_BACKOFFICE: redisUrl.optional(),
     MESSAGE_QUEUE_DELAY_MS: optionalNumber(0),
     MAINTENANCE_MODE: optionalBoolean,
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
