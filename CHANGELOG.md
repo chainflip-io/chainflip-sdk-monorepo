@@ -7,6 +7,26 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## 2.3.0
+
+### Added
+
+- New chains:
+  - `BNB Chain` - Internal symbol: `Bsc`
+- New assets on `BNB Chain`:
+  - BNB - Internal symbol: `Bnb`
+  - BNB Chain USDT - Internal symbol: `BscUsdt`
+- New assets on `Ethereum`:
+  - Coinbase Wrapped BTC - Internal symbol: `Cbbtc`
+
+### Dependencies
+
+- `@chainflip/rpc` upgraded to 2.3.3
+- `@chainflip/utils` upgraded to 2.3.3
+- `@chainflip/redis`: upgraded to 2.3.1
+- `@chainflip/solana` upgraded to 2.3.1
+- `@chainflip/bitcoin` upgraded to 2.3.1
+
 ## 2.2.0
 
 ### Added
