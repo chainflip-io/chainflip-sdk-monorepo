@@ -1,7 +1,12 @@
-FROM node:24.13.0-bullseye-slim as builder
+FROM node:24.20.0-trixie-slim AS builder
 
 # create root application folder
 WORKDIR /app
+
+# hadolint ignore=DL3008
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openssl && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY . .
 
@@ -20,9 +25,14 @@ ENV NODE_ENV=$node_env
 
 RUN pnpm --filter swap build
 
-FROM node:24.13.0-bullseye-slim
+FROM node:24.20.0-trixie-slim
 
 WORKDIR /app
+
+# hadolint ignore=DL3008
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openssl && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g pnpm@10
 
