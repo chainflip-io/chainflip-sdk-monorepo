@@ -1,4 +1,4 @@
-FROM node:24.13.0-trixie-slim AS builder
+FROM node:24.20.0-trixie-slim AS builder
 
 # create root application folder
 WORKDIR /app
@@ -25,7 +25,7 @@ ENV NODE_ENV=$node_env
 
 RUN pnpm --filter swap build
 
-FROM node:24.13.0-trixie-slim
+FROM node:24.20.0-trixie-slim
 
 WORKDIR /app
 
