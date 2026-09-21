@@ -11,7 +11,7 @@
 # NOTE: unlike the legacy packages/swap/Dockerfile, no Rust toolchain is installed —
 # the old amm-addon (napi/Rust) package is no longer part of the workspace, and none
 # of swap's current dependencies need native compilation.
-FROM node:24.13.0-bullseye-slim
+FROM node:24.20.0-bullseye-slim
 
 WORKDIR /app
 
