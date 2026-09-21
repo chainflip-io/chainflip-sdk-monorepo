@@ -8,9 +8,9 @@ const logger = baseLogger.child({ module: 'message-queues' });
 
 let redis: Redis | undefined;
 
-const getRedis = () => {
-  if (!redis && env.REDIS_URL) {
-    redis = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null });
+const getBackofficeRedis = () => {
+  if (!redis && env.REDIS_URL_BACKOFFICE) {
+    redis = new Redis(env.REDIS_URL_BACKOFFICE, { maxRetriesPerRequest: null });
     handleExit(async () => {
       await redis?.quit();
     });
@@ -19,9 +19,9 @@ const getRedis = () => {
 };
 
 const createQueue = ({ name }: { name: string }) => {
-  const connection = getRedis();
+  const connection = getBackofficeRedis();
   if (!connection) {
-    throw new Error(`cannot create queue "${name}" without REDIS_URL`);
+    throw new Error(`cannot create queue "${name}" without REDIS_URL_BACKOFFICE`);
   }
 
   const queue = new Queue(name, {

@@ -26,11 +26,11 @@ describe('initialize', () => {
     vi.restoreAllMocks();
   });
 
-  it('creates quoteEvents queue when ENABLE_QUOTE_MESSAGE_QUEUE is true and REDIS_URL is set', async () => {
+  it('creates quoteEvents queue when ENABLE_QUOTE_MESSAGE_QUEUE is true and REDIS_URL_BACKOFFICE is set', async () => {
     vi.doMock('../../config/env.js', () => ({
       default: {
         ENABLE_QUOTE_MESSAGE_QUEUE: true,
-        REDIS_URL: 'redis://localhost:6379',
+        REDIS_URL_BACKOFFICE: 'redis://localhost:6379',
       },
     }));
 
@@ -45,7 +45,7 @@ describe('initialize', () => {
     vi.doMock('../../config/env.js', () => ({
       default: {
         ENABLE_QUOTE_MESSAGE_QUEUE: false,
-        REDIS_URL: 'redis://localhost:6379',
+        REDIS_URL_BACKOFFICE: 'redis://localhost:6379',
       },
     }));
 
@@ -59,7 +59,7 @@ describe('initialize', () => {
     vi.doMock('../../config/env.js', () => ({
       default: {
         ENABLE_QUOTE_MESSAGE_QUEUE: true,
-        REDIS_URL: 'redis://localhost:6379',
+        REDIS_URL_BACKOFFICE: 'redis://localhost:6379',
       },
     }));
 
@@ -68,18 +68,18 @@ describe('initialize', () => {
     expect(queues.quoteEvents).toBeUndefined();
   });
 
-  it('throws when initializeQueues is called without REDIS_URL', async () => {
+  it('throws when initializeQueues is called without REDIS_URL_BACKOFFICE', async () => {
     vi.doMock('../../config/env.js', () => ({
       default: {
         ENABLE_QUOTE_MESSAGE_QUEUE: true,
-        REDIS_URL: undefined,
+        REDIS_URL_BACKOFFICE: undefined,
       },
     }));
 
     const { initializeQueues } = await import('../initialize.js');
 
     expect(() => initializeQueues()).toThrow(
-      'cannot create queue "quote-events" without REDIS_URL',
+      'cannot create queue "quote-events" without REDIS_URL_BACKOFFICE',
     );
   });
 });
