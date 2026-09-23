@@ -35,7 +35,7 @@
   ],
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.27.4",
+    "@babel/core": "^8.0.1",
     "@dotenvx/dotenvx": "^1.45.1",
     "@ts-rest/core": "^3.52.1",
     "@types/cors": "^2.8.19",
