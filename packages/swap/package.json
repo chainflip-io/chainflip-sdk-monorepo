@@ -55,12 +55,12 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@chainflip/bitcoin": "2.3.0-dev.1",
+    "@chainflip/bitcoin": "2.3.1",
     "@chainflip/processor": "2.3.1",
-    "@chainflip/rpc": "2.3.0-dev.5",
-    "@chainflip/utils": "2.3.0-dev.5",
-    "@chainflip/redis": "2.3.0-dev.1",
-    "@chainflip/solana": "2.3.0-dev.1",
+    "@chainflip/rpc": "2.3.3",
+    "@chainflip/utils": "2.3.3",
+    "@chainflip/redis": "2.3.1",
+    "@chainflip/solana": "2.3.1",
     "@polkadot/api": "^16.5.6",
     "@polkadot/types": "^16.5.6",
     "@prisma/adapter-pg": "^7.8.0",

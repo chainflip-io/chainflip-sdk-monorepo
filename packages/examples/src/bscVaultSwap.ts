@@ -1,0 +1,71 @@
+#!/usr/bin/env node --import=tsx --trace-uncaught --no-warnings
+
+import { getDefaultProvider, Wallet, Contract, parseUnits } from 'ethers';
+import { SwapSDK, Chains, Assets } from '@/sdk/swap/index.js';
+import 'dotenv/config';
+
+if (!process.env.BSC_SECRET_KEY) {
+  const randomWallet = Wallet.createRandom();
+  process.env.BSC_SECRET_KEY = randomWallet.privateKey;
+
+  console.log('BSC_SECRET_KEY not set - generating random secret key');
+  console.log('generated secret key', process.env.BSC_SECRET_KEY);
+}
+
+const swapSDK = new SwapSDK({
+  network: 'perseverance',
+  enabledFeatures: { dcaV2: true },
+  // broker: {url: 'http://10.5.2.143:8080/ '}
+});
+
+// 'bnbt' is bsc testnet (chain id 97), the bsc network used by perseverance
+const wallet = new Wallet(process.env.BSC_SECRET_KEY as string, getDefaultProvider('bnbt'));
+console.log('wallet address', wallet.address);
+
+const { quotes } = await swapSDK.getQuoteV2({
+  srcChain: Chains.Bsc,
+  srcAsset: Assets.USDT,
+  destChain: Chains.Bsc,
+  destAsset: Assets.BNB,
+  amount: parseUnits('50', 18).toString(), // 50 bscUSDT - unlike other chains, it has 18 decimals
+  isVaultSwap: true,
+});
+
+const quote = quotes.find((q) => q.type === 'REGULAR');
+if (!quote) throw new Error('No quote');
+console.log('quote', quote);
+
+const vaultSwapData = await swapSDK.encodeVaultSwapData({
+  quote,
+  destAddress: wallet.address,
+  fillOrKillParams: {
+    slippageTolerancePercent: quote.recommendedSlippageTolerancePercent,
+    refundAddress: wallet.address,
+    retryDurationBlocks: 100,
+    livePriceSlippageTolerancePercent: quote.recommendedLivePriceSlippageTolerancePercent,
+  },
+});
+console.log('transactionData', vaultSwapData);
+if (vaultSwapData.chain !== 'Bsc') throw new Error('Invalid chain');
+
+if (vaultSwapData.sourceTokenAddress) {
+  const sourceTokenContract = new Contract(
+    vaultSwapData.sourceTokenAddress,
+    ['function approve(address spender, uint256 value) returns (bool)'],
+    wallet,
+  );
+  console.log('approving contract');
+  const approvalTx = await sourceTokenContract.approve(vaultSwapData.to, quote.depositAmount);
+  await approvalTx.wait();
+}
+
+console.log('sending transaction');
+const swapTx = await wallet.sendTransaction({
+  to: vaultSwapData.to,
+  data: vaultSwapData.calldata,
+  value: vaultSwapData.value,
+});
+console.log('transaction sent, waiting for receipt');
+const receipt = await swapTx.wait();
+
+console.log(receipt?.hash);
