@@ -115,6 +115,7 @@ export default z
     REDIS_URL_BACKOFFICE: redisUrl.optional(),
     MESSAGE_QUEUE_DELAY_MS: optionalNumber(0),
     MAINTENANCE_MODE: optionalBoolean,
+    DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK: optionalBoolean,
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
     COINGECKO_API_KEY: z.string().optional(),
     DCA_DEFAULT_SELL_CHUNK_SIZE_USD: optionalNumber(10000),

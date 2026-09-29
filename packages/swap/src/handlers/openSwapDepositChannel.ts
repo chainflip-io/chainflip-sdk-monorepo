@@ -29,6 +29,10 @@ export const openSwapDepositChannel = async ({
   takeCommission,
   ...input
 }: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>) => {
+  if (env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK) {
+    throw ServiceError.unavailable('Opening swap deposit channels is currently unavailable');
+  }
+
   logger.info('Opening swap deposit channel', input);
 
   const srcAsset = getInternalAsset(input.srcAsset);
