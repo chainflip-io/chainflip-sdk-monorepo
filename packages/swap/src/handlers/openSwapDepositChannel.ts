@@ -29,10 +29,6 @@ export const openSwapDepositChannel = async ({
   takeCommission,
   ...input
 }: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>) => {
-  if (env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK) {
-    throw ServiceError.unavailable('Opening swap deposit channels is currently unavailable');
-  }
-
   logger.info('Opening swap deposit channel', input);
 
   const srcAsset = getInternalAsset(input.srcAsset);
@@ -65,6 +61,13 @@ export const openSwapDepositChannel = async ({
   if (takeCommission && env.RPC_COMMISSION_BROKER_HTTPS_URL) {
     commissionBps = env.BROKER_COMMISSION_BPS;
     brokerUrl = env.RPC_COMMISSION_BROKER_HTTPS_URL;
+  }
+
+  if (
+    env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK &&
+    brokerUrl === env.RPC_BROKER_HTTPS_URL
+  ) {
+    throw ServiceError.unavailable('Opening swap deposit channels is currently unavailable');
   }
 
   const [swapDepositAddress, chainInfo, inputPrice, outputPrice] = await Promise.all([

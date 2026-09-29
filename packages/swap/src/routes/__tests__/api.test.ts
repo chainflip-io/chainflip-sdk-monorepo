@@ -521,6 +521,40 @@ describe('openSwapDepositChannel', () => {
     expect(await prisma.swapDepositChannel.count()).toBe(0);
   });
 
+  it('does not reject requests using the commission broker if opening swap deposit channels through the chainflip sdk is disabled', async () => {
+    env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK = true;
+    env.RPC_COMMISSION_BROKER_HTTPS_URL = 'https://broker-2.test';
+    mockRpcResponse({ data: environment() });
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: 888,
+      issuedBlock: 123,
+      channelOpeningFee: 100n,
+    });
+
+    const result = await client.openSwapDepositChannel({
+      body: {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        amount: '777',
+        fillOrKillParams: {
+          maxOraclePriceSlippage: 100,
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundCcmMetadata: null,
+          retryDurationBlocks: 2,
+          minPriceX128: '1',
+        },
+        takeCommission: true,
+      },
+    });
+
+    expect(result.status).toBe(201);
+    expect(broker.requestSwapDepositAddress).toHaveBeenCalledTimes(1);
+    expect(await prisma.swapDepositChannel.count()).toBe(1);
+  });
+
   it('rejects if too many channels are open', async () => {
     env.MAX_CHANNELS_OPEN_PER_ADDRESS = 5;
 
