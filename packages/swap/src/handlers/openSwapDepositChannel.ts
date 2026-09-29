@@ -29,6 +29,20 @@ export const openSwapDepositChannel = async ({
   takeCommission,
   ...input
 }: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>) => {
+  let commissionBps = 0;
+  let brokerUrl = env.RPC_BROKER_HTTPS_URL;
+  if (takeCommission && env.RPC_COMMISSION_BROKER_HTTPS_URL) {
+    commissionBps = env.BROKER_COMMISSION_BPS;
+    brokerUrl = env.RPC_COMMISSION_BROKER_HTTPS_URL;
+  }
+
+  if (
+    env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK &&
+    brokerUrl === env.RPC_BROKER_HTTPS_URL
+  ) {
+    throw ServiceError.unavailable('Opening swap deposit channels is currently unavailable');
+  }
+
   logger.info('Opening swap deposit channel', input);
 
   const srcAsset = getInternalAsset(input.srcAsset);
@@ -54,20 +68,6 @@ export const openSwapDepositChannel = async ({
 
   if (openChannelCount >= env.MAX_CHANNELS_OPEN_PER_ADDRESS) {
     throw ServiceError.badRequest('too many channels');
-  }
-
-  let commissionBps = 0;
-  let brokerUrl = env.RPC_BROKER_HTTPS_URL;
-  if (takeCommission && env.RPC_COMMISSION_BROKER_HTTPS_URL) {
-    commissionBps = env.BROKER_COMMISSION_BPS;
-    brokerUrl = env.RPC_COMMISSION_BROKER_HTTPS_URL;
-  }
-
-  if (
-    env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK &&
-    brokerUrl === env.RPC_BROKER_HTTPS_URL
-  ) {
-    throw ServiceError.unavailable('Opening swap deposit channels is currently unavailable');
   }
 
   const [swapDepositAddress, chainInfo, inputPrice, outputPrice] = await Promise.all([
