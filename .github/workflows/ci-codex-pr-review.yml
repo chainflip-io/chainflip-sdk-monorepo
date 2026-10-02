@@ -1,0 +1,25 @@
+name: Codex PR Review
+
+concurrency:
+  group: >-
+    ${{ ((github.event_name == 'pull_request' && !github.event.pull_request.draft) ||
+          (contains(github.event.comment.body, '/codex-review') &&
+            contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)))
+        && format('{0}-codex-pr-review', github.event.pull_request.number || github.event.issue.number)
+        || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+
+jobs:
+  codex-review:
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_codex_pr_review.yml@main
+    secrets: inherit
