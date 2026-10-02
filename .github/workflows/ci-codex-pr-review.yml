@@ -15,11 +15,276 @@ on:
   issue_comment:
     types: [created]
 
+env:
+  MODEL: gpt-6-sol
+
 jobs:
-  codex-review:
+  review:
+    if: >
+      (github.event_name == 'pull_request' && !github.event.pull_request.draft &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.event.pull_request.user.type != 'Bot') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/codex-review'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      final_message: ${{ steps.codex.outputs.final-message }}
+      pr_number: ${{ steps.pr.outputs.number }}
+      head_sha: ${{ steps.pr.outputs.head_sha }}
+    steps:
+      - name: Resolve pull request
+        id: pr
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          script: |
+            if (context.eventName === 'issue_comment') {
+              const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                username: context.actor,
+              });
+              if (!['admin', 'write'].includes(data.permission)) {
+                core.notice(`${context.actor} does not have write access, skipping review.`);
+                return;
+              }
+            }
+
+            const number = context.payload.pull_request?.number ?? context.payload.issue.number;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: number,
+            });
+            core.setOutput('number', number);
+            core.setOutput('head_sha', pr.head.sha);
+            core.setOutput('base_sha', pr.base.sha);
+            core.setOutput('title', pr.title);
+            core.setOutput('body', pr.body ?? '');
+
+      - name: Checkout repository
+        if: steps.pr.outputs.head_sha
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ steps.pr.outputs.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Codex PR Review
+        id: codex
+        if: steps.pr.outputs.head_sha
+        timeout-minutes: 10
+        # TODO: Point this back to V1 when the issue is fixed
+        # v1.12 can leave the runner's networking broken so the step never exits: https://github.com/openai/codex-action/issues/160
+        uses: openai/codex-action@52fe01ec70a42f454c9d2ebd47598f9fd6893d56
+        with:
+          openai-api-key: ${{ secrets.CF_WEB_OPENAI_API_KEY }}
+          model: ${{ env.MODEL }}
+          effort: high
+          sandbox: read-only
+          output-schema: |
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["summary", "findings"],
+              "properties": {
+                "summary": { "type": "string" },
+                "findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["priority", "title", "path", "start_line", "end_line", "body"],
+                    "properties": {
+                      "priority": { "type": "integer", "enum": [0, 1, 2, 3] },
+                      "title": { "type": "string" },
+                      "path": { "type": "string" },
+                      "start_line": { "type": "integer" },
+                      "end_line": { "type": "integer" },
+                      "body": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR_NUMBER: ${{ steps.pr.outputs.number }}
+            BASE_SHA: ${{ steps.pr.outputs.base_sha }}
+            HEAD_SHA: ${{ steps.pr.outputs.head_sha }} (checked out)
+
+            PR title and description:
+            ----
+            ${{ steps.pr.outputs.title }}
+
+            ${{ steps.pr.outputs.body }}
+            ----
+
+            Review ONLY the changes introduced by the PR: `git diff BASE_SHA...HEAD_SHA`. Read surrounding code as needed.
+            Read and follow the CLAUDE.md file at the repository root for project conventions and coding standards.
+
+            Focus your review on:
+
+            1. **Correctness**: Logic errors, bugs, or edge cases
+            2. **Security**: Potential vulnerabilities (XSS, injection, etc.)
+            3. **Performance**: Unnecessary re-renders, missing memoization, inefficient queries
+            4. **Code quality**: Readability, naming, DRY violations, unnecessary complexity, dead code, commented-out code
+
+            Keep the review concise. Only report issues that matter — skip style nitpicks.
+            Report each line-specific issue in `findings`:
+            - `priority`: 0 = critical, blocks merge; 1 = should be fixed before merge; 2 = should be fixed eventually; 3 = minor
+            - `title`: one line, at most 80 characters
+            - `path`: relative to the repository root
+            - `start_line` / `end_line`: the shortest range that pinpoints the issue, as line numbers in the PR's version of the file (equal for a single line)
+            Use `summary` for a one or two sentence overall assessment. Do not repeat the findings in it; they are listed separately.
+            If the changes look good, say so briefly and leave `findings` empty.
+
+  post:
+    needs: review
+    if: needs.review.outputs.final_message != ''
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
       issues: write
-    uses: chainflip-io/chainflip-reusable-workflows/.github/workflows/_web_codex_pr_review.yml@main
-    secrets: inherit
+    steps:
+      - name: Post review
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        env:
+          FINAL_MESSAGE: ${{ needs.review.outputs.final_message }}
+          PR_NUMBER: ${{ needs.review.outputs.pr_number }}
+          HEAD_SHA: ${{ needs.review.outputs.head_sha }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const MARKER = '<!-- codex-pr-review -->';
+            const { owner, repo } = context.repo;
+            const pull_number = Number(process.env.PR_NUMBER);
+            const PRIORITY = ['🔴 P0', '🟠 P1', '🟡 P2', '⚪ P3'];
+            let summary = process.env.FINAL_MESSAGE;
+            let findings = [];
+            let parsed = false;
+            try {
+              ({ summary, findings } = JSON.parse(process.env.FINAL_MESSAGE));
+              parsed = true;
+            } catch {
+              core.warning('Codex output was not valid JSON, posting it verbatim.');
+            }
+
+            const hunkByRightSideLine = (patch = '') => {
+              const hunks = new Map();
+              let hunkIndex = -1;
+              let line = 0;
+              for (const row of patch.split('\n')) {
+                const hunk = row.match(/^@@ -\d+(?:,\d+)? \+(\d+)/);
+                if (hunk) {
+                  hunkIndex += 1;
+                  line = Number(hunk[1]);
+                } else if (!row.startsWith('-') && !row.startsWith('\\')) {
+                  hunks.set(line++, hunkIndex);
+                }
+              }
+              return hunks;
+            };
+
+            const files = await github.paginate(github.rest.pulls.listFiles, { owner, repo, pull_number });
+            const commentable = new Map(files.map((f) => [f.filename, hunkByRightSideLine(f.patch)]));
+
+            findings.sort((a, b) => a.priority - b.priority);
+
+            // GitHub rejects the whole review if any single comment points outside the diff,
+            // and a multi-line comment must start and end in the same hunk.
+            const isInDiff = (f) => {
+              const hunks = commentable.get(f.path);
+              const startHunk = hunks?.get(f.start_line);
+              return startHunk !== undefined && f.start_line <= f.end_line && hunks.get(f.end_line) === startHunk;
+            };
+            const inline = findings.filter(isInDiff);
+            let outsideDiff = findings.filter((f) => !inline.includes(f));
+
+            const lineRange = (f) => (f.start_line === f.end_line ? `${f.start_line}` : `${f.start_line}-${f.end_line}`);
+            const heading = (f) => `${PRIORITY[f.priority]} · **${f.title}**`;
+
+            const previousInline = await github.paginate(github.rest.pulls.listReviewComments, {
+              owner,
+              repo,
+              pull_number,
+            });
+            const repliedTo = new Set(previousInline.map((c) => c.in_reply_to_id).filter(Boolean));
+            for (const comment of previousInline) {
+              if (
+                comment.user?.login === 'github-actions[bot]' &&
+                comment.body?.includes(MARKER) &&
+                !repliedTo.has(comment.id)
+              ) {
+                await github.rest.pulls.deleteReviewComment({ owner, repo, comment_id: comment.id });
+              }
+            }
+
+            if (inline.length > 0) {
+              try {
+                await github.rest.pulls.createReview({
+                  owner,
+                  repo,
+                  pull_number,
+                  commit_id: process.env.HEAD_SHA,
+                  event: 'COMMENT',
+                  comments: inline.map((f) => ({
+                    path: f.path,
+                    line: f.end_line,
+                    side: 'RIGHT',
+                    ...(f.start_line < f.end_line && { start_line: f.start_line, start_side: 'RIGHT' }),
+                    body: `${MARKER}\n${heading(f)}\n\n${f.body}`,
+                  })),
+                });
+              } catch (error) {
+                core.warning(`Inline review failed, folding findings into the summary: ${error.message}`);
+                outsideDiff = findings;
+              }
+            }
+
+            const previous = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: pull_number,
+            });
+            for (const comment of previous) {
+              if (comment.user?.login === 'github-actions[bot]' && comment.body?.includes(MARKER)) {
+                await github.rest.issues.deleteComment({ owner, repo, comment_id: comment.id });
+              }
+            }
+
+            const blobUrl = (f) =>
+              `https://github.com/${owner}/${repo}/blob/${process.env.HEAD_SHA}/${encodeURI(f.path)}#L${f.start_line}` +
+              (f.start_line < f.end_line ? `-L${f.end_line}` : '');
+            const findingBullet = (f) => {
+              const bullet = `- ${heading(f)} — [\`${f.path}:${lineRange(f)}\`](${blobUrl(f)})`;
+              return outsideDiff.includes(f) ? `${bullet} _(outside the diff)_\n\n  ${f.body.replace(/\n/g, '\n  ')}` : bullet;
+            };
+            const counts = PRIORITY.map((label, p) => [label, findings.filter((f) => f.priority === p).length])
+              .filter(([, n]) => n > 0)
+              .map(([label, n]) => `${label} × ${n}`)
+              .join(' · ');
+
+            let findingsSection = [];
+            if (findings.length > 0) {
+              findingsSection = ['', `**${findings.length} finding${findings.length === 1 ? '' : 's'}** — ${counts}`, '', ...findings.map(findingBullet)];
+            } else if (parsed) {
+              findingsSection = ['', '✅ No issues found.'];
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pull_number,
+              body: [
+                MARKER,
+                '### Codex review',
+                '',
+                summary,
+                ...findingsSection,
+                '',
+                `<sub>${process.env.MODEL} · ${process.env.HEAD_SHA.slice(0, 7)}</sub>`,
+              ].join('\n'),
+            });
