@@ -129,4 +129,21 @@ describe(createNotFoundRateLimit, () => {
     expect(request(middleware, IP, 200).mock.calls[0]![0]?.code).toBe(429);
     expect(request(middleware, OTHER_IP, 200)).toHaveBeenCalledWith();
   });
+
+  it('counts a 404 from a request that was in flight when the cleanup ran', () => {
+    const middleware = createNotFoundRateLimit();
+    const inFlight = mockRes(404);
+    middleware(mockReq(IP), inFlight, vi.fn());
+
+    vi.advanceTimersByTime(
+      Math.max(env.NOT_FOUND_RATE_LIMIT_WINDOW_MS, env.NOT_FOUND_RATE_LIMIT_BLOCK_DURATION_MS),
+    );
+    (inFlight as unknown as EventEmitter).emit('finish');
+
+    for (let i = 0; i < MAX_REQUESTS; i += 1) {
+      request(middleware, IP, 404);
+    }
+
+    expect(request(middleware, IP, 200).mock.calls[0]![0]?.code).toBe(429);
+  });
 });

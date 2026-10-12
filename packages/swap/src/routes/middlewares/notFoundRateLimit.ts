@@ -42,11 +42,8 @@ export const createNotFoundRateLimit = (): RequestHandler => {
     if (!isString(ip)) return next();
 
     const now = Date.now();
-    let record = records.get(ip);
-    if (!record) {
-      record = { timestamps: [], blockedUntil: 0 };
-      records.set(ip, record);
-    }
+    const record = records.get(ip) ?? { timestamps: [], blockedUntil: 0 };
+    records.set(ip, record);
 
     if (record.blockedUntil > now) {
       return next(ServiceError.tooManyRequests());
@@ -55,7 +52,9 @@ export const createNotFoundRateLimit = (): RequestHandler => {
     res.on('finish', () => {
       if (res.statusCode !== 404) return;
 
-      const rec = records.get(ip)!;
+      // The cleanup interval can evict this IP while the request is in flight.
+      const rec = records.get(ip) ?? record;
+      records.set(ip, rec);
       const finishTime = Date.now();
       const cutoff = finishTime - windowMs;
 
