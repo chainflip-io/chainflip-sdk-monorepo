@@ -210,8 +210,8 @@ importers:
         specifier: 2.3.1
         version: 2.3.1
       '@chainflip/redis':
-        specifier: 2.3.1
-        version: 2.3.1(supports-color@7.2.0)
+        specifier: 2.3.2
+        version: 2.3.2(supports-color@7.2.0)
       '@chainflip/rpc':
         specifier: 2.3.3
         version: 2.3.3
@@ -430,8 +430,8 @@ packages:
   '@chainflip/processor@2.3.1':
     resolution: {integrity: sha512-WYR2sYtlNA5EJmOQVf1vjVJT3FeGEwKSrv687UpRYyxEg4m9fI5SOe8qYA9udqsxckAd5CrT2WjkpZVgU2YaJw==}
 
-  '@chainflip/redis@2.3.1':
-    resolution: {integrity: sha512-tc7xzCwOPZC9aN40pltW3X77SSJF140nUxeqwMFPyLVDKuCB4ILWpgmDiVwFGL5mnCTDdgBQKlGFIzKjYp3g1g==}
+  '@chainflip/redis@2.3.2':
+    resolution: {integrity: sha512-2wYNqPjrM9IlpCSU3pVpnsOdPP6OdKCTn6YJZgZGUNitGl3JNhFFYnh2hZLB/ofPKuppPzORtfU/lEt/ZU47Ow==}
 
   '@chainflip/rpc@2.3.0-dev.4':
     resolution: {integrity: sha512-YfMWjJGRYfdDUM+GDFsnlWWSfxCvFb0WxwR9kij89RdgTlV+CUMuZjcNA/ENrKWEnz6gShMMJaeJm3hURwBmiw==}
@@ -5869,7 +5869,7 @@ snapshots:
       '@chainflip/utils': 2.3.0-dev.4
       zod: 3.25.76
 
-  '@chainflip/redis@2.3.1(supports-color@7.2.0)':
+  '@chainflip/redis@2.3.2(supports-color@7.2.0)':
     dependencies:
       '@chainflip/utils': 2.3.3
       bignumber.js: 11.1.5
