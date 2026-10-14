@@ -138,7 +138,10 @@ describe('ingress-egress-tracking', () => {
             amount: '0x9000',
             asset: { asset: 'BTC', chain: 'Bitcoin' },
             deposit_chain_block_height: 1234567890,
-            deposit_details: { tx_id: '0x1234', vout: 1 },
+            deposit_details: {
+              tx_id: '0x52b5dad6c7717e34c87e90e8c9883102c986a4adc46d1befc2459ee984784cf6',
+              vout: 1,
+            },
           }),
         ),
         updateChainTracking({ chain: 'Bitcoin', height: 1234567894n }),
@@ -150,7 +153,7 @@ describe('ingress-egress-tracking', () => {
       expect(deposit).toEqual({
         amount: '36864',
         txConfirmations: 4,
-        txRef: '3412',
+        txRef: '52b5dad6c7717e34c87e90e8c9883102c986a4adc46d1befc2459ee984784cf6',
       });
     });
 
@@ -229,7 +232,7 @@ describe('ingress-egress-tracking', () => {
           destination_address: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff',
           ccm_deposit_metadata: null,
           deposit_details: {
-            tx_id: '0x396255c0153a4af5f2b7f07adbdb60ff41c7eaff6e6137e5d48c8d11dadca477',
+            tx_id: '0x77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
             vout: 0,
           },
           broker_fee: { account: 'cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW', bps: 0 },
@@ -551,7 +554,7 @@ describe('ingress-egress-tracking', () => {
           destination_address: '0xa56a6be23b6cf39d9448ff6e897c29c41c8fbdff',
           ccm_deposit_metadata: null,
           deposit_details: {
-            tx_id: '0x396255c0153a4af5f2b7f07adbdb60ff41c7eaff6e6137e5d48c8d11dadca477',
+            tx_id: '0x77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
             vout: 0,
           },
           broker_fee: { account: 'cFMTNSQQVfBo2HqtekvhLPfZY764kuJDVFG1EvnnDGYxc3LRW', bps: 0 },
