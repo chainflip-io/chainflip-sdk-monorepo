@@ -162,6 +162,8 @@ model SwapBeneficiary {
   accountCreationDepositChannelId BigInt?
 
   @@index([channelId])
+  @@index([swapRequestId])
+  @@index([accountCreationDepositChannelId])
   @@schema("public")
 }
 
@@ -275,6 +277,8 @@ model SwapRequest {
 
   @@index([srcAsset, prewitnessedDepositId])
   @@index([nativeId])
+  @@index([swapDepositChannelId])
+  @@index([accountCreationDepositChannelId])
   @@schema("public")
 }
 
@@ -317,6 +321,7 @@ model Swap {
   updatedAt                       DateTime           @default(now()) @updatedAt
 
   @@index([nativeId])
+  @@index([swapRequestId])
   @@schema("public")
 }
 
@@ -392,6 +397,7 @@ model FailedSwap {
   solanaPendingTxRef              SolanaPendingTxRef[]
 
   @@index([swapDepositChannelId])
+  @@index([accountCreationDepositChannelId])
   @@schema("public")
 }
 
