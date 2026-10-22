@@ -55,7 +55,7 @@
     "pnpm": ">=9"
   },
   "dependencies": {
-    "@chainflip/bitcoin": "2.3.1",
+    "@chainflip/bitcoin": "2.3.2",
     "@chainflip/processor": "2.3.1",
     "@chainflip/rpc": "2.3.3",
     "@chainflip/utils": "2.3.3",
