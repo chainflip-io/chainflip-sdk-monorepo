@@ -53,7 +53,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "^20 || ^22 || ^24",
+    "node": "^20 || ^22 || ^24 || ^26",
     "pnpm": ">=9"
   },
   "repository": {
