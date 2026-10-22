@@ -12,7 +12,7 @@ on:
         description: Node version
         required: false
         type: string
-        default: 24.x
+        default: 26.x
       package_registry:
         description: Package registry
         required: false
@@ -81,7 +81,7 @@ jobs:
       - name: Import SSH key 🔑
         uses: webfactory/ssh-agent@v0.9.0
         with:
-            ssh-private-key: ${{ secrets.ssh_private_key }}
+          ssh-private-key: ${{ secrets.ssh_private_key }}
       - name: Config Git 🛠
         shell: bash
         run: |
@@ -91,7 +91,6 @@ jobs:
           git config --global commit.gpgsign true
           git config --global gpg.format ssh
           git config --global user.signingkey /tmp/signingkey.pub
-
 
       - name: Create Git Tag 🔖
         run: |
