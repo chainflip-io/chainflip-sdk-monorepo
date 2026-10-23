@@ -315,6 +315,7 @@ describe(networkDepositFailed, () => {
         },
         `
         {
+          "abandonedAt": null,
           "accountCreationDepositChannelId": null,
           "address": null,
           "failedVaultSwapId": null,
@@ -362,6 +363,7 @@ describe(networkDepositFailed, () => {
         },
         `
         {
+          "abandonedAt": null,
           "accountCreationDepositChannelId": null,
           "address": "HZC6KyQYbxbKGiyWbBrwhxrPPecFi2yKG9jMwFqwNEtJ",
           "failedVaultSwapId": Any<Number>,

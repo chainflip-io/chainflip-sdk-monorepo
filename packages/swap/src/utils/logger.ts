@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { AsyncLocalStorage } from 'async_hooks';
 import type { UUID } from 'crypto';
 import stringify from 'safe-stable-stringify';
-import { createLogger, format, transports } from 'winston';
+import winston, { createLogger, format, transports } from 'winston';
 import { ZodError } from 'zod';
 import env from '../config/env.js';
 
@@ -11,6 +11,21 @@ const customMessageFormat = format.printf(
     // TODO: check and improve the format for dev environments - old format broken by unexpected breaking change
     `[${info.timestamp}] ${info.level}: ${info.message}  ${info.metadata ? stringify(info.metadata) : ''}`,
 );
+
+// npm levels shifted down to make room for three custom levels more severe than 'error'
+const levels = {
+  alert: 0,
+  crit: 1,
+  severe: 2,
+  ...Object.fromEntries(
+    Object.entries(winston.config.npm.levels).map(([level, n]) => [level, n + 3]),
+  ),
+};
+
+// winston only ships colors for its built-in level names, and colorize throws on a level without one
+winston.addColors({ severe: 'red' });
+
+type Logger = winston.Logger & Record<keyof typeof levels, winston.LeveledLogMethod>;
 
 export const logStorage = new AsyncLocalStorage<UUID>();
 
@@ -28,7 +43,8 @@ const logger = createLogger({
   silent: env.NODE_ENV === 'test',
   defaultMeta: { component: 'SWAP' },
   transports: [new transports.Console()],
-});
+  levels,
+}) as Logger;
 
 export default logger;
 

@@ -620,6 +620,7 @@ model SolanaPendingTxRef {
   failedVaultSwapId               Int?
   accountCreationDepositChannel   AccountCreationDepositChannel? @relation(fields: [accountCreationDepositChannelId], references: [id])
   accountCreationDepositChannelId BigInt?
+  abandonedAt                     DateTime?
 
   @@schema("private")
 }
