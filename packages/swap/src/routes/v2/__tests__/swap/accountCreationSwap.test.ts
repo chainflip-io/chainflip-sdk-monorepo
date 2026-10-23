@@ -284,6 +284,7 @@ describe('account creation swap', () => {
       },
       `
       {
+        "abandonedAt": null,
         "accountCreationDepositChannelId": Any<BigInt>,
         "address": null,
         "failedVaultSwapId": null,
