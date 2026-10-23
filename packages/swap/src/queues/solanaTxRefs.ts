@@ -16,6 +16,9 @@ import baseLogger, { inspectError } from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'solana-queue' });
 
+const GIVE_UP_AFTER_MS = 24 * 60 * 60 * 1000; // 24 hours
+const MAX_BACKOFF_MS = 30 * 60 * 1000; // 30 minutes
+
 const pendingTxRefSchema = z.union([
   z.object({ swapDepositChannelId: z.bigint() }).transform((args) => ({
     type: 'CHANNEL' as const,
@@ -193,16 +196,20 @@ export const start = async () => {
   logger.info('starting solana tx ref queue');
 
   let retries = 0;
+  const firstFailedAt = new Map<number, number>();
 
   while (!controller.signal.aborted) {
     try {
-      const backoff = Math.min(env.SOLANA_TX_REF_QUEUE_INTERVAL * 2 ** retries, 60_000);
+      const backoff = Math.min(env.SOLANA_TX_REF_QUEUE_INTERVAL * 2 ** retries, MAX_BACKOFF_MS);
       await sleep(backoff, { signal: controller.signal });
     } catch {
       break;
     }
 
-    const pendingTxRef = await prisma.solanaPendingTxRef.findFirst();
+    const pendingTxRef = await prisma.solanaPendingTxRef.findFirst({
+      where: { abandonedAt: null },
+      orderBy: { id: 'asc' },
+    });
 
     // eslint-disable-next-line no-continue
     if (!pendingTxRef) continue;
@@ -226,6 +233,7 @@ export const start = async () => {
       }
 
       retries = 0;
+      firstFailedAt.delete(pendingTxRef.id);
 
       await prisma.solanaPendingTxRef.delete({ where: { id: pendingTxRef.id } });
     } catch (error) {
@@ -240,7 +248,31 @@ export const start = async () => {
           pendingTxRef,
           parsed,
         });
+      }
 
+      const failingSince = firstFailedAt.get(pendingTxRef.id) ?? Date.now();
+      firstFailedAt.set(pendingTxRef.id, failingSince);
+
+      if (Date.now() - failingSince >= GIVE_UP_AFTER_MS) {
+        try {
+          await prisma.solanaPendingTxRef.update({
+            where: { id: pendingTxRef.id },
+            data: { abandonedAt: new Date() },
+          });
+          logger.severe('giving up on solana tx ref after a day of retries', {
+            pendingTxRef,
+            parsed,
+            failingSince: new Date(failingSince).toISOString(),
+          });
+          firstFailedAt.delete(pendingTxRef.id);
+          retries = 0;
+        } catch (abandonError) {
+          logger.error('failed to abandon solana tx ref', {
+            error: inspectError(abandonError),
+            pendingTxRef,
+          });
+        }
+      } else if (!isAxiosError(error)) {
         retries += 1;
         logger.info('retrying request', { retries });
       }
