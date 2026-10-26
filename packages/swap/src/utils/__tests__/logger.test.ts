@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { Writable } from 'stream';
+import { stripVTControlCharacters } from 'util';
+import { afterEach, describe, expect, it } from 'vitest';
+import { transports } from 'winston';
 import { z } from 'zod';
-import { inspectError } from '../logger.js';
+import logger, { inspectError } from '../logger.js';
 
 describe(inspectError, () => {
   it('handles a generic Error', () => {
@@ -86,5 +89,45 @@ describe(inspectError, () => {
   it('converts bigint values to numbers', () => {
     const result = inspectError({ amount: BigInt(999) });
     expect(result).toEqual({ amount: 999 });
+  });
+});
+
+describe('logger', () => {
+  const captured: Record<string | symbol, unknown>[] = [];
+  const transport = new transports.Stream({
+    stream: new Writable({
+      objectMode: true,
+      write(info, _encoding, callback) {
+        captured.push(info);
+        callback();
+      },
+    }),
+  });
+
+  afterEach(() => {
+    logger.remove(transport);
+    logger.silent = true;
+    captured.length = 0;
+  });
+
+  it('emits the custom severe, crit and alert levels', () => {
+    logger.add(transport);
+    logger.silent = false;
+
+    logger.severe('quote rejected by every broker');
+    logger.child({ module: 'test' }).crit('processor has stalled', { lastBlock: 100 });
+    logger.alert('pager please');
+    logger.debug('should not appear');
+
+    expect(
+      captured.map((info) => ({
+        level: info[Symbol.for('level')],
+        message: stripVTControlCharacters(String(info.message)),
+      })),
+    ).toEqual([
+      { level: 'severe', message: 'quote rejected by every broker' },
+      { level: 'crit', message: 'processor has stalled' },
+      { level: 'alert', message: 'pager please' },
+    ]);
   });
 });

@@ -363,6 +363,7 @@ describe(depositFinalised, () => {
         "refundEgressId": Any<BigInt>,
         "solanaPendingTxRef": [
           {
+            "abandonedAt": null,
             "accountCreationDepositChannelId": null,
             "address": "9nGBAS5eSSYLak3QgsmPTEsJtpquXdCCXrSGU5ffMC1X",
             "failedVaultSwapId": Any<Number>,

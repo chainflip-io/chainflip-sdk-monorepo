@@ -9,12 +9,15 @@ import assert from 'assert';
 import { isAxiosError } from 'axios';
 import { z } from 'zod';
 import { assertUnreachable } from '@/shared/functions.js';
-import prisma from '../client.js';
+import prisma, { type SolanaPendingTxRef } from '../client.js';
 import env from '../config/env.js';
 import { handleExit } from '../utils/function.js';
 import baseLogger, { inspectError } from '../utils/logger.js';
 
 const logger = baseLogger.child({ module: 'solana-queue' });
+
+const GIVE_UP_AFTER_MS = 24 * 60 * 60 * 1000; // 24 hours
+const MAX_BACKOFF_MS = 30 * 60 * 1000; // 30 minutes
 
 const pendingTxRefSchema = z.union([
   z.object({ swapDepositChannelId: z.bigint() }).transform((args) => ({
@@ -165,6 +168,90 @@ const updateVaultSwap = async (url: string, data: VaultSwapPendingTxRef) => {
   }
 };
 
+type RetryState = { attempts: number; firstFailedAt: number; nextAttemptAt: number };
+
+const recordFailure = async (
+  retryStates: Map<number, RetryState>,
+  pendingTxRef: SolanaPendingTxRef,
+  parsed: PendingTxRef | undefined,
+) => {
+  const now = Date.now();
+  const state = retryStates.get(pendingTxRef.id);
+  const firstFailedAt = state?.firstFailedAt ?? now;
+
+  if (now - firstFailedAt >= GIVE_UP_AFTER_MS) {
+    try {
+      await prisma.solanaPendingTxRef.update({
+        where: { id: pendingTxRef.id },
+        data: { abandonedAt: new Date(now) },
+      });
+      retryStates.delete(pendingTxRef.id);
+      logger.severe('giving up on solana tx ref after a day of retries', {
+        pendingTxRef,
+        parsed,
+        failingSince: new Date(firstFailedAt).toISOString(),
+      });
+    } catch (error) {
+      logger.error('failed to abandon solana tx ref', { error: inspectError(error), pendingTxRef });
+    }
+    return;
+  }
+
+  const attempts = (state?.attempts ?? 0) + 1;
+  const backoff = Math.min(env.SOLANA_TX_REF_QUEUE_INTERVAL * 2 ** attempts, MAX_BACKOFF_MS);
+  const nextAttemptAt = now + backoff;
+  retryStates.set(pendingTxRef.id, { attempts, firstFailedAt, nextAttemptAt });
+  logger.info('retrying solana tx ref', {
+    id: pendingTxRef.id,
+    attempts,
+    nextAttemptAt: new Date(nextAttemptAt),
+  });
+};
+
+const processTxRef = async (
+  url: string,
+  network: SolanaNetwork,
+  retryStates: Map<number, RetryState>,
+  pendingTxRef: SolanaPendingTxRef,
+) => {
+  let parsed;
+
+  try {
+    parsed = pendingTxRefSchema.parse(pendingTxRef);
+
+    logger.info('processing solana tx ref', parsed);
+
+    switch (parsed.type) {
+      case 'CHANNEL':
+        await updateChannel(url, parsed, network);
+        break;
+      case 'VAULT_SWAP':
+        await updateVaultSwap(url, parsed);
+        break;
+      default:
+        assertUnreachable(parsed, 'unexpected pending tx ref type');
+    }
+
+    await prisma.solanaPendingTxRef.delete({ where: { id: pendingTxRef.id } });
+    retryStates.delete(pendingTxRef.id);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      logger.warn('network error while processing solana tx ref', {
+        error: error.toJSON(),
+        pendingTxRef,
+      });
+    } else {
+      logger.error('error processing solana tx ref', {
+        error: inspectError(error),
+        pendingTxRef,
+        parsed,
+      });
+    }
+
+    await recordFailure(retryStates, pendingTxRef, parsed);
+  }
+};
+
 export const start = async () => {
   const url = env.SOLANA_RPC_HTTP_URL;
 
@@ -192,58 +279,29 @@ export const start = async () => {
 
   logger.info('starting solana tx ref queue');
 
-  let retries = 0;
+  const retryStates = new Map<number, RetryState>();
 
   while (!controller.signal.aborted) {
     try {
-      const backoff = Math.min(env.SOLANA_TX_REF_QUEUE_INTERVAL * 2 ** retries, 60_000);
-      await sleep(backoff, { signal: controller.signal });
+      await sleep(env.SOLANA_TX_REF_QUEUE_INTERVAL, { signal: controller.signal });
     } catch {
       break;
     }
 
-    const pendingTxRef = await prisma.solanaPendingTxRef.findFirst();
+    const now = Date.now();
+    const waitingIds = [...retryStates]
+      .filter(([, state]) => state.nextAttemptAt > now)
+      .map(([id]) => id);
 
-    // eslint-disable-next-line no-continue
-    if (!pendingTxRef) continue;
+    const pendingTxRefs = await prisma.solanaPendingTxRef.findMany({
+      where: { abandonedAt: null, id: { notIn: waitingIds } },
+      orderBy: { id: 'asc' },
+      take: env.SOLANA_TX_REF_QUEUE_BATCH_SIZE,
+    });
 
-    let parsed;
-
-    try {
-      parsed = pendingTxRefSchema.parse(pendingTxRef);
-
-      logger.info('processing solana tx ref', parsed);
-
-      switch (parsed.type) {
-        case 'CHANNEL':
-          await updateChannel(url, parsed, network);
-          break;
-        case 'VAULT_SWAP':
-          await updateVaultSwap(url, parsed);
-          break;
-        default:
-          assertUnreachable(parsed, 'unexpected pending tx ref type');
-      }
-
-      retries = 0;
-
-      await prisma.solanaPendingTxRef.delete({ where: { id: pendingTxRef.id } });
-    } catch (error) {
-      if (isAxiosError(error)) {
-        logger.warn('network error while processing solana tx ref', {
-          error: error.toJSON(),
-          pendingTxRef,
-        });
-      } else {
-        logger.error('error processing solana tx ref', {
-          error: inspectError(error),
-          pendingTxRef,
-          parsed,
-        });
-
-        retries += 1;
-        logger.info('retrying request', { retries });
-      }
+    for (const pendingTxRef of pendingTxRefs) {
+      if (controller.signal.aborted) break;
+      await processTxRef(url, network, retryStates, pendingTxRef);
     }
   }
 
