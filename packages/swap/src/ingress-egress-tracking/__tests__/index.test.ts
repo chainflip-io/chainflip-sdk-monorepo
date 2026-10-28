@@ -6,6 +6,7 @@ import { Redis } from 'ioredis';
 import { vi, describe, expect, beforeAll, beforeEach, it } from 'vitest';
 import prisma, { Broadcast } from '../../client.js';
 import logger from '../../utils/logger.js';
+import { transactionRef } from '../../utils/transactionRef.js';
 import { getPendingBroadcast, getPendingDeposit, getPendingVaultSwap } from '../index.js';
 
 vi.mock('../../utils/logger.js');
@@ -248,7 +249,7 @@ describe('ingress-egress-tracking', () => {
       );
 
       const swap = await getPendingVaultSwap(
-        '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
+        transactionRef.parse('77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239'),
       );
 
       expect(swap).toMatchInlineSnapshot(`
@@ -313,7 +314,7 @@ describe('ingress-egress-tracking', () => {
       );
 
       const swap = await getPendingVaultSwap(
-        '0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6',
+        transactionRef.parse('0x648b916f4aef7dbae2d74ee8f0f4d498b2468151cd2f83d4a3f8a1d80f27f9f6'),
       );
 
       expect(swap).toMatchInlineSnapshot(`
@@ -375,7 +376,9 @@ describe('ingress-egress-tracking', () => {
       });
 
       const swap = await getPendingVaultSwap(
-        '4C8eMMsbpworHSTqDoqd31HnTFF4dJdG5mJVEJaK7Vjjeu7fC99ZDkDakiMHRNRsiWqcaQzyavoTrnH6gSkQR3Xj',
+        transactionRef.parse(
+          '4C8eMMsbpworHSTqDoqd31HnTFF4dJdG5mJVEJaK7Vjjeu7fC99ZDkDakiMHRNRsiWqcaQzyavoTrnH6gSkQR3Xj',
+        ),
       );
 
       expect(swap).toMatchInlineSnapshot(`
@@ -436,7 +439,7 @@ describe('ingress-egress-tracking', () => {
       });
 
       const swap = await getPendingVaultSwap(
-        '91d7edcdca97558e74d3d69205402026e3bb70158ec9d8cc063a5072fcbc5024',
+        transactionRef.parse('91d7edcdca97558e74d3d69205402026e3bb70158ec9d8cc063a5072fcbc5024'),
       );
 
       expect(swap).toMatchInlineSnapshot(`
@@ -501,7 +504,7 @@ describe('ingress-egress-tracking', () => {
       });
 
       const swap = await getPendingVaultSwap(
-        '91d7edcdca97558e74d3d69205402026e3bb70158ec9d8cc063a5072fcbc5024',
+        transactionRef.parse('91d7edcdca97558e74d3d69205402026e3bb70158ec9d8cc063a5072fcbc5024'),
       );
 
       expect(swap).toMatchInlineSnapshot(`
@@ -570,7 +573,7 @@ describe('ingress-egress-tracking', () => {
       );
 
       const swap = await getPendingVaultSwap(
-        '77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239',
+        transactionRef.parse('77a4dcda118d8cd4e537616effeac741ff60dbdb7af0b7f2f54a3a15c0556239'),
       );
 
       expect(swap?.txConfirmations).toEqual(4);
@@ -578,7 +581,7 @@ describe('ingress-egress-tracking', () => {
 
     it('returns null swap is not found', async () => {
       const swap = await getPendingVaultSwap(
-        '0x6187fbe7da29b6ca48f02fe1f07fa7f02b5570cc2d8950c53f4f427ced57db72',
+        transactionRef.parse('0x6187fbe7da29b6ca48f02fe1f07fa7f02b5570cc2d8950c53f4f427ced57db72'),
       );
 
       expect(swap).toBeNull();
@@ -589,7 +592,7 @@ describe('ingress-egress-tracking', () => {
       vi.spyOn(RedisClient.prototype, 'getPendingVaultSwap').mockRejectedValueOnce(new Error());
 
       const swap = await getPendingVaultSwap(
-        '0x6187fbe7da29b6ca48f02fe1f07fa7f02b5570cc2d8950c53f4f427ced57db72',
+        transactionRef.parse('0x6187fbe7da29b6ca48f02fe1f07fa7f02b5570cc2d8950c53f4f427ced57db72'),
       );
 
       expect(swap).toBeNull();

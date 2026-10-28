@@ -14,11 +14,13 @@ import {
   getSwapFields,
   getSwapState,
   rollupFees,
+  swapIdSchema,
 } from './utils.js';
 import { readField } from '../../utils/function.js';
 import { getLastChainTrackingUpdateTimestamp } from '../../utils/intercept.js';
 import logger from '../../utils/logger.js';
 import { getRequiredBlockConfirmations } from '../../utils/rpc.js';
+import ServiceError from '../../utils/ServiceError.js';
 import { estimateSwapDuration } from '../../utils/swap.js';
 import { asyncHandler } from '../middlewares/common.js';
 
@@ -39,13 +41,20 @@ router.get(
   asyncHandler(async (req, res) => {
     const { id } = req.params;
 
+    const parsedId = swapIdSchema.safeParse(id);
+
+    if (!parsedId.success) {
+      logger.info('received invalid swap id', { id });
+      throw ServiceError.badRequest('invalid swap id');
+    }
+
     const {
       swapRequest,
       failedSwap,
       swapDepositChannel,
       pendingVaultSwap,
       accountCreationDepositChannel,
-    } = await getLatestSwapForId(id);
+    } = await getLatestSwapForId(parsedId.data);
 
     const {
       state,

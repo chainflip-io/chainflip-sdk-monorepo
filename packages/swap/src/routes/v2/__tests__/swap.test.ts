@@ -537,6 +537,34 @@ describe('server', () => {
       expect(body).toEqual({ message: 'resource not found' });
     });
 
+    it.each([
+      // base58 but not a 64 byte solana signature
+      'vmPY5qWJg6j8V6G',
+      'xur-test-0001',
+      // bitcoin tx id with the wrong length
+      'deadbeef',
+      // evm tx hash with the wrong length
+      '0xdeadbeef',
+      // swap request id out of bigint range
+      '9223372036854775808',
+      // issued block out of integer range
+      '2147483648-Ethereum-1',
+      // channel id out of bigint range
+      '1-Ethereum-9223372036854775808',
+      '1-Foo-1',
+      // assethub extrinsic index out of u32 range
+      '1-4294967296',
+      `0x${'0'.repeat(64)}%00`,
+    ])('rejects an invalid swap id: %s', async (id) => {
+      vi.mocked(getPendingVaultSwap).mockClear();
+
+      const { body, status } = await request(server).get(`/v2/swaps/${id}`);
+
+      expect(status).toBe(400);
+      expect(body).toEqual({ message: 'invalid swap id' });
+      expect(getPendingVaultSwap).not.toHaveBeenCalled();
+    });
+
     it(`retrieves a swap in ${StateV2.Waiting} status`, async () => {
       await processEvents(swapEvents.slice(0, 1));
 
@@ -802,7 +830,7 @@ describe('server', () => {
       expect(rest).toMatchSnapshot();
     });
 
-    it.each(['0xdeadbeef', '0xDEADBEEF'])(
+    it.each([`0x${'deadbeef'.repeat(8)}`, `0x${'DEADBEEF'.repeat(8)}`])(
       `retrieves a swap in ${StateV2.Completed} status by tx hash`,
       async (ref) => {
         await processEvents(swapEvents.slice(0, 9));
@@ -2145,7 +2173,7 @@ describe('server', () => {
     });
 
     it(`returns the vault swap details in ${StateV2.Receiving} status`, async () => {
-      const txRef = '0x1234';
+      const txRef = `0x${'12'.repeat(32)}`;
       env.CHAINFLIP_NETWORK = 'mainnet';
       vi.mocked(getPendingVaultSwap).mockResolvedValue({
         txRef,

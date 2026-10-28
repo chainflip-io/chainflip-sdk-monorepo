@@ -1,7 +1,7 @@
 import { ChainflipChain } from '@chainflip/utils/chainflip';
 import { describe, it, expect } from 'vitest';
 import { Prisma } from '../../../client.js';
-import { getEgressStatusFields } from '../../v2/utils.js';
+import { getEgressStatusFields, swapIdSchema } from '../../v2/utils.js';
 
 describe(getEgressStatusFields, () => {
   const mockTransactionPayload = JSON.stringify({
@@ -98,5 +98,48 @@ describe(getEgressStatusFields, () => {
       undefined,
     );
     expect(egressStatus?.transactionPayload).toBeUndefined();
+  });
+});
+
+describe('swapIdSchema', () => {
+  it.each([
+    ['1', { type: 'swapRequest', nativeId: 1n }],
+    ['9223372036854775807', { type: 'swapRequest', nativeId: 9223372036854775807n }],
+    [
+      '123-ethereum-456',
+      { type: 'channel', issuedBlock: 123, srcChain: 'Ethereum', channelId: 456n },
+    ],
+    [
+      '2147483647-Bitcoin-9223372036854775807',
+      {
+        type: 'channel',
+        issuedBlock: 2147483647,
+        srcChain: 'Bitcoin',
+        channelId: 9223372036854775807n,
+      },
+    ],
+    ['104-2', { type: 'txRef', txRef: '104-2', chains: ['Assethub'] }],
+    [
+      '1'.repeat(64),
+      // a numeric bitcoin tx id is too long to be a swap request id
+      { type: 'txRef', txRef: '1'.repeat(64), chains: ['Bitcoin'] },
+    ],
+  ])('parses %s', (id, expected) => {
+    expect(swapIdSchema.parse(id)).toEqual(expected);
+  });
+
+  it.each([
+    '',
+    '-1',
+    '1.5',
+    '9223372036854775808',
+    '2147483648-Ethereum-1',
+    '1-Ethereum-9223372036854775808',
+    '1-Polkadot-1',
+    '1-Foo-1',
+    'vmPY5qWJg6j8V6G',
+    'xur-test-0001',
+  ])('rejects %j', (id) => {
+    expect(swapIdSchema.safeParse(id).success).toBe(false);
   });
 });

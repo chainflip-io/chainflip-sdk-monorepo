@@ -26,7 +26,16 @@ export const basisPoints = z.number().int({ message: 'must be in basis points' }
 export const DOT_PREFIX = 0;
 
 export const chainflipAddress = z.string().refine(
-  (address) => address.startsWith('cF') && ss58.decode(address),
+  (address) => {
+    if (!address.startsWith('cF')) return false;
+    // zod does not catch errors thrown by refinements
+    try {
+      ss58.decode(address);
+      return true;
+    } catch {
+      return false;
+    }
+  },
   (address) => ({ message: `${address} is not a valid Chainflip address` }),
 );
 

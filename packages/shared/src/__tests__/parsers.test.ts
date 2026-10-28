@@ -12,6 +12,10 @@ describe('chainflipAddress', () => {
     '0x0',
     '14UPxPveENj36SF5YX8R2YMrb6HaS7Nuuxw5a1aysuxVZyDu',
     '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+    // invalid ss58 strings make the decoder throw
+    'cF',
+    'cFxyz',
+    'cF0OIl',
   ])('invalid chainflip address', async (address) => {
     expect(chainflipAddress.safeParse(address).success).toBe(false);
   });
