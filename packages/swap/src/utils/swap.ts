@@ -3,12 +3,10 @@ import {
   anyChainConstants,
   AnyChainflipAsset,
   anyInternalAssetToRpcAsset,
-  chainflipChains,
 } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import { CHAINFLIP_STATECHAIN_BLOCK_TIME_SECONDS } from '@/shared/consts.js';
 import { assertUnreachable } from '@/shared/functions.js';
-import ServiceError from './ServiceError.js';
 import { FailedSwapReason, Swap } from '../client.js';
 import { getBoostDelay, getIngressDelay, getWitnessSafetyMargin } from './rpc.js';
 
@@ -89,12 +87,6 @@ export const isEgressableSwap = (swap: Swap) => {
     default:
       return assertUnreachable(swap.type);
   }
-};
-
-export const coerceChain = (maybeChain: string) => {
-  const chain = chainflipChains.find((c) => c.toLowerCase() === maybeChain.toLowerCase());
-  if (!chain) throw ServiceError.badRequest(`Invalid chain: ${maybeChain}`);
-  return chain;
 };
 
 export const failedSwapMessage: Record<FailedSwapReason, string> = {

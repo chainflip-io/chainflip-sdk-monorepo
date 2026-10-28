@@ -655,7 +655,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "brokers": [],
   "deposit": {
     "amount": "5000000000000000000",
-    "txRef": "0xdeadbeef",
+    "txRef": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
     "witnessedAt": 552000,
     "witnessedBlockIndex": "92-400",
   },
@@ -747,7 +747,7 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "brokers": [],
   "deposit": {
     "amount": "5000000000000000000",
-    "txRef": "0xdeadbeef",
+    "txRef": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
     "witnessedAt": 552000,
     "witnessedBlockIndex": "92-400",
   },
@@ -1947,7 +1947,7 @@ exports[`server > GET /v2/swaps/:id > returns the vault swap details in RECEIVIN
   "deposit": {
     "amount": "100",
     "txConfirmations": 1,
-    "txRef": "0x1234",
+    "txRef": "0x1212121212121212121212121212121212121212121212121212121212121212",
   },
   "destAddress": "0xcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
   "destAsset": "FLIP",

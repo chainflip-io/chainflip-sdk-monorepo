@@ -3,8 +3,10 @@ import {
   AnyChainflipChain,
   anyInternalAssetToRpcAsset,
   AssetSymbol,
+  chainflipChains,
 } from '@chainflip/utils/chainflip';
 import { isTruthy } from '@chainflip/utils/guard';
+import { z } from 'zod';
 import { assertUnreachable, getPriceFromPriceX128 } from '@/shared/functions.js';
 import { isNotNullish } from '@/shared/guards.js';
 import { StateV2 } from './swap.js';
@@ -26,8 +28,8 @@ import {
 import { readField } from '../../utils/function.js';
 import logger from '../../utils/logger.js';
 import ServiceError from '../../utils/ServiceError.js';
-import { coerceChain, failedSwapMessage, FailureMode } from '../../utils/swap.js';
-import { isTransactionRef } from '../../utils/transactionRef.js';
+import { failedSwapMessage, FailureMode } from '../../utils/swap.js';
+import { transactionRef } from '../../utils/transactionRef.js';
 
 const failedSwapInclude = { refundBroadcast: true } as const;
 const beneficiaryInclude = { type: true, account: true, commissionBps: true } as const;
@@ -67,27 +69,67 @@ const swapRequestInclude = {
   liquidationSwapInfo: true,
 } as const;
 
-const channelIdRegex = /^(?<issuedBlock>\d+)-(?<srcChain>[a-z]+)-(?<channelId>\d+)$/i;
-const swapRequestIdRegex = /^\d+$/i;
+// postgres integer and bigint column limits
+const INT_MAX = 2 ** 31 - 1;
+const BIGINT_MAX = 2n ** 63n - 1n;
 
-export const getLatestSwapForId = async (id: string) => {
+// transforms and pipes are skipped after a failed check, refinements are not
+const intString = z
+  .string()
+  .regex(/^\d{1,10}$/)
+  .transform(Number)
+  .pipe(z.number().max(INT_MAX));
+
+const bigintString = z
+  .string()
+  .regex(/^\d{1,19}$/)
+  .transform(BigInt)
+  .pipe(z.bigint().max(BIGINT_MAX));
+
+const chainString = z
+  .string()
+  .transform((maybeChain) =>
+    chainflipChains.find((chain) => chain.toLowerCase() === maybeChain.toLowerCase()),
+  )
+  .refine(isNotNullish);
+
+const channelIdSchema = z
+  .string()
+  .regex(/^\d+-[a-z]+-\d+$/i)
+  .transform((id) => id.split('-'))
+  .pipe(z.tuple([intString, chainString, bigintString]))
+  .transform(([issuedBlock, srcChain, channelId]) => ({
+    type: 'channel' as const,
+    issuedBlock,
+    srcChain,
+    channelId,
+  }));
+
+const swapRequestIdSchema = bigintString.transform((nativeId) => ({
+  type: 'swapRequest' as const,
+  nativeId,
+}));
+
+const txRefSchema = transactionRef.transform((ref) => ({ type: 'txRef' as const, ...ref }));
+
+export const swapIdSchema = z.union([channelIdSchema, swapRequestIdSchema, txRefSchema]);
+
+export type SwapId = z.output<typeof swapIdSchema>;
+
+export const getLatestSwapForId = async (id: SwapId) => {
   let swapRequest;
   let failedSwap;
   let swapDepositChannel;
   let pendingVaultSwap;
   let accountCreationDepositChannel;
 
-  if (channelIdRegex.test(id)) {
-    const { issuedBlock, srcChain, channelId } = channelIdRegex.exec(id)!.groups!;
+  if (id.type === 'channel') {
+    const { issuedBlock, srcChain, channelId } = id;
 
     [swapDepositChannel, accountCreationDepositChannel] = await Promise.all([
       prisma.swapDepositChannel.findUnique({
         where: {
-          issuedBlock_srcChain_channelId: {
-            issuedBlock: Number(issuedBlock),
-            srcChain: coerceChain(srcChain),
-            channelId: BigInt(channelId),
-          },
+          issuedBlock_srcChain_channelId: { issuedBlock, srcChain, channelId },
         },
         include: {
           swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
@@ -104,11 +146,7 @@ export const getLatestSwapForId = async (id: string) => {
       }),
       prisma.accountCreationDepositChannel.findUnique({
         where: {
-          issuedBlock_chain_channelId: {
-            issuedBlock: Number(issuedBlock),
-            chain: coerceChain(srcChain),
-            channelId: BigInt(channelId),
-          },
+          issuedBlock_chain_channelId: { issuedBlock, chain: srcChain, channelId },
         },
         include: {
           swapRequests: { include: swapRequestInclude, orderBy: { nativeId: 'desc' } },
@@ -129,7 +167,7 @@ export const getLatestSwapForId = async (id: string) => {
     const channel = accountCreationDepositChannel ?? swapDepositChannel;
 
     if (!channel) {
-      logger.info(`could not find swap request with id "${id}"`);
+      logger.info(`could not find swap request with id "${issuedBlock}-${srcChain}-${channelId}"`);
       throw ServiceError.notFound();
     }
 
@@ -138,14 +176,14 @@ export const getLatestSwapForId = async (id: string) => {
     if (!swapRequest || (swapRequest.completedAt && !swapRequest.swaps.length)) {
       failedSwap = channel.failedSwaps.at(0);
     }
-  } else if (swapRequestIdRegex.test(id)) {
+  } else if (id.type === 'swapRequest') {
     swapRequest = await prisma.swapRequest.findUnique({
-      where: { nativeId: BigInt(id) },
+      where: { nativeId: id.nativeId },
       include: swapRequestInclude,
     });
-  } else if (isTransactionRef(id)) {
+  } else {
     swapRequest = await prisma.swapRequest.findFirst({
-      where: { depositTransactionRef: { mode: 'insensitive', equals: id } },
+      where: { depositTransactionRef: { mode: 'insensitive', equals: id.txRef } },
       include: swapRequestInclude,
       // just get the last one for now
       orderBy: { nativeId: 'desc' },
@@ -154,7 +192,7 @@ export const getLatestSwapForId = async (id: string) => {
     if (!swapRequest) {
       [failedSwap, pendingVaultSwap] = await Promise.all([
         prisma.failedSwap.findFirst({
-          where: { depositTransactionRef: id },
+          where: { depositTransactionRef: id.txRef },
           include: failedSwapWithChannelsInclude,
         }),
         getPendingVaultSwap(id),

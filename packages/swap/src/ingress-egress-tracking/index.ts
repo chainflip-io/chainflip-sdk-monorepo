@@ -13,7 +13,7 @@ import prisma, { Broadcast } from '../client.js';
 import env from '../config/env.js';
 import { handleExit } from '../utils/function.js';
 import logger, { inspectError } from '../utils/logger.js';
-import { getTransactionRefChains } from '../utils/transactionRef.js';
+import type { TransactionRef } from '../utils/transactionRef.js';
 
 const redis = env.REDIS_URL ? new RedisClient(env.REDIS_URL) : undefined;
 
@@ -113,8 +113,8 @@ export const getPendingBroadcast = async (broadcast: Broadcast) => {
   }
 };
 
-export const getPendingVaultSwap = async (txRef: string) => {
-  const resultPromises = getTransactionRefChains(txRef).map(async (chain) => {
+export const getPendingVaultSwap = async ({ txRef, chains }: TransactionRef) => {
+  const resultPromises = chains.map(async (chain) => {
     let result = redis ? await redis.getPendingVaultSwap(chain, txRef) : null;
 
     if (!result) {
