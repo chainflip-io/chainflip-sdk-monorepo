@@ -1,4 +1,4 @@
-import { findTransactionSignatures } from '@chainflip/solana';
+import { findTransactionSignatures, findVaultSwapSignature } from '@chainflip/solana';
 import { sleep } from '@chainflip/utils/async';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import prisma from '../../client.js';
@@ -10,6 +10,7 @@ vi.mock('../../utils/function.js');
 vi.mock('@chainflip/utils/async');
 vi.mock('@chainflip/solana', () => ({
   findTransactionSignatures: vi.fn().mockRejectedValue(new Error('test error')),
+  findVaultSwapSignature: vi.fn(),
 }));
 vi.mock('../updateChannel.js');
 
@@ -73,7 +74,7 @@ describe('solana queue', () => {
     vi.clearAllMocks();
     vi.mocked(findTransactionSignatures).mockRejectedValue(new Error('test error'));
     vi.useFakeTimers({ toFake: ['Date'] });
-    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel" CASCADE`;
+    await prisma.$queryRaw`TRUNCATE TABLE "SwapDepositChannel", "FailedSwap", "Broadcast" CASCADE`;
   });
 
   afterEach(() => {
@@ -153,5 +154,47 @@ describe('solana queue', () => {
     expect(await prisma.solanaPendingTxRef.findMany()).toEqual([
       expect.objectContaining({ id: stuck.id, abandonedAt: expect.any(Date) }),
     ]);
+  });
+
+  it('holds back a broker-rejected vault swap until its refund broadcast is linked', async () => {
+    vi.mocked(findVaultSwapSignature).mockResolvedValue('vault swap signature');
+    const failedSwap = await prisma.failedSwap.create({
+      data: {
+        reason: 'TransactionRejectedByBroker',
+        srcChain: 'Solana',
+        srcAsset: 'SolUsdt',
+        depositAmount: 597267181,
+        failedAt: new Date(),
+        failedBlockIndex: '15478423-1',
+        solanaPendingTxRef: {
+          create: { address: '5VLYw68CdXuXFEPewiiG2RLu1eFP37pH1popkJHmKTw9', slot: 463388987n },
+        },
+      },
+    });
+
+    await runQueue({ ticks: 1, tickMs: ONE_SECOND });
+
+    expect(findVaultSwapSignature).not.toHaveBeenCalled();
+
+    await prisma.failedSwap.update({
+      where: { id: failedSwap.id },
+      data: {
+        refundBroadcast: {
+          create: {
+            nativeId: 276379,
+            chain: 'Solana',
+            requestedAt: new Date(),
+            requestedBlockIndex: '15478424-1',
+          },
+        },
+      },
+    });
+
+    await runQueue({ ticks: 1, tickMs: ONE_SECOND });
+
+    expect(
+      await prisma.failedSwap.findUniqueOrThrow({ where: { id: failedSwap.id } }),
+    ).toMatchObject({ depositTransactionRef: 'vault swap signature' });
+    expect(await prisma.solanaPendingTxRef.findMany()).toEqual([]);
   });
 });

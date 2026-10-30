@@ -294,7 +294,15 @@ export const start = async () => {
       .map(([id]) => id);
 
     const pendingTxRefs = await prisma.solanaPendingTxRef.findMany({
-      where: { abandonedAt: null, id: { notIn: waitingIds } },
+      where: {
+        abandonedAt: null,
+        id: { notIn: waitingIds },
+        OR: [
+          { failedVaultSwapId: null },
+          { failedVaultSwap: { reason: { not: 'TransactionRejectedByBroker' } } },
+          { failedVaultSwap: { refundBroadcastId: { not: null } } },
+        ],
+      },
       orderBy: { id: 'asc' },
       take: env.SOLANA_TX_REF_QUEUE_BATCH_SIZE,
     });
