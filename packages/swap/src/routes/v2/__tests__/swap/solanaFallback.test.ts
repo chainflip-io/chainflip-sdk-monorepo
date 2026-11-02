@@ -430,10 +430,10 @@ describe('solana fallback requested', () => {
         "destAddress": "EdmjHbx1mirAeWTnsLhVx24p1nTsdoxuEJBHJijcmT7c",
         "destAsset": "SOL",
         "destChain": "Solana",
-        "estimatedDurationSeconds": 126.4,
+        "estimatedDurationSeconds": 126.1,
         "estimatedDurationsSeconds": {
           "deposit": 24,
-          "egress": 90.4,
+          "egress": 90.1,
           "swap": 12,
         },
         "fallbackEgress": {

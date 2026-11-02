@@ -121,8 +121,8 @@ importers:
         specifier: 2.3.1
         version: 2.3.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
-        specifier: 2.3.3
-        version: 2.3.3
+        specifier: 2.3.7
+        version: 2.3.7
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@26.6.4)(zod@3.25.76)
@@ -155,8 +155,8 @@ importers:
         specifier: 2.3.1
         version: 2.3.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.3.3
-        version: 2.3.3
+        specifier: 2.3.7
+        version: 2.3.7
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@26.6.4)(zod@3.25.76)
@@ -219,8 +219,8 @@ importers:
         specifier: 2.3.1
         version: 2.3.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
-        specifier: 2.3.3
-        version: 2.3.3
+        specifier: 2.3.7
+        version: 2.3.7
       '@polkadot/api':
         specifier: ^16.5.6
         version: 16.5.6(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -450,6 +450,9 @@ packages:
 
   '@chainflip/utils@2.3.3':
     resolution: {integrity: sha512-Syz0In/6b3CTni/8UHcFI5vtx7+PJinvRo30/BuhW+PeVmk4JT9exrhG4zqhVGYbihuhbwU0v8TSy14l4gMR8g==}
+
+  '@chainflip/utils@2.3.7':
+    resolution: {integrity: sha512-AiOYExtLMMXSLobNxvAyPY/jRMEBD3nJHCIU8YDOONJD+609vzB8vPBA9nWfEA9HNcpGjQf8OK6+dAXDK0kUnw==}
 
   '@colors/colors@1.6.0':
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
@@ -1015,10 +1018,6 @@ packages:
   '@noble/hashes@1.8.0':
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
-
-  '@noble/hashes@2.2.0':
-    resolution: {integrity: sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg==}
-    engines: {node: '>= 20.19.0'}
 
   '@noble/hashes@2.4.0':
     resolution: {integrity: sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA==}
@@ -5932,11 +5931,18 @@ snapshots:
   '@chainflip/utils@2.3.0-dev.4':
     dependencies:
       '@date-fns/utc': 2.1.1
-      '@noble/hashes': 2.2.0
+      '@noble/hashes': 2.4.0
       bignumber.js: 11.1.5
       date-fns: 4.4.0
 
   '@chainflip/utils@2.3.3':
+    dependencies:
+      '@date-fns/utc': 2.1.1
+      '@noble/hashes': 2.4.0
+      bignumber.js: 11.1.5
+      date-fns: 4.4.0
+
+  '@chainflip/utils@2.3.7':
     dependencies:
       '@date-fns/utc': 2.1.1
       '@noble/hashes': 2.4.0
@@ -6477,8 +6483,6 @@ snapshots:
   '@noble/hashes@1.4.0': {}
 
   '@noble/hashes@1.8.0': {}
-
-  '@noble/hashes@2.2.0': {}
 
   '@noble/hashes@2.4.0': {}
 
