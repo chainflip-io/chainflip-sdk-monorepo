@@ -132,10 +132,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a native swap id 1`]
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -193,10 +193,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a solana case-insens
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -250,10 +250,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin 1`] =
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -307,10 +307,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap from a vault origin in CO
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -579,10 +579,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status 1`] =
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -671,10 +671,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -763,10 +763,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in COMPLETED status by tx
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -854,10 +854,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENDING status 1`] = `
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -942,10 +942,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SENT status 1`] = `
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1031,10 +1031,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 1`] = 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1091,10 +1091,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status 2`] = 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1168,10 +1168,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap in SWAPPING status with a
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1228,10 +1228,10 @@ exports[`server > GET /v2/swaps/:id > retrieves a swap with FillOrKillParams in 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1315,10 +1315,10 @@ exports[`server > GET /v2/swaps/:id > retrieves boost details when channel swap 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1380,10 +1380,10 @@ exports[`server > GET /v2/swaps/:id > retrieves boost details when vault swap wa
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1450,10 +1450,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in COMPLETED 
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1554,10 +1554,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in FAILED sta
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1685,10 +1685,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SENDING st
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
@@ -1786,10 +1786,10 @@ exports[`server > GET /v2/swaps/:id > retrieves multiple DCA swaps in SWAPPING s
   "destAddress": "1yMmfLti1k3huRQM2c47WugwonQMqTvQ2GUFxnU7Pcs7xPo",
   "destAsset": "DOT",
   "destChain": "Assethub",
-  "estimatedDurationSeconds": 127.5,
+  "estimatedDurationSeconds": 127,
   "estimatedDurationsSeconds": {
     "deposit": 24,
-    "egress": 91.5,
+    "egress": 91,
     "swap": 12,
   },
   "fees": [
