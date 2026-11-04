@@ -149,4 +149,58 @@ describe(getOpenSwapDepositChannelSchema, () => {
       }),
     ).toThrow('must be in basis points');
   });
+
+  it('accepts u128::MAX amounts and gas budgets', () => {
+    const u128Max = (2n ** 128n - 1n).toString();
+
+    expect(() =>
+      getOpenSwapDepositChannelSchema('mainnet').parse({
+        ...swapBody,
+        amount: u128Max,
+        ccmParams: { gasBudget: u128Max, message: '0x00' },
+        quote: { egressAmount: u128Max, intermediateAmount: u128Max, estimatedPrice: '1.5' },
+      }),
+    ).not.toThrow();
+  });
+
+  it.each([
+    ['amount', { amount: (2n ** 128n).toString() }],
+    ['ccm gas budget', { ccmParams: { gasBudget: (2n ** 128n).toString(), message: '0x00' } }],
+    [
+      'quote egress amount',
+      { quote: { egressAmount: (2n ** 128n).toString(), estimatedPrice: '1' } },
+    ],
+    [
+      'quote intermediate amount',
+      {
+        quote: {
+          egressAmount: '1',
+          intermediateAmount: (2n ** 128n).toString(),
+          estimatedPrice: '1',
+        },
+      },
+    ],
+  ])('rejects a %s that does not fit in a u128', (_name, overrides) => {
+    expect(() =>
+      getOpenSwapDepositChannelSchema('mainnet').parse({ ...swapBody, ...overrides }),
+    ).toThrow('less than 2^128');
+  });
+
+  it.each(['1e999999999999999999', 'abc'])('rejects a quote estimated price of %s', (price) => {
+    expect(() =>
+      getOpenSwapDepositChannelSchema('mainnet').parse({
+        ...swapBody,
+        quote: { egressAmount: '1', estimatedPrice: price },
+      }),
+    ).toThrow('must be a finite number');
+  });
+
+  it.each([
+    ['amount', { amount: '1.5' }],
+    ['quote egress amount', { quote: { egressAmount: 'abc', estimatedPrice: '1' } }],
+  ])('returns a validation error for a non-numeric %s', (_name, overrides) => {
+    expect(
+      getOpenSwapDepositChannelSchema('mainnet').safeParse({ ...swapBody, ...overrides }).success,
+    ).toBe(false);
+  });
 });

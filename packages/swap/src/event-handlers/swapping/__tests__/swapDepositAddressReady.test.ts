@@ -211,6 +211,34 @@ describe(swapDepositAddressReady, () => {
     });
   });
 
+  it('stores a u128::MAX ccm gas budget', async () => {
+    await swapDepositAddressReady({
+      prisma,
+      event: {
+        ...eventMock.event,
+        args: {
+          ...eventMock.event.args,
+          channelMetadata: {
+            message: '0x00',
+            gasBudget: '0xffffffffffffffffffffffffffffffff',
+            ccmAdditionalData: {
+              __kind: 'NotRequired',
+            },
+          },
+        },
+      },
+      block: eventMock.block,
+    });
+
+    const swapDepositChannel = await prisma.swapDepositChannel.findFirstOrThrow({
+      where: {
+        channelId: BigInt(eventMock.event.args.channelId),
+      },
+    });
+
+    expect(swapDepositChannel.ccmGasBudget?.toFixed()).toBe((2n ** 128n - 1n).toString());
+  });
+
   it('inserts affiliates', async () => {
     await swapDepositAddressReady({
       prisma,
