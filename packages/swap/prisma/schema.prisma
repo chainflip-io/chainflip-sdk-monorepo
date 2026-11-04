@@ -279,6 +279,8 @@ model SwapRequest {
   @@index([nativeId])
   @@index([swapDepositChannelId])
   @@index([accountCreationDepositChannelId])
+  // "SwapRequest_depositTransactionRef_lower_idx" on lower("depositTransactionRef") is created in
+  // raw SQL because prisma can't express expression indexes
   @@schema("public")
 }
 
@@ -398,6 +400,7 @@ model FailedSwap {
 
   @@index([swapDepositChannelId])
   @@index([accountCreationDepositChannelId])
+  @@index([depositTransactionRef])
   @@schema("public")
 }
 
