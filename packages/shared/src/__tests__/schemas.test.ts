@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { quoteQuerySchema } from '../schemas.js';
+import { ccmParamsSchema, quoteQuerySchema } from '../schemas.js';
 
 describe('quoteQuerySchema', () => {
   const baseParams = {
@@ -95,4 +95,55 @@ describe('quoteQuerySchema', () => {
         ]]
       `);
   });
+
+  it('accepts a u128::MAX ccm gas budget', () => {
+    const { ccmParams } = quoteQuerySchema.parse({
+      ...baseParams,
+      ccmGasBudget: (2n ** 128n - 1n).toString(),
+      ccmMessageLengthBytes: '1',
+    });
+
+    expect(ccmParams?.gasBudget).toBe(2n ** 128n - 1n);
+  });
+
+  it('rejects a ccm gas budget that does not fit in a u128', () => {
+    expect(() =>
+      quoteQuerySchema.parse({
+        ...baseParams,
+        ccmGasBudget: (2n ** 128n).toString(),
+        ccmMessageLengthBytes: '1',
+      }),
+    ).toThrow('ccm gas budget must be less than 2^128');
+  });
+
+  it('returns a validation error for a non-numeric ccm gas budget', () => {
+    expect(
+      quoteQuerySchema.safeParse({ ...baseParams, ccmGasBudget: 'abc', ccmMessageLengthBytes: '1' })
+        .success,
+    ).toBe(false);
+  });
+});
+
+describe('ccmParamsSchema', () => {
+  it('returns a validation error for a non-numeric gas budget', () => {
+    expect(ccmParamsSchema.safeParse({ gasBudget: 'abc', message: '0x00' }).success).toBe(false);
+  });
+
+  it.each([(2n ** 128n - 1n).toString(), '0xffffffffffffffffffffffffffffffff'])(
+    'accepts a u128::MAX gas budget (%s)',
+    (gasBudget) => {
+      expect(ccmParamsSchema.parse({ gasBudget, message: '0x00' }).gasBudget).toBe(
+        '0xffffffffffffffffffffffffffffffff',
+      );
+    },
+  );
+
+  it.each([(2n ** 128n).toString(), '0x100000000000000000000000000000000'])(
+    'rejects a gas budget that does not fit in a u128 (%s)',
+    (gasBudget) => {
+      expect(() => ccmParamsSchema.parse({ gasBudget, message: '0x00' })).toThrow(
+        'ccm gas budget must be less than 2^128',
+      );
+    },
+  );
 });

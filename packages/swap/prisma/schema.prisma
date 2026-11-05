@@ -112,7 +112,7 @@ model SwapDepositChannel {
   expectedDepositAmount        Decimal?             @db.Decimal(30, 0)
   destAsset                    InternalAsset
   destAddress                  String
-  ccmGasBudget                 Decimal?             @db.Decimal(30, 0)
+  ccmGasBudget                 Decimal?             @db.Decimal(39, 0)
   ccmMessage                   String?
   issuedBlock                  Int
   expiryBlock                  Int? // TODO(mainnet): remove this column
@@ -233,7 +233,7 @@ model SwapRequest {
   swapInputAmount                 Decimal                        @db.Decimal(30, 0)
   swapOutputAmount                Decimal?                       @db.Decimal(30, 0)
   requestType                     SwapRequestType
-  ccmGasBudget                    Decimal?                       @db.Decimal(30, 0)
+  ccmGasBudget                    Decimal?                       @db.Decimal(39, 0)
   ccmMessage                      String?
   srcAddress                      String?
   destAddress                     String?
@@ -389,7 +389,7 @@ model FailedSwap {
   depositTransactionRef           String?
   failedAt                        DateTime
   failedBlockIndex                String
-  ccmGasBudget                    Decimal?                       @db.Decimal(30, 0)
+  ccmGasBudget                    Decimal?                       @db.Decimal(39, 0)
   ccmMessage                      String?
   ccmAdditionalData               String?
   refundBroadcast                 Broadcast?                     @relation(fields: [refundBroadcastId], references: [id])

@@ -149,4 +149,84 @@ describe(getOpenSwapDepositChannelSchema, () => {
       }),
     ).toThrow('must be in basis points');
   });
+
+  it('accepts 30 digit amounts and a u128::MAX gas budget', () => {
+    const maxAmount = '9'.repeat(30);
+
+    expect(() =>
+      getOpenSwapDepositChannelSchema('mainnet').parse({
+        ...swapBody,
+        amount: maxAmount,
+        ccmParams: { gasBudget: (2n ** 128n - 1n).toString(), message: '0x00' },
+        quote: { egressAmount: maxAmount, intermediateAmount: maxAmount, estimatedPrice: '1.5' },
+      }),
+    ).not.toThrow();
+  });
+
+  it.each([
+    ['amount', { amount: '1'.repeat(31) }],
+    ['quote egress amount', { quote: { egressAmount: '1'.repeat(31), estimatedPrice: '1' } }],
+    [
+      'quote intermediate amount',
+      { quote: { egressAmount: '1', intermediateAmount: '1'.repeat(31), estimatedPrice: '1' } },
+    ],
+  ])('rejects a %s with more than 30 digits', (_name, overrides) => {
+    expect(() =>
+      getOpenSwapDepositChannelSchema('mainnet').parse({ ...swapBody, ...overrides }),
+    ).toThrow('must have at most 30 digits');
+  });
+
+  it('rejects a ccm gas budget that does not fit in a u128', () => {
+    expect(() =>
+      getOpenSwapDepositChannelSchema('mainnet').parse({
+        ...swapBody,
+        ccmParams: { gasBudget: (2n ** 128n).toString(), message: '0x00' },
+      }),
+    ).toThrow('ccm gas budget must be less than 2^128');
+  });
+
+  it.each(['1234', '0.000000123', '1.5', '1e-8', '1.5E+3', '9'.repeat(34)])(
+    'accepts a quote estimated price of %s',
+    (price) => {
+      expect(() =>
+        getOpenSwapDepositChannelSchema('mainnet').parse({
+          ...swapBody,
+          quote: { egressAmount: '1', estimatedPrice: price },
+        }),
+      ).not.toThrow();
+    },
+  );
+
+  it.each(['', ' ', 'abc', '-1', '1.', '0x10'])(
+    'rejects a quote estimated price of "%s"',
+    (price) => {
+      expect(() =>
+        getOpenSwapDepositChannelSchema('mainnet').parse({
+          ...swapBody,
+          quote: { egressAmount: '1', estimatedPrice: price },
+        }),
+      ).toThrow('must be a decimal number');
+    },
+  );
+
+  it.each(['1e35', '1e999999999999999999', `1${'0'.repeat(35)}`])(
+    'rejects a quote estimated price of %s that does not fit in the column',
+    (price) => {
+      expect(() =>
+        getOpenSwapDepositChannelSchema('mainnet').parse({
+          ...swapBody,
+          quote: { egressAmount: '1', estimatedPrice: price },
+        }),
+      ).toThrow('must be less than 10^35');
+    },
+  );
+
+  it.each([
+    ['amount', { amount: '1.5' }],
+    ['quote egress amount', { quote: { egressAmount: 'abc', estimatedPrice: '1' } }],
+  ])('returns a validation error for a non-numeric %s', (_name, overrides) => {
+    expect(
+      getOpenSwapDepositChannelSchema('mainnet').safeParse({ ...swapBody, ...overrides }).success,
+    ).toBe(false);
+  });
 });

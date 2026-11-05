@@ -9,13 +9,16 @@ const assets = z.object({
   destAsset: assetAndChain,
 });
 
+// these amounts are stored in DECIMAL(30,0) columns
+const amountString = numericString.max(30, { message: 'must have at most 30 digits' });
+
 export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
   z
     .intersection(
       assets,
       z.object({
         destAddress: z.string(),
-        amount: numericString,
+        amount: amountString,
         ccmParams: ccmParamsSchema.optional(),
         maxBoostFeeBps: z.number().optional(),
         srcAddress: z.string().optional(),
@@ -23,9 +26,12 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
         dcaParams: dcaParams.optional(),
         quote: z
           .object({
-            intermediateAmount: z.string().optional(),
-            egressAmount: z.string(),
-            estimatedPrice: z.string(),
+            intermediateAmount: amountString.optional(),
+            egressAmount: amountString,
+            estimatedPrice: z
+              .string()
+              .regex(/^[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?$/i, { message: 'must be a decimal number' })
+              .refine((v) => Number(v) < 1e35, { message: 'must be less than 10^35' }),
             recommendedSlippageTolerancePercent: z.number().optional(),
             recommendedLivePriceSlippageTolerancePercent: z.number().optional(),
           })

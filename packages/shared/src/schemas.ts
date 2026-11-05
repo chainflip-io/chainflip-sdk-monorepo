@@ -31,7 +31,9 @@ export const quoteQuerySchema = z
     brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
     ccmGasBudget: z
       .union([
-        numericString.transform((v) => BigInt(v)),
+        numericString
+          .transform((v) => BigInt(v))
+          .refine((v) => v < 2n ** 128n, { message: 'ccm gas budget must be less than 2^128' }),
         z.literal('undefined').transform(() => undefined), // sdk version 1.8.2 sends undefined string if not set
       ])
       .optional(),
@@ -142,7 +144,11 @@ export type ParsedQuoteParams = z.output<typeof quoteQuerySchema>;
 
 export const ccmParamsSchema = z
   .object({
-    gasBudget: z.union([numericString, hexString]).transform((n) => hexEncodeNumber(BigInt(n))),
+    gasBudget: z
+      .union([numericString, hexString])
+      .transform((n) => BigInt(n))
+      .refine((n) => n < 2n ** 128n, { message: 'ccm gas budget must be less than 2^128' })
+      .transform((n) => hexEncodeNumber(n)),
     // https://github.com/chainflip-io/chainflip-backend/blob/415aa9e20ec4046c68892cd34798e5d831c5b83f/state-chain/chains/src/lib.rs#L709
     message: hexStringWithMaxByteSize(15_000),
     // https://github.com/chainflip-io/chainflip-backend/blob/415aa9e20ec4046c68892cd34798e5d831c5b83f/state-chain/chains/src/lib.rs#L710
