@@ -109,7 +109,7 @@ model SwapDepositChannel {
   srcChain                     Chain
   srcAsset                     InternalAsset
   depositAddress               String
-  expectedDepositAmount        Decimal?             @db.Decimal(39, 0)
+  expectedDepositAmount        Decimal?             @db.Decimal(30, 0)
   destAsset                    InternalAsset
   destAddress                  String
   ccmGasBudget                 Decimal?             @db.Decimal(39, 0)
@@ -586,9 +586,9 @@ model Quote {
   destAsset                                    InternalAsset
   maxBoostFeeBps                               Int?
   numberOfChunks                               Int?
-  expectedDepositAmount                        Decimal            @db.Decimal(39, 0)
-  quotedIntermediateAmount                     Decimal?           @db.Decimal(39, 0)
-  quotedEgressAmount                           Decimal            @db.Decimal(39, 0)
+  expectedDepositAmount                        Decimal            @db.Decimal(30, 0)
+  quotedIntermediateAmount                     Decimal?           @db.Decimal(30, 0)
+  quotedEgressAmount                           Decimal            @db.Decimal(30, 0)
   quotedPrice                                  Decimal
   inputAssetPriceAtChannelOpening              Decimal?
   outputAssetPriceAtChannelOpening             Decimal?

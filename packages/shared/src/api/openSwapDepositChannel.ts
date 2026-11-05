@@ -9,16 +9,8 @@ const assets = z.object({
   destAsset: assetAndChain,
 });
 
-const u128String = numericString.refine(
-  (v) => {
-    try {
-      return BigInt(v) < 2n ** 128n;
-    } catch {
-      return true;
-    }
-  },
-  { message: 'must be less than 2^128' },
-);
+// these amounts are stored in DECIMAL(30,0) columns
+const amountString = numericString.max(30, { message: 'must have at most 30 digits' });
 
 export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
   z
@@ -26,7 +18,7 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
       assets,
       z.object({
         destAddress: z.string(),
-        amount: u128String,
+        amount: amountString,
         ccmParams: ccmParamsSchema.optional(),
         maxBoostFeeBps: z.number().optional(),
         srcAddress: z.string().optional(),
@@ -34,8 +26,8 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
         dcaParams: dcaParams.optional(),
         quote: z
           .object({
-            intermediateAmount: u128String.optional(),
-            egressAmount: u128String,
+            intermediateAmount: amountString.optional(),
+            egressAmount: amountString,
             estimatedPrice: z.string().refine((v) => Number.isFinite(Number(v)), {
               message: 'must be a finite number',
             }),
