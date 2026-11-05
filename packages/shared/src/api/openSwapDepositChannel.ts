@@ -28,9 +28,9 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
           .object({
             intermediateAmount: amountString.optional(),
             egressAmount: amountString,
-            estimatedPrice: z.string().refine((v) => Number.isFinite(Number(v)), {
-              message: 'must be a finite number',
-            }),
+            estimatedPrice: z
+              .string()
+              .regex(/^[0-9]+(\.[0-9]+)?$/, { message: 'must be a decimal number' }),
             recommendedSlippageTolerancePercent: z.number().optional(),
             recommendedLivePriceSlippageTolerancePercent: z.number().optional(),
           })

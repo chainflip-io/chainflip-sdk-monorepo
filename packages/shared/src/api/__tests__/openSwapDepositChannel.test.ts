@@ -185,14 +185,26 @@ describe(getOpenSwapDepositChannelSchema, () => {
     ).toThrow('ccm gas budget must be less than 2^128');
   });
 
-  it.each(['1e999999999999999999', 'abc'])('rejects a quote estimated price of %s', (price) => {
+  it.each(['1234', '0.000000123', '1.5'])('accepts a quote estimated price of %s', (price) => {
     expect(() =>
       getOpenSwapDepositChannelSchema('mainnet').parse({
         ...swapBody,
         quote: { egressAmount: '1', estimatedPrice: price },
       }),
-    ).toThrow('must be a finite number');
+    ).not.toThrow();
   });
+
+  it.each(['', ' ', '1e999999999999999999', 'abc', '-1', '1.'])(
+    'rejects a quote estimated price of "%s"',
+    (price) => {
+      expect(() =>
+        getOpenSwapDepositChannelSchema('mainnet').parse({
+          ...swapBody,
+          quote: { egressAmount: '1', estimatedPrice: price },
+        }),
+      ).toThrow('must be a decimal number');
+    },
+  );
 
   it.each([
     ['amount', { amount: '1.5' }],
