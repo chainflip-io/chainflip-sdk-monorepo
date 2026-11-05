@@ -185,16 +185,19 @@ describe(getOpenSwapDepositChannelSchema, () => {
     ).toThrow('ccm gas budget must be less than 2^128');
   });
 
-  it.each(['1234', '0.000000123', '1.5'])('accepts a quote estimated price of %s', (price) => {
-    expect(() =>
-      getOpenSwapDepositChannelSchema('mainnet').parse({
-        ...swapBody,
-        quote: { egressAmount: '1', estimatedPrice: price },
-      }),
-    ).not.toThrow();
-  });
+  it.each(['1234', '0.000000123', '1.5', '1e-8', '1.5E+3', '9'.repeat(34)])(
+    'accepts a quote estimated price of %s',
+    (price) => {
+      expect(() =>
+        getOpenSwapDepositChannelSchema('mainnet').parse({
+          ...swapBody,
+          quote: { egressAmount: '1', estimatedPrice: price },
+        }),
+      ).not.toThrow();
+    },
+  );
 
-  it.each(['', ' ', '1e999999999999999999', 'abc', '-1', '1.'])(
+  it.each(['', ' ', 'abc', '-1', '1.', '0x10'])(
     'rejects a quote estimated price of "%s"',
     (price) => {
       expect(() =>
@@ -203,6 +206,18 @@ describe(getOpenSwapDepositChannelSchema, () => {
           quote: { egressAmount: '1', estimatedPrice: price },
         }),
       ).toThrow('must be a decimal number');
+    },
+  );
+
+  it.each(['1e35', '1e999999999999999999', `1${'0'.repeat(35)}`])(
+    'rejects a quote estimated price of %s that does not fit in the column',
+    (price) => {
+      expect(() =>
+        getOpenSwapDepositChannelSchema('mainnet').parse({
+          ...swapBody,
+          quote: { egressAmount: '1', estimatedPrice: price },
+        }),
+      ).toThrow('must be less than 10^35');
     },
   );
 

@@ -30,7 +30,8 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
             egressAmount: amountString,
             estimatedPrice: z
               .string()
-              .regex(/^[0-9]+(\.[0-9]+)?$/, { message: 'must be a decimal number' }),
+              .regex(/^[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?$/i, { message: 'must be a decimal number' })
+              .refine((v) => Number(v) < 1e35, { message: 'must be less than 10^35' }),
             recommendedSlippageTolerancePercent: z.number().optional(),
             recommendedLivePriceSlippageTolerancePercent: z.number().optional(),
           })
