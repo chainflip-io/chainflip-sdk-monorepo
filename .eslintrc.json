@@ -27,7 +27,17 @@
     "lines-between-class-members": "error",
     "no-empty-function": "off",
     "@typescript-eslint/no-empty-function": "error",
-    "no-restricted-syntax": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "MemberExpression[property.name=/^\\$(query|execute)RawUnsafe$/]",
+        "message": "Unsafe raw queries are open to SQL injection. Use the $queryRaw/$executeRaw tagged templates, which bind interpolated values as parameters."
+      },
+      {
+        "selector": "MemberExpression[object.name='Prisma'][property.name='raw']",
+        "message": "Prisma.raw inserts strings into SQL unescaped. Interpolate values in a Prisma.sql/$queryRaw tagged template instead."
+      }
+    ],
     "import/extensions": "off",
     "import/prefer-default-export": "off",
     "import/no-unresolved": "off",

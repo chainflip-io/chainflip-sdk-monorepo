@@ -64,6 +64,8 @@ const truncateAllTables = async (client: PrismaClient): Promise<void> => {
   `;
   if (tables.length > 0) {
     const tableList = tables.map((t) => `"${t.schemaname}"."${t.tablename}"`).join(', ');
+    // identifiers can't be bound as parameters; table names come from pg_tables, not user input
+    // eslint-disable-next-line no-restricted-syntax
     await client.$executeRawUnsafe(`TRUNCATE ${tableList} CASCADE`);
   }
 };
@@ -77,6 +79,8 @@ beforeAll(async () => {
     try {
       const exists = await dbExists(adminClient, tempDbName);
       if (!exists) {
+        // identifiers can't be bound as parameters; db names come from the test database url
+        // eslint-disable-next-line no-restricted-syntax
         await adminClient.$queryRawUnsafe(
           `CREATE DATABASE "${tempDbName}" TEMPLATE "${templateDbName}"`,
         );

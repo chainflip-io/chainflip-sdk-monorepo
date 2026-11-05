@@ -182,13 +182,21 @@ export const getLatestSwapForId = async (id: SwapId) => {
       include: swapRequestInclude,
     });
   } else {
-    swapRequest = await prisma.swapRequest.findFirst({
-      where: { depositTransactionRef: { mode: 'insensitive', equals: id.txRef } },
-      include: swapRequestInclude,
-      // just get the last one for now
-      orderBy: { nativeId: 'desc' },
-      take: 1,
-    });
+    // prisma's case insensitive equals compiles to ILIKE, which can't use an index, so the match
+    // is done on lower() to hit "SwapRequest_depositTransactionRef_lower_idx"
+    const [match] = await prisma.$queryRaw<{ id: bigint }[]>`
+      SELECT "id" FROM "public"."SwapRequest"
+      WHERE lower("depositTransactionRef") = lower(${id.txRef})
+      -- just get the last one for now
+      ORDER BY "nativeId" DESC
+      LIMIT 1
+    `;
+    swapRequest = match
+      ? await prisma.swapRequest.findUnique({
+          where: { id: match.id },
+          include: swapRequestInclude,
+        })
+      : null;
     if (!swapRequest) {
       [failedSwap, pendingVaultSwap] = await Promise.all([
         prisma.failedSwap.findFirst({
