@@ -7,7 +7,7 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
-## 2.3.0
+## 2.3.2
 
 ### Added
 
@@ -18,14 +18,15 @@ which it is deprecated.
   - BNB Chain USDT - Internal symbol: `BscUsdt`
 - New assets on `Ethereum`:
   - Coinbase Wrapped BTC - Internal symbol: `Cbbtc`
+- `getQuoteV2()` responses now include an optional requestId. Please include it when you report a quoting issue to us.
 
 ### Dependencies
 
 - `@chainflip/rpc` upgraded to 2.3.3
-- `@chainflip/utils` upgraded to 2.3.3
-- `@chainflip/redis`: upgraded to 2.3.1
-- `@chainflip/solana` upgraded to 2.3.1
-- `@chainflip/bitcoin` upgraded to 2.3.1
+- `@chainflip/utils` upgraded to 2.3.7
+- `@chainflip/redis`: upgraded to 2.3.2
+- `@chainflip/solana` upgraded to 2.3.2
+- `@chainflip/bitcoin` upgraded to 2.3.2
 
 ## 2.2.0
 
