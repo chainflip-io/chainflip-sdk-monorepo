@@ -18,6 +18,7 @@ which it is deprecated.
   - BNB Chain USDT - Internal symbol: `BscUsdt`
 - New assets on `Ethereum`:
   - Coinbase Wrapped BTC - Internal symbol: `Cbbtc`
+- `getQuoteV2()` responses now include an optional requestId. Please include it when you report a quoting issue to us.
 
 ### Dependencies
 
