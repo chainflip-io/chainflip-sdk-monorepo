@@ -22,10 +22,10 @@ which it is deprecated.
 ### Dependencies
 
 - `@chainflip/rpc` upgraded to 2.3.3
-- `@chainflip/utils` upgraded to 2.3.3
-- `@chainflip/redis`: upgraded to 2.3.1
-- `@chainflip/solana` upgraded to 2.3.1
-- `@chainflip/bitcoin` upgraded to 2.3.1
+- `@chainflip/utils` upgraded to 2.3.7
+- `@chainflip/redis`: upgraded to 2.3.2
+- `@chainflip/solana` upgraded to 2.3.2
+- `@chainflip/bitcoin` upgraded to 2.3.2
 
 ## 2.2.0
 
