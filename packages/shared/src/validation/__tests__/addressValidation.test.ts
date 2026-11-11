@@ -114,4 +114,23 @@ describe(validateAddress, () => {
   ] as const)('returns false for invalid address %s', (chain, address) => {
     expect(validateAddress(chain, address, 'mainnet')).toBeFalsy();
   });
+
+  it.each(['constructor', '__proto__', '__defineGetter__', 'toString', 'Polkadot'])(
+    'returns false for unknown chain %s',
+    (chain) => {
+      expect(
+        validateAddress(chain as never, '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1', 'mainnet'),
+      ).toBe(false);
+    },
+  );
+
+  it('returns false for an unknown network', () => {
+    expect(
+      validateAddress(
+        'Ethereum',
+        '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1',
+        'constructor' as never,
+      ),
+    ).toBe(false);
+  });
 });

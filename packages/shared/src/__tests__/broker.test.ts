@@ -1669,3 +1669,68 @@ describe(broker.formatBrokerDepositAddress, () => {
     },
   );
 });
+
+describe(broker.getVaultSwapParameterEncodingRequestSchema, () => {
+  const schema = broker.getVaultSwapParameterEncodingRequestSchema('mainnet');
+
+  const base = {
+    srcAsset: { asset: 'ETH', chain: 'Ethereum' },
+    destAsset: { asset: 'BTC', chain: 'Bitcoin' },
+    destAddress: 'bc1qvwmuc3pjhwju287sjs5vg7467t2jlymnmjyatp',
+    amount: '1000000000000000000',
+    fillOrKillParams: {
+      retryDurationBlocks: 100,
+      refundAddress: '0x02679b10f7b94fc4f273569cc2e5c49eefa5c0f1',
+      minPriceX128: '1',
+    },
+  };
+
+  const issues = (input: unknown) => {
+    const result = schema.safeParse(input);
+    expect(result.success).toBe(false);
+    return result.error!.issues.map((i) => i.message);
+  };
+
+  it('parses a valid request', () => {
+    expect(schema.safeParse(base).success).toBe(true);
+  });
+
+  it('rejects unsupported source chains with a validation issue instead of throwing', () => {
+    expect(
+      issues({
+        ...base,
+        srcAsset: { asset: 'DOT', chain: 'Assethub' },
+        fillOrKillParams: {
+          ...base.fillOrKillParams,
+          refundAddress: '13NZffZRSQFdg5gYLJBdj5jVtkeDPqF3czLdJ9m6fyHcMjki',
+        },
+      }),
+    ).toEqual(['parameter encoding is not supported for Assethub']);
+  });
+
+  it('requires srcAddress for Solana with a validation issue instead of throwing', () => {
+    expect(
+      issues({
+        ...base,
+        srcAsset: { asset: 'SOL', chain: 'Solana' },
+        fillOrKillParams: {
+          ...base.fillOrKillParams,
+          refundAddress: '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV',
+        },
+      }),
+    ).toEqual(['srcAddress is required for Solana']);
+  });
+
+  it.each([
+    { srcAsset: { asset: 'name', chain: 'constructor' } },
+    { destAsset: { asset: 'constructor', chain: 'Ethereum' } },
+    { amount: 1.5 },
+    { amount: -1 },
+    { commissionBps: 1.5 },
+    { maxBoostFeeBps: 70000 },
+    { dcaParams: { numberOfChunks: 0, chunkIntervalBlocks: 2 } },
+    { fillOrKillParams: { ...base.fillOrKillParams, retryDurationBlocks: 2 ** 32 } },
+  ])('rejects invalid input %o', (override) => {
+    expect(schema.safeParse({ ...base, ...override }).success).toBe(false);
+  });
+});

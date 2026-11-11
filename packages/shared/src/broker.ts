@@ -13,7 +13,6 @@ import { priceX128ToPrice } from '@chainflip/utils/tickMath';
 import { HexString } from '@chainflip/utils/types';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
-import { assert } from './guards.js';
 import { transformKeysToCamelCase } from './objects.js';
 import {
   numericString,
@@ -23,6 +22,8 @@ import {
   hexString,
   basisPoints,
   chainflipAddress,
+  u16,
+  u32,
 } from './parsers.js';
 import {
   affiliateBroker,
@@ -64,7 +65,7 @@ const transformedCcmParamsSchema = ccmParamsSchema.transform(
 
 const transformedFokSchema = z
   .object({
-    retryDurationBlocks: z.number(),
+    retryDurationBlocks: u32,
     refundAddress: z.string(),
     minPriceX128: numericString,
     maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
@@ -92,9 +93,9 @@ const getDepositAddressRequestSchema = (network: ChainflipNetwork) =>
       srcAsset: assetAndChain,
       destAsset: assetAndChain,
       destAddress: z.string(),
-      commissionBps: z.number().optional().default(0),
+      commissionBps: u16.optional().default(0),
       ccmParams: transformedCcmParamsSchema.optional(),
-      maxBoostFeeBps: z.number().optional(),
+      maxBoostFeeBps: u16.optional(),
       affiliates: z.array(affiliateBroker).optional(),
       fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),
@@ -123,9 +124,9 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
       destAsset: assetAndChain,
       destAddress: z.string(),
       amount: unsignedInteger,
-      commissionBps: z.number().optional().default(0),
+      commissionBps: u16.optional().default(0),
       ccmParams: transformedCcmParamsSchema.optional(),
-      maxBoostFeeBps: z.number().optional(),
+      maxBoostFeeBps: u16.optional(),
       affiliates: z.array(affiliateBroker).optional(),
       fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),
@@ -158,7 +159,7 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
         ctx.addIssue({ message: 'Seed must be 32 bytes', code: z.ZodIssueCode.custom });
       }
     })
-    .transform((data) => {
+    .transform((data, ctx) => {
       let extraParams;
       if (data.srcAsset.chain === 'Bitcoin') {
         const minOutputAmount = BigNumber(data.amount.toString())
@@ -183,7 +184,13 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
           refund_parameters: data.fillOrKillParams,
         } as const;
       } else if (data.srcAsset.chain === 'Solana') {
-        assert(data.srcAddress, 'srcAddress is required for Solana');
+        if (!data.srcAddress) {
+          ctx.addIssue({
+            message: 'srcAddress is required for Solana',
+            code: z.ZodIssueCode.custom,
+          });
+          return z.NEVER;
+        }
 
         extraParams = {
           chain: 'Solana',
@@ -193,7 +200,11 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
           refund_parameters: data.fillOrKillParams,
         } as const;
       } else {
-        throw new Error(`parameter encoding is not supported for ${data.srcAsset.chain}`);
+        ctx.addIssue({
+          message: `parameter encoding is not supported for ${data.srcAsset.chain}`,
+          code: z.ZodIssueCode.custom,
+        });
+        return z.NEVER;
       }
 
       return { ...data, extraParams };
@@ -292,9 +303,9 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
       destAsset: assetAndChain,
       destAddress: z.string(),
       amount: unsignedInteger,
-      commissionBps: z.number().optional().default(0),
+      commissionBps: u16.optional().default(0),
       ccmParams: transformedCcmParamsSchema.optional(),
-      maxBoostFeeBps: z.number().optional(),
+      maxBoostFeeBps: u16.optional(),
       affiliates: z.array(affiliateBroker).optional(),
       fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),

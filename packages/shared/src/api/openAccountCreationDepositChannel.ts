@@ -1,6 +1,6 @@
 import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { assetAndChain, hexString } from '../parsers.js';
+import { assetAndChain, hexString, u16, u32 } from '../parsers.js';
 import { validateAddress } from '../validation/addressValidation.js';
 
 export type AccountCreationDepositChannelParams = z.input<
@@ -24,8 +24,8 @@ export const getAccountCreationDepositChannelSchema = (network: ChainflipNetwork
       }),
       transactionMetadata: z
         .object({
-          nonce: z.number().gte(0),
-          expiryBlock: z.number().positive(),
+          nonce: u32,
+          expiryBlock: u32.positive(),
         })
         .transform(({ nonce, expiryBlock }) => ({
           nonce,
@@ -33,7 +33,7 @@ export const getAccountCreationDepositChannelSchema = (network: ChainflipNetwork
         })),
       asset: assetAndChain,
       refundAddress: z.string(),
-      boostFeeBps: z.number().optional().default(0),
+      boostFeeBps: u16.optional().default(0),
     })
     .superRefine(({ asset, refundAddress }, ctx) => {
       if (!validateAddress(asset.chain, refundAddress, network)) {

@@ -4,13 +4,19 @@ import { randomUUID } from 'crypto';
 import express from 'express';
 import { Request } from 'express-serve-static-core';
 import { createServer } from 'http';
+import stringify from 'safe-stable-stringify';
 import { Server } from 'socket.io';
 import { createApiContract } from '@/shared/api/contract.js';
 import env from './config/env.js';
 import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
 import { createApiRouter } from './routes/api.js';
-import { handleError, maintenanceMode, quoteMiddleware } from './routes/middlewares/common.js';
+import {
+  handleError,
+  jsonBodyParser,
+  maintenanceMode,
+  quoteMiddleware,
+} from './routes/middlewares/common.js';
 import { createIpBlacklist } from './routes/middlewares/ipBlacklist.js';
 import { createNotFoundRateLimit } from './routes/middlewares/notFoundRateLimit.js';
 import { createQuoteRateLimit } from './routes/middlewares/quoteRateLimit.js';
@@ -18,6 +24,21 @@ import quoteRouterV2 from './routes/v2/quote.js';
 import swapV2 from './routes/v2/swap.js';
 import { lastUpdateHeader } from './utils/intercept.js';
 import logger, { logStorage } from './utils/logger.js';
+
+const MAX_LOGGED_BODY_LENGTH = 10_000;
+
+// the request body is only parsed by `jsonBodyParser()` further down the middleware chain, so it is
+// logged when the request finishes rather than when it is received
+const serializeBody = (body: unknown): unknown => {
+  if (body === undefined || body === null) return undefined;
+  if (typeof body === 'object' && Object.keys(body).length === 0) return undefined;
+
+  const serialized = stringify(body);
+  if (serialized === undefined) return undefined;
+  if (serialized.length <= MAX_LOGGED_BODY_LENGTH) return JSON.parse(serialized);
+
+  return `${serialized.slice(0, MAX_LOGGED_BODY_LENGTH)}...(truncated, ${serialized.length} chars)`;
+};
 
 const app = express().use(cors({ exposedHeaders: ['x-request-id'] }));
 const server = createServer(app);
@@ -32,7 +53,6 @@ app.use((req, res, next) => {
     url: req.url,
     headers: req.headers,
     query: req.query,
-    body: req.body,
   };
   res.setHeader('x-request-id', info.reqId);
   logger.info('request received', info);
@@ -41,6 +61,8 @@ app.use((req, res, next) => {
     logger.info('request finished', {
       reqId: info.reqId,
       duration: performance.now() - startTime,
+      statusCode: res.statusCode,
+      body: serializeBody(req.body),
     });
   });
 
@@ -52,7 +74,7 @@ app.use(
   createIpBlacklist(),
   createNotFoundRateLimit(),
   lastUpdateHeader,
-  express.json(),
+  jsonBodyParser(),
   swapV2,
 );
 
@@ -66,7 +88,7 @@ const contract = createApiContract(env.CHAINFLIP_NETWORK);
 createExpressEndpoints(contract, createApiRouter(contract), app, {
   globalMiddleware: [
     (req, res, next) => maintenanceMode(req as Request, res, next),
-    express.json(),
+    jsonBodyParser(),
   ],
 });
 

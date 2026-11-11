@@ -90,7 +90,10 @@ export const validateAddress = (
   chain: ChainflipChain,
   address: string,
   network: ChainflipNetwork | 'localnet',
-): boolean => validators[network][chain](address);
+): boolean =>
+  Object.hasOwn(validators, network) &&
+  Object.hasOwn(validators[network], chain) &&
+  validators[network][chain](address);
 
 export const assertValidAddress = (
   chain: ChainflipChain,
@@ -98,6 +101,6 @@ export const assertValidAddress = (
   network: ChainflipNetwork | 'localnet',
 ) =>
   assert(
-    validators[network][chain](address),
+    validateAddress(chain, address, network),
     `Address "${address}" is not a valid "${chain}" address for "${network}"`,
   );

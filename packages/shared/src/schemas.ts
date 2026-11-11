@@ -16,6 +16,8 @@ import {
   hexString,
   booleanString,
   basisPoints,
+  u16,
+  u32,
 } from './parsers.js';
 
 export const quoteQuerySchema = z
@@ -165,22 +167,22 @@ export type CcmParams = z.input<typeof ccmParamsSchema>;
 export const affiliateBroker = z
   .object({
     account: chainflipAddress,
-    commissionBps: z.number(),
+    commissionBps: u16,
   })
   .transform(({ account, commissionBps: bps }) => ({ account, bps }));
 
 export type AffiliateBroker = z.input<typeof affiliateBroker>;
 
 export const dcaParams = z.object({
-  numberOfChunks: z.number(),
-  chunkIntervalBlocks: z.number(),
+  numberOfChunks: u32.min(1, { message: 'number of chunks must be greater than 0' }),
+  chunkIntervalBlocks: u32,
 });
 export type DcaParams = z.input<typeof dcaParams>;
 
 export type SwapFeeType = 'IngressDepositChannel' | 'IngressVaultSwap' | 'Network' | 'Egress';
 
 export const fillOrKillParams = z.object({
-  retryDurationBlocks: z.number(),
+  retryDurationBlocks: u32,
   refundAddress: z.string(),
   minPriceX128: numericString,
   maxOraclePriceSlippage: basisPoints.nullish().transform((v) => v ?? null),
