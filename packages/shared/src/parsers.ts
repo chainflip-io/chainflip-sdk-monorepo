@@ -47,8 +47,8 @@ export const tronAddress = z.string().refine(isValidTronAddress, (address) => ({
   message: `${address} is not a valid Tron address`,
 }));
 
-export const u16 = z.number().int().nonnegative().max(0xffff);
-export const u32 = z.number().int().nonnegative().max(0xffffffff);
+export const u16 = z.number().int().nonnegative().max(0xffff); // 2^16 - 1 = 65_535
+export const u32 = z.number().int().nonnegative().max(0xffffffff); // 2^32 - 1 = 4_294_967_295
 
 export const u128 = z
   .union([
