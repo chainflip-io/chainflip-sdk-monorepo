@@ -10,14 +10,19 @@ import env from './config/env.js';
 import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
 import { createApiRouter } from './routes/api.js';
-import { handleError, maintenanceMode, quoteMiddleware } from './routes/middlewares/common.js';
+import {
+  handleError,
+  jsonBodyParser,
+  maintenanceMode,
+  quoteMiddleware,
+} from './routes/middlewares/common.js';
 import { createIpBlacklist } from './routes/middlewares/ipBlacklist.js';
 import { createNotFoundRateLimit } from './routes/middlewares/notFoundRateLimit.js';
 import { createQuoteRateLimit } from './routes/middlewares/quoteRateLimit.js';
 import quoteRouterV2 from './routes/v2/quote.js';
 import swapV2 from './routes/v2/swap.js';
 import { lastUpdateHeader } from './utils/intercept.js';
-import logger, { logStorage } from './utils/logger.js';
+import logger, { logStorage, serializeRequestBody } from './utils/logger.js';
 
 const app = express().use(cors({ exposedHeaders: ['x-request-id'] }));
 const server = createServer(app);
@@ -32,7 +37,6 @@ app.use((req, res, next) => {
     url: req.url,
     headers: req.headers,
     query: req.query,
-    body: req.body,
   };
   res.setHeader('x-request-id', info.reqId);
   logger.info('request received', info);
@@ -41,6 +45,8 @@ app.use((req, res, next) => {
     logger.info('request finished', {
       reqId: info.reqId,
       duration: performance.now() - startTime,
+      statusCode: res.statusCode,
+      body: serializeRequestBody(req.body),
     });
   });
 
@@ -52,7 +58,7 @@ app.use(
   createIpBlacklist(),
   createNotFoundRateLimit(),
   lastUpdateHeader,
-  express.json(),
+  jsonBodyParser(),
   swapV2,
 );
 
@@ -66,7 +72,7 @@ const contract = createApiContract(env.CHAINFLIP_NETWORK);
 createExpressEndpoints(contract, createApiRouter(contract), app, {
   globalMiddleware: [
     (req, res, next) => maintenanceMode(req as Request, res, next),
-    express.json(),
+    jsonBodyParser(),
   ],
 });
 

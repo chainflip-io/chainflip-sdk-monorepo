@@ -5,10 +5,86 @@ import env from '../../config/env.js';
 import logger, { inspectError } from '../../utils/logger.js';
 import ServiceError from '../../utils/ServiceError.js';
 
+const getClientErrorStatus = (error: unknown): number | null => {
+  if (typeof error !== 'object' || error === null || !('status' in error)) return null;
+  const { status } = error;
+  return typeof status === 'number' && status >= 400 && status < 500 ? status : null;
+};
+
+// wraps `express.json()` so that errors caused by the request body (malformed JSON, unsupported
+// content encodings, oversized payloads, ...) are returned as client errors.
+export const jsonBodyParser = (
+  options?: Parameters<typeof express.json>[0],
+): ReturnType<typeof express.json> => {
+  const parser = express.json(options);
+
+  return (req, res, next) => {
+    parser(req, res, (error?: unknown) => {
+      if (error === undefined) {
+        next();
+        return;
+      }
+
+      const status = getClientErrorStatus(error);
+      if (status === null) {
+        next(error);
+        return;
+      }
+
+      const message = error instanceof Error ? error.message : 'invalid request body';
+      next(new ServiceError(message, status));
+    });
+  };
+};
+
+const swappingModuleErrorRegex =
+  /^RPC error \[-32024\]: KnownModuleError \{ pallet: "Swapping", name: "(\w+)", error: "([^"]*)" \}/;
+
+// swapping pallet errors caused by invalid user-supplied parameters of the extrinsics submitted by
+// this service (opening deposit channels, encoding vault swaps, opening account creation channels).
+// other errors of the pallet (e.g. safe mode, missing oracle prices) are server-side problems
+const clientSwappingModuleErrors = new Set([
+  'IncompatibleAssetAndAddress',
+  'InvalidEgressAddress',
+  'InvalidDestinationAddress',
+  'InvalidRefundAddress',
+  'CcmUnsupportedForTargetChain',
+  'CcmUnsupportedForRefundChain',
+  'InvalidCcm',
+  'BrokerCommissionBpsTooHigh',
+  'BrokerFeeTooHigh',
+  'BoostFeeTooHigh',
+  'AffiliateFeeTooHigh',
+  'AffiliateNotRegisteredForBroker',
+  'RetryDurationTooHigh',
+  'ZeroNumberOfChunksNotAllowed',
+  'ChunkIntervalTooLow',
+  'SwapRequestDurationTooLong',
+  'InvalidDcaParameters',
+  'InvalidUserSignatureData',
+  'InvalidTransactionMetadata',
+  'AccountAlreadyExists',
+]);
+
+const toServiceError = (error: unknown): ServiceError | null => {
+  if (error instanceof ServiceError) return error;
+
+  if (error instanceof Error) {
+    const match = swappingModuleErrorRegex.exec(error.message);
+    if (match && clientSwappingModuleErrors.has(match[1])) {
+      return ServiceError.badRequest(`${match[1]}: ${match[2]}`);
+    }
+  }
+
+  return null;
+};
+
 export const handleError: ErrorRequestHandler = (error, req, res, _next) => {
-  if (error instanceof ServiceError) {
+  const serviceError = toServiceError(error);
+
+  if (serviceError) {
     logger.info('received error', { error: inspectError(error) });
-    res.status(error.code).json(error.toJSON());
+    res.status(serviceError.code).json(serviceError.toJSON());
   } else {
     logger.error('unknown error occurred', { error: inspectError(error) });
     res.status(500).json({ message: 'unknown error' });

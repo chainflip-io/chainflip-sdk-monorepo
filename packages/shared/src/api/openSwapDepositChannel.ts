@@ -1,6 +1,6 @@
 import { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
-import { assetAndChain, numericString } from '../parsers.js';
+import { assetAndChain, numericString, u16 } from '../parsers.js';
 import { ccmParamsSchema, dcaParams, fillOrKillParams } from '../schemas.js';
 import { validateAddress } from '../validation/addressValidation.js';
 
@@ -20,7 +20,7 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
         destAddress: z.string(),
         amount: amountString,
         ccmParams: ccmParamsSchema.optional(),
-        maxBoostFeeBps: z.number().optional(),
+        maxBoostFeeBps: u16.optional(),
         srcAddress: z.string().optional(),
         fillOrKillParams,
         dcaParams: dcaParams.optional(),

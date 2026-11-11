@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { chainflipAddress, hexStringWithMaxByteSize, u128, unsignedInteger } from '../parsers.js';
+import {
+  assetAndChain,
+  chainflipAddress,
+  hexStringWithMaxByteSize,
+  u128,
+  u16,
+  u32,
+  unsignedInteger,
+} from '../parsers.js';
 
 describe('chainflipAddress', () => {
   it.each([
@@ -37,6 +45,52 @@ describe('u128', () => {
   it('rejects invalid hex string', () => {
     expect(() => u128.parse('0x123z')).toThrow();
     expect(() => u128.parse('0x')).toThrow();
+  });
+
+  it.each([1.5, -1, Infinity, NaN, Number.MAX_SAFE_INTEGER + 2])('rejects number %s', (n) => {
+    expect(u128.safeParse(n).success).toBe(false);
+  });
+
+  it('rejects values that do not fit into 128 bits', () => {
+    expect(u128.parse((2n ** 128n - 1n).toString())).toBe(2n ** 128n - 1n);
+    expect(u128.safeParse((2n ** 128n).toString()).success).toBe(false);
+    expect(u128.safeParse(`0x1${'0'.repeat(32)}`).success).toBe(false);
+  });
+});
+
+describe('u16 and u32', () => {
+  it('accepts integers in range', () => {
+    expect(u16.parse(0)).toBe(0);
+    expect(u16.parse(65535)).toBe(65535);
+    expect(u32.parse(4294967295)).toBe(4294967295);
+  });
+
+  it.each([-1, 1.5, Infinity, NaN, 65536])('u16 rejects %s', (n) => {
+    expect(u16.safeParse(n).success).toBe(false);
+  });
+
+  it.each([-1, 1.5, Infinity, NaN, 4294967296])('u32 rejects %s', (n) => {
+    expect(u32.safeParse(n).success).toBe(false);
+  });
+});
+
+describe('assetAndChain', () => {
+  it('accepts valid asset and chain combinations', () => {
+    expect(assetAndChain.parse({ asset: 'ETH', chain: 'Ethereum' })).toEqual({
+      asset: 'ETH',
+      chain: 'Ethereum',
+    });
+  });
+
+  it.each([
+    { asset: 'name', chain: 'constructor' },
+    { asset: 'constructor', chain: '__proto__' },
+    { asset: 'constructor', chain: 'Ethereum' },
+    { asset: 'length', chain: '__defineGetter__' },
+    { asset: 'BTC', chain: 'Ethereum' },
+    { asset: 'DOT', chain: 'Polkadot' },
+  ])('rejects $asset on $chain', (value) => {
+    expect(assetAndChain.safeParse(value).success).toBe(false);
   });
 });
 

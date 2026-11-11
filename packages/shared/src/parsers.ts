@@ -47,9 +47,19 @@ export const tronAddress = z.string().refine(isValidTronAddress, (address) => ({
   message: `${address} is not a valid Tron address`,
 }));
 
-export const u128 = z.union([z.number(), numericString, hexString]).transform((arg) => BigInt(arg));
+export const u16 = z.number().int().nonnegative().max(0xffff); // 2^16 - 1 = 65_535
+export const u32 = z.number().int().nonnegative().max(0xffffffff); // 2^32 - 1 = 4_294_967_295
 
-export const unsignedInteger = z.union([u128, z.number().transform((n) => BigInt(n))]);
+export const u128 = z
+  .union([
+    z.number().int().nonnegative().safe(),
+    numericString,
+    hexString.refine((v) => v.length > 2, { message: 'hex string must not be empty' }),
+  ])
+  .transform((arg) => BigInt(arg))
+  .refine((n) => n < 2n ** 128n, { message: 'must be less than 2^128' });
+
+export const unsignedInteger = u128;
 
 export const chain = z.enum(chainflipChains);
 export const asset = z.enum(assetSymbols);
@@ -59,6 +69,9 @@ export const uncheckedAssetAndChain = z.object({
   chain: z.string(),
 });
 
-export const assetAndChain = uncheckedAssetAndChain.refine((value): value is AssetAndChain =>
-  isValidAssetAndChain(value as UncheckedAssetAndChain),
+export const assetAndChain = uncheckedAssetAndChain.refine(
+  (value): value is AssetAndChain =>
+    chain.safeParse(value.chain).success &&
+    asset.safeParse(value.asset).success &&
+    isValidAssetAndChain(value as UncheckedAssetAndChain),
 );
