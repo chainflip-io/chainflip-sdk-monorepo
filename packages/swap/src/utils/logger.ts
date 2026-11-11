@@ -75,3 +75,27 @@ export const inspectError = (err: unknown) => {
   }
   return safeSerialize(err);
 };
+
+const MAX_LOGGED_BODY_LENGTH = 10_000;
+// legitimate request bodies are nested a few levels deep at most. without a bound, a crafted body of
+// deeply nested arrays that fits within the body size limit overflows the stack when serialized
+const MAX_LOGGED_BODY_DEPTH = 10;
+
+const stringifyBody = stringify.configure({ maximumDepth: MAX_LOGGED_BODY_DEPTH });
+
+export const serializeRequestBody = (body: unknown): unknown => {
+  if (body === undefined || body === null) return undefined;
+  if (typeof body === 'object' && Object.keys(body).length === 0) return undefined;
+
+  let serialized;
+  try {
+    serialized = stringifyBody(body);
+  } catch (err) {
+    logger.warn('failed to serialize request body', { error: inspectError(err) });
+    return '(failed to serialize request body)';
+  }
+  if (serialized === undefined) return undefined;
+  if (serialized.length <= MAX_LOGGED_BODY_LENGTH) return JSON.parse(serialized);
+
+  return `${serialized.slice(0, MAX_LOGGED_BODY_LENGTH)}...(truncated, ${serialized.length} chars)`;
+};

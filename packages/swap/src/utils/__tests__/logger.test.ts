@@ -3,7 +3,7 @@ import { stripVTControlCharacters } from 'util';
 import { afterEach, describe, expect, it } from 'vitest';
 import { transports } from 'winston';
 import { z } from 'zod';
-import logger, { inspectError } from '../logger.js';
+import logger, { inspectError, serializeRequestBody } from '../logger.js';
 
 describe(inspectError, () => {
   it('handles a generic Error', () => {
@@ -129,5 +129,31 @@ describe('logger', () => {
       { level: 'crit', message: 'processor has stalled' },
       { level: 'alert', message: 'pager please' },
     ]);
+  });
+});
+
+describe(serializeRequestBody, () => {
+  it.each([undefined, null, {}])('returns undefined for an empty body (%o)', (body) => {
+    expect(serializeRequestBody(body)).toBeUndefined();
+  });
+
+  it('returns a json body unchanged', () => {
+    const body = { amount: '100', fillOrKillParams: { retryDurationBlocks: 10 }, affiliates: [] };
+    expect(serializeRequestBody(body)).toEqual(body);
+  });
+
+  it('truncates a large body', () => {
+    const result = serializeRequestBody({ message: 'a'.repeat(20_000) });
+    expect(result).toMatch(/^\{"message":"a+\.\.\.\(truncated, 20014 chars\)$/);
+    expect((result as string).length).toBeLessThan(10_100);
+  });
+
+  it('caps the depth of a deeply nested body instead of overflowing the stack', () => {
+    const depth = 50_000; // fits within the 100kb default body size limit
+    const body = JSON.parse(`${'['.repeat(depth)}${']'.repeat(depth)}`);
+
+    const result = serializeRequestBody(body);
+
+    expect(JSON.stringify(result)).toBe(`${'['.repeat(10)}"[Array]"${']'.repeat(10)}`);
   });
 });
