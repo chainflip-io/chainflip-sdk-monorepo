@@ -4,6 +4,7 @@ import assert from 'assert';
 import { z } from 'zod';
 import { getVaultSwapParameterEncodingRequestSchema } from '@/shared/broker.js';
 import { transformKeysToCamelCase } from '@/shared/objects.js';
+import { u16 } from '@/shared/parsers.js';
 import env from '../config/env.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
@@ -17,7 +18,7 @@ export const encodeVaultSwapDataSchema = getVaultSwapParameterEncodingRequestSch
   env.CHAINFLIP_NETWORK,
 ).and(
   z.object({
-    brokerCommissionBps: z.number().optional(), // sdk version 1.8.3 sends brokerCommissionBps instead of commissionBps
+    brokerCommissionBps: u16.optional(), // sdk version 1.8.3 sends brokerCommissionBps instead of commissionBps
   }),
 );
 

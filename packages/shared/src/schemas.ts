@@ -30,7 +30,10 @@ export const quoteQuerySchema = z
       .transform((v) => BigInt(v))
       .refine((v) => v > 0n, { message: 'swap input amount must be greater than 0' })
       .refine((v) => v < 2n ** 128n, { message: 'swap input amount must be less than 2^128' }),
-    brokerCommissionBps: numericOrEmptyString.transform((v) => Number(v)).optional(),
+    brokerCommissionBps: numericOrEmptyString
+      .transform((v) => Number(v))
+      .pipe(u16)
+      .optional(),
     ccmGasBudget: z
       .union([
         numericString
@@ -41,7 +44,7 @@ export const quoteQuerySchema = z
       .optional(),
     ccmMessageLengthBytes: z
       .union([
-        numericString.transform((v) => Number(v)),
+        numericString.transform((v) => Number(v)).pipe(u32),
         z.literal('undefined').transform(() => undefined), // sdk version 1.8.2 sends undefined string if not set
       ])
       .optional(),
@@ -50,7 +53,10 @@ export const quoteQuerySchema = z
     isOnChain: booleanString.optional(),
     brokerAccount: chainflipAddress.optional(),
     brokerIdSs58: chainflipAddress.optional(),
-    expectedResponseTimeMs: numericString.transform((v) => Number(v)).optional(),
+    expectedResponseTimeMs: numericString
+      .transform((v) => Number(v))
+      .pipe(u32)
+      .optional(),
   })
   .transform((args, ctx) => {
     const { srcAsset, destAsset } = getInternalAssets(args, false);

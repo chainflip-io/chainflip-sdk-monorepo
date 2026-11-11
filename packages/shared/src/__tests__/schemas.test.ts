@@ -122,6 +122,37 @@ describe('quoteQuerySchema', () => {
         .success,
     ).toBe(false);
   });
+
+  it.each([
+    { brokerCommissionBps: '65536' },
+    { brokerCommissionBps: '99999999999999999999' },
+    { ccmGasBudget: '1', ccmMessageLengthBytes: '4294967296' },
+    { expectedResponseTimeMs: '4294967296' },
+  ])('rejects out of range numeric params (%o)', (params) => {
+    expect(quoteQuerySchema.safeParse({ ...baseParams, ...params }).success).toBe(false);
+  });
+
+  it('accepts in range numeric params at their upper bounds', () => {
+    const result = quoteQuerySchema.parse({
+      ...baseParams,
+      brokerCommissionBps: '65535',
+      ccmGasBudget: '1',
+      ccmMessageLengthBytes: '4294967295',
+      expectedResponseTimeMs: '4294967295',
+    });
+
+    expect(result).toMatchObject({
+      brokerCommissionBps: 65535,
+      ccmParams: { gasBudget: 1n, messageLengthBytes: 4294967295 },
+      expectedResponseTimeMs: 4294967295,
+    });
+  });
+
+  it('treats an empty broker commission as 0', () => {
+    expect(quoteQuerySchema.parse({ ...baseParams, brokerCommissionBps: '' })).toMatchObject({
+      brokerCommissionBps: 0,
+    });
+  });
 });
 
 describe('ccmParamsSchema', () => {
