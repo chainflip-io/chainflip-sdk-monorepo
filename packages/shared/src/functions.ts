@@ -4,6 +4,8 @@ import {
   ChainflipNetwork,
   AnyChainflipAsset,
   anyAssetConstants,
+  AnyChainflipChain,
+  anyChainConstants,
 } from '@chainflip/utils/chainflip';
 import { CHAINFLIP_BLOCK_TIME_SECONDS } from '@chainflip/utils/consts';
 import BigNumber from 'bignumber.js';
@@ -168,3 +170,25 @@ export const safeStringify = (obj: unknown) =>
   JSON.stringify(obj, (_key, value) => (typeof value === 'bigint' ? value.toString() : value));
 
 export const isTestnet = (network: ChainflipNetwork): boolean => network !== 'mainnet';
+
+export function calculateExpiryTime(args: {
+  chainInfo?: {
+    chain: AnyChainflipChain;
+    height: bigint | number;
+    blockTrackedAt: Date | number;
+  } | null;
+  expiryBlock?: bigint | number | null;
+}) {
+  const { chainInfo, expiryBlock } = args;
+
+  if (chainInfo == null || expiryBlock == null) {
+    return null;
+  }
+
+  const remainingBlocks = Number(BigInt(expiryBlock) - BigInt(chainInfo.height)); // If it is negative, it means the channel has already expired and will return the time from the past
+  const { blockTimeSeconds } = anyChainConstants[chainInfo.chain];
+
+  return new Date(
+    new Date(chainInfo.blockTrackedAt).getTime() + remainingBlocks * blockTimeSeconds * 1000,
+  );
+}

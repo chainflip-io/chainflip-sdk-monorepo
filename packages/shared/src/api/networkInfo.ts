@@ -1,4 +1,4 @@
-import { chainflipAssets } from '@chainflip/utils/chainflip';
+import { chainflipAssets, chainflipChains } from '@chainflip/utils/chainflip';
 import z from 'zod';
 
 export const NetworkInfo = z.object({
@@ -14,4 +14,13 @@ export const NetworkInfo = z.object({
     }),
   ),
   cfBrokerCommissionBps: z.number(),
+  chainTracking: z
+    .array(
+      z.object({
+        chain: z.enum(chainflipChains),
+        height: z.number(),
+        blockTrackedAt: z.number(),
+      }),
+    )
+    .optional(),
 });

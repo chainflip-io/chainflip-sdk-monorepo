@@ -20,6 +20,7 @@ if (!process.env.BITCOIN_WALLET_WIF) {
 const swapSDK = new SwapSDK({
   network: 'perseverance',
   enabledFeatures: { dcaV2: true },
+  broker: { url: process.env.BROKER_URL as string },
 });
 
 const keypair = ECPairFactory(secp256k1).fromWIF(process.env.BITCOIN_WALLET_WIF, network);

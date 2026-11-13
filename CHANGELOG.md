@@ -7,6 +7,23 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Changed
+
+- `requestDepositAddressV2()`, `encodeVaultSwapData()`, `encodeCfParameters()` and
+  `requestAccountCreationDepositAddress()` now require the SDK to be initialized with a
+  `broker: { url }`. They call the broker directly and no longer fall back to the
+  Chainflip backend.
+- `estimatedDepositChannelExpiryTime` from `requestDepositAddressV2()` and `estimatedExpiryTime`
+  from `requestAccountCreationDepositAddress()` are estimated from the chain tracking returned
+  by the backend's network info. They are `undefined` if the backend doesn't return it.
+
+### Removed
+
+- The `brokerAccount` parameter of `encodeVaultSwapData()` and `encodeCfParameters()`.
+  Configure a broker url instead.
+
 ## 2.3.2
 
 ### Added

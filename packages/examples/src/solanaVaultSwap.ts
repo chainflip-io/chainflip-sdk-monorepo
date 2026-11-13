@@ -24,6 +24,7 @@ if (!process.env.SOLANA_SECRET_KEY_BASE58) {
 const swapSDK = new SwapSDK({
   network: 'perseverance',
   enabledFeatures: { dcaV2: true },
+  broker: { url: process.env.BROKER_URL as string },
 });
 
 const keypair = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SECRET_KEY_BASE58));

@@ -1,7 +1,7 @@
 import { swappingSwapDepositAddressReady as schema220 } from '@chainflip/processor/220/swapping/swapDepositAddressReady';
 import { swappingSwapDepositAddressReady as schema230 } from '@chainflip/processor/230/swapping/swapDepositAddressReady';
 import { z } from 'zod';
-import { calculateExpiryTime } from '../../utils/function.js';
+import { calculateExpiryTime } from '@/shared/functions.js';
 import { EventHandlerArgs } from '../index.js';
 
 const schema = z.union([schema230.strict(), schema220.strict()]);
