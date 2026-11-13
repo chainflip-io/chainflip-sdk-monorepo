@@ -18,9 +18,9 @@ vi.mock('../services/ApiService', () => ({
   getStatusV2: vi.fn(),
 }));
 
-vi.mock('@ts-rest/core', async (importOriginal) => ({
+vi.mock('@/shared/api/client.js', async (importOriginal) => ({
   ...(await importOriginal()),
-  initClient: () => ({
+  createApiClient: () => ({
     openSwapDepositChannel: vi.fn(),
     encodeVaultSwapData: vi.fn(),
     encodeCfParameters: vi.fn(),
