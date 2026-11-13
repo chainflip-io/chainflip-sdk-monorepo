@@ -185,6 +185,7 @@ exports[`networkStatus > checks the chain's safe mode (deposit_channel_creation_
     },
   ],
   "cfBrokerCommissionBps": 0,
+  "chainTracking": [],
 }
 `;
 
@@ -373,6 +374,7 @@ exports[`networkStatus > checks the chain's safe mode (deposit_channel_witnessin
     },
   ],
   "cfBrokerCommissionBps": 0,
+  "chainTracking": [],
 }
 `;
 
@@ -561,6 +563,7 @@ exports[`networkStatus > checks the chain's safe mode (vault_deposit_witnessing_
     },
   ],
   "cfBrokerCommissionBps": 0,
+  "chainTracking": [],
 }
 `;
 
@@ -749,5 +752,6 @@ exports[`networkStatus > returns everything when possible (default) 1`] = `
     },
   ],
   "cfBrokerCommissionBps": 0,
+  "chainTracking": [],
 }
 `;

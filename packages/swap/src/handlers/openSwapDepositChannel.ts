@@ -2,12 +2,11 @@ import { getInternalAsset, internalAssetToRpcAsset } from '@chainflip/utils/chai
 import { z } from 'zod';
 import { getOpenSwapDepositChannelSchema } from '@/shared/api/openSwapDepositChannel.js';
 import * as broker from '@/shared/broker.js';
-import { getPriceFromPriceX128 } from '@/shared/functions.js';
+import { calculateExpiryTime, getPriceFromPriceX128 } from '@/shared/functions.js';
 import prisma, { Prisma } from '../client.js';
 import env from '../config/env.js';
 import { getAssetPrice } from '../pricing/index.js';
 import { assertRouteEnabled } from '../utils/env.js';
-import { calculateExpiryTime } from '../utils/function.js';
 import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
@@ -25,23 +24,10 @@ const getSlippageTolerancePercent = (
   return estimatedPrice && fokMinPrice && (100 * (estimatedPrice - fokMinPrice)) / estimatedPrice;
 };
 
-export const openSwapDepositChannel = async ({
-  takeCommission,
-  ...input
-}: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>) => {
-  let commissionBps = 0;
-  let brokerUrl = env.RPC_BROKER_HTTPS_URL;
-  if (takeCommission && env.RPC_COMMISSION_BROKER_HTTPS_URL) {
-    commissionBps = env.BROKER_COMMISSION_BPS;
-    brokerUrl = env.RPC_COMMISSION_BROKER_HTTPS_URL;
-  }
-
-  if (
-    env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK &&
-    brokerUrl === env.RPC_BROKER_HTTPS_URL
-  ) {
-    throw ServiceError.unavailable('Opening swap deposit channels is currently unavailable');
-  }
+export const openSwapDepositChannel = async (
+  input: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>,
+) => {
+  const commissionBps = env.BROKER_COMMISSION_BPS;
 
   logger.info('Opening swap deposit channel', input);
 
@@ -78,7 +64,7 @@ export const openSwapDepositChannel = async ({
         destAsset: internalAssetToRpcAsset[destAsset],
         commissionBps,
       },
-      { url: brokerUrl },
+      { url: env.RPC_BROKER_HTTPS_URL },
       env.CHAINFLIP_NETWORK,
     ),
     prisma.chainTracking.findFirst({ where: { chain: input.srcAsset.chain } }),
