@@ -1,8 +1,10 @@
 import { HttpClient } from '@chainflip/rpc';
-import { ApiFetcherArgs, initClient } from '@ts-rest/core';
+import type { ChainflipNetwork } from '@chainflip/utils/chainflip';
 import request from 'supertest';
 import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from 'vitest';
-import { createApiContract } from '@/shared/api/contract.js';
+import type { z } from 'zod';
+import { getAccountCreationDepositChannelSchema } from '@/shared/api/openAccountCreationDepositChannel.js';
+import { getOpenSwapDepositChannelSchema } from '@/shared/api/openSwapDepositChannel.js';
 import * as broker from '@/shared/broker.js';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
 import prisma from '../../client.js';
@@ -15,35 +17,32 @@ vi.mock('@/shared/broker.js', async (importOriginal) => ({
   requestSwapParameterEncoding: vi.fn(),
 }));
 
-const client = initClient(createApiContract('mainnet'), {
-  baseUrl: 'http://not-used.com',
-  api: async (args: ApiFetcherArgs) => {
-    let result;
-
-    switch (args.route.method) {
-      case 'GET':
-        result = await request(server)
-          .get(args.route.path)
-          .set(args.headers || {});
-        break;
-      case 'POST':
-        result = await request(server)
-          .post(args.route.path)
-          .send(args.body as string)
-          .set(args.headers || {});
-        break;
-
-      default:
-        throw new Error(`Unsupported method ${args.method}`);
-    }
+// calls the endpoints through the express app, typing the request bodies with the schema inputs
+const post =
+  <T extends (network: ChainflipNetwork) => z.ZodType>(path: string, _schema: T) =>
+  async ({ body }: { body: z.input<ReturnType<T>> }) => {
+    const result = await request(server)
+      .post(path)
+      .send(body as object);
 
     return {
       status: result.statusCode,
       body: result.body,
       headers: new Headers(result.headers),
     };
-  },
-});
+  };
+
+const client = {
+  openSwapDepositChannel: post('/api/openSwapDepositChannel', getOpenSwapDepositChannelSchema),
+  encodeVaultSwapData: post(
+    '/api/encodeVaultSwapData',
+    broker.getVaultSwapParameterEncodingRequestSchema,
+  ),
+  openAccountCreationDepositChannel: post(
+    '/api/openAccountCreationDepositChannel',
+    getAccountCreationDepositChannelSchema,
+  ),
+};
 
 describe('openSwapDepositChannel', () => {
   let oldEnv: typeof env;
