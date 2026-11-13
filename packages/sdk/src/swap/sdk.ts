@@ -61,12 +61,13 @@ import {
   EncodeCfParametersRequest,
 } from './v2/types.js';
 
+export const DEFAULT_BROKER = 'swap.chainflip.io';
+export type BrokerOption = { url: string } | { name: typeof DEFAULT_BROKER };
+
 export type SwapSDKOptions = {
   network?: ChainflipNetwork;
   backendUrl?: string;
-  broker?: {
-    url: string;
-  };
+  broker?: BrokerOption;
   rpcUrl?: string;
   enabledFeatures?: {
     dcaV2?: boolean;
@@ -76,6 +77,16 @@ export type SwapSDKOptions = {
    * Sent on every /v2/quote request unless overridden per-call.
    */
   brokerAccount?: `cF${string}`;
+};
+
+const apiError = (action: string, res: { status: number; body: unknown }) => {
+  const { body } = res;
+  const reason =
+    body && typeof body === 'object' && 'message' in body && typeof body.message === 'string'
+      ? body.message
+      : JSON.stringify(body);
+
+  return new Error(`Failed to ${action} (${res.status}): ${reason}`, { cause: res });
 };
 
 const assertQuoteValid = (quote: Quote | BoostQuote) => {
@@ -205,14 +216,28 @@ export class SwapSDK {
       .filter((asset) => !chain || asset.chain === chain);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  protected shouldTakeCommission(): boolean {
-    return false;
+  private getBroker(): BrokerOption {
+    const { broker } = this.options;
+    assert(broker, 'A broker url or name is required to open channels or encode swaps');
+    if ('name' in broker) {
+      assert(broker.name === DEFAULT_BROKER, `Broker name "${broker.name}" is not supported`);
+    }
+    return broker;
   }
 
-  private getBrokerUrl(): { url: string } {
-    assert(this.options.broker, 'A broker url is required to open channels or encode swaps');
-    return { url: this.options.broker.url };
+  private useDefaultBroker(): boolean {
+    const { broker } = this.options;
+    return broker !== undefined && 'name' in broker && broker.name === DEFAULT_BROKER;
+  }
+
+  private static assertNoBrokerFeesAndAffiliates(
+    brokerCommissionBps: number | undefined,
+    affiliates: unknown[] | undefined,
+  ) {
+    assert(
+      brokerCommissionBps === undefined && !affiliates?.length,
+      `Broker commission and affiliates are not supported with the ${DEFAULT_BROKER} broker`,
+    );
   }
 
   private async estimateExpiryTime(
@@ -228,8 +253,12 @@ export class SwapSDK {
     }
   }
 
-  private async getCommissionBps(brokerCommissionBps: number | undefined): Promise<number> {
-    if (this.shouldTakeCommission()) {
+  private async getCommissionBps({
+    brokerCommissionBps,
+    affiliateBrokers,
+  }: QuoteRequest): Promise<number> {
+    if (this.useDefaultBroker()) {
+      SwapSDK.assertNoBrokerFeesAndAffiliates(brokerCommissionBps, affiliateBrokers);
       return (await this.cache.read('networkInfo')).cfBrokerCommissionBps;
     }
     return brokerCommissionBps ?? 0;
@@ -239,9 +268,7 @@ export class SwapSDK {
     quoteRequest: QuoteRequest,
     options: ApiService.RequestOptions = {},
   ): Promise<QuoteResponseV2> {
-    const submitterBrokerCommissionBps = await this.getCommissionBps(
-      quoteRequest.brokerCommissionBps,
-    );
+    const submitterBrokerCommissionBps = await this.getCommissionBps(quoteRequest);
 
     return ApiService.getQuoteV2(
       this.options.backendUrl,
@@ -364,9 +391,9 @@ export class SwapSDK {
     fillOrKillParams: inputFoKParams,
     affiliateBrokers: affiliates,
     ccmParams,
-    brokerCommissionBps = 0,
+    brokerCommissionBps,
   }: DepositAddressRequestV2): Promise<DepositAddressResponseV2> {
-    const broker = this.getBrokerUrl();
+    const broker = this.getBroker();
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(!quote.isVaultSwap, 'Cannot open a deposit channel for a vault swap quote');
@@ -390,11 +417,38 @@ export class SwapSDK {
       amount: quote.depositAmount,
     };
 
-    const result = await requestSwapDepositAddress(
-      { ...depositAddressRequest, commissionBps: brokerCommissionBps, affiliates },
-      broker,
-      this.options.network,
-    );
+    let channel;
+
+    if ('url' in broker) {
+      const result = await requestSwapDepositAddress(
+        { ...depositAddressRequest, commissionBps: brokerCommissionBps ?? 0, affiliates },
+        broker,
+        this.options.network,
+      );
+
+      channel = {
+        id: `${result.issuedBlock}-${quote.srcAsset.chain}-${result.channelId}`,
+        depositAddress: result.address,
+        brokerCommissionBps: brokerCommissionBps ?? 0,
+        maxBoostFeeBps: Number(depositAddressRequest.maxBoostFeeBps) || 0,
+        srcChainExpiryBlock: result.sourceChainExpiryBlock,
+        estimatedExpiryTime: await this.estimateExpiryTime(
+          quote.srcAsset.chain,
+          result.sourceChainExpiryBlock,
+        ),
+        channelOpeningFee: result.channelOpeningFee,
+      };
+    } else {
+      SwapSDK.assertNoBrokerFeesAndAffiliates(brokerCommissionBps, affiliates);
+
+      const res = await this.apiClient.openSwapDepositChannel({
+        body: { ...depositAddressRequest, quote },
+      });
+
+      if (res.status !== 201) throw apiError('open swap deposit channel', res);
+
+      channel = res.body;
+    }
 
     return {
       ...depositAddressRequest,
@@ -402,17 +456,14 @@ export class SwapSDK {
       destAsset: quote.destAsset.asset,
       srcChain: quote.srcAsset.chain,
       destChain: quote.destAsset.chain,
-      depositChannelId: `${result.issuedBlock}-${quote.srcAsset.chain}-${result.channelId}`,
-      depositAddress: result.address,
-      brokerCommissionBps,
+      depositChannelId: channel.id,
+      depositAddress: channel.depositAddress,
+      brokerCommissionBps: channel.brokerCommissionBps,
       affiliateBrokers: affiliates ?? [],
-      maxBoostFeeBps: Number(depositAddressRequest.maxBoostFeeBps) || 0,
-      depositChannelExpiryBlock: BigInt(result.sourceChainExpiryBlock),
-      estimatedDepositChannelExpiryTime: await this.estimateExpiryTime(
-        quote.srcAsset.chain,
-        result.sourceChainExpiryBlock,
-      ),
-      channelOpeningFee: BigInt(result.channelOpeningFee),
+      maxBoostFeeBps: channel.maxBoostFeeBps,
+      depositChannelExpiryBlock: BigInt(channel.srcChainExpiryBlock),
+      estimatedDepositChannelExpiryTime: channel.estimatedExpiryTime,
+      channelOpeningFee: BigInt(channel.channelOpeningFee),
       fillOrKillParams: inputFoKParams,
     };
   }
@@ -427,7 +478,7 @@ export class SwapSDK {
     brokerCommissionBps,
     extraParams,
   }: VaultSwapRequest): Promise<VaultSwapResponse> {
-    const broker = this.getBrokerUrl();
+    const broker = this.getBroker();
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(quote.isVaultSwap, 'Cannot encode vault swap data for non-vault swap quotes');
@@ -453,7 +504,25 @@ export class SwapSDK {
       affiliates,
     };
 
-    return requestSwapParameterEncoding(vaultSwapRequest, broker, this.options.network);
+    if ('url' in broker) {
+      return requestSwapParameterEncoding(vaultSwapRequest, broker, this.options.network);
+    }
+
+    SwapSDK.assertNoBrokerFeesAndAffiliates(brokerCommissionBps, affiliates);
+
+    const res = await this.apiClient.encodeVaultSwapData({ body: vaultSwapRequest });
+
+    if (res.status !== 200) throw apiError('encode vault swap data', res);
+
+    switch (res.body.chain) {
+      case 'Arbitrum':
+      case 'Ethereum':
+      case 'Tron':
+      case 'Bsc':
+        return { ...res.body, value: BigInt(res.body.value) };
+      default:
+        return res.body;
+    }
   }
 
   async encodeCfParameters({
@@ -465,7 +534,7 @@ export class SwapSDK {
     ccmParams,
     brokerCommissionBps,
   }: EncodeCfParametersRequest): Promise<HexString> {
-    const broker = this.getBrokerUrl();
+    const broker = this.getBroker();
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
 
@@ -489,7 +558,17 @@ export class SwapSDK {
       affiliates,
     };
 
-    return requestCfParametersEncoding(requestParams, broker, this.options.network);
+    if ('url' in broker) {
+      return requestCfParametersEncoding(requestParams, broker, this.options.network);
+    }
+
+    SwapSDK.assertNoBrokerFeesAndAffiliates(brokerCommissionBps, affiliates);
+
+    const res = await this.apiClient.encodeCfParameters({ body: requestParams });
+
+    if (res.status !== 200) throw apiError('encode cf parameters', res);
+
+    return res.body;
   }
 
   async checkBoostEnabled(): Promise<boolean> {
@@ -504,26 +583,42 @@ export class SwapSDK {
     transactionMetadata: AccountCreationDepositChannelParams['transactionMetadata'],
     boostFeeBps = 0,
   ) {
+    const broker = this.getBroker();
     const rpcAsset = internalAssetToRpcAsset[asset];
-
-    const result = await requestAccountCreationDepositAddress(
-      { asset: rpcAsset, refundAddress, signatureData, transactionMetadata, boostFeeBps },
-      this.getBrokerUrl(),
-      this.options.network,
-    );
-
-    return {
-      id: `${result.issuedBlock}-${rpcAsset.chain}-${result.channelId}`,
-      depositAddress: result.address,
-      brokerCommissionBps: 0,
-      maxBoostFeeBps: boostFeeBps,
-      issuedBlock: result.issuedBlock,
-      srcChainExpiryBlock: result.depositChainExpiryBlock.toString(),
-      estimatedExpiryTime: await this.estimateExpiryTime(
-        rpcAsset.chain,
-        result.depositChainExpiryBlock,
-      ),
-      channelOpeningFee: result.channelOpeningFee.toString(),
+    const request = {
+      asset: rpcAsset,
+      refundAddress,
+      signatureData,
+      transactionMetadata,
+      boostFeeBps,
     };
+
+    if ('url' in broker) {
+      const result = await requestAccountCreationDepositAddress(
+        request,
+        broker,
+        this.options.network,
+      );
+
+      return {
+        id: `${result.issuedBlock}-${rpcAsset.chain}-${result.channelId}`,
+        depositAddress: result.address,
+        brokerCommissionBps: 0,
+        maxBoostFeeBps: boostFeeBps,
+        issuedBlock: result.issuedBlock,
+        srcChainExpiryBlock: result.depositChainExpiryBlock.toString(),
+        estimatedExpiryTime: await this.estimateExpiryTime(
+          rpcAsset.chain,
+          result.depositChainExpiryBlock,
+        ),
+        channelOpeningFee: result.channelOpeningFee.toString(),
+      };
+    }
+
+    const res = await this.apiClient.openAccountCreationDepositChannel({ body: request });
+
+    if (res.status !== 201) throw apiError('open account creation deposit channel', res);
+
+    return res.body;
   }
 }
