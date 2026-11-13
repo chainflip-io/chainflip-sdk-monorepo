@@ -3,7 +3,6 @@ import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { getVaultSwapParameterEncodingRequestSchema } from '@/shared/broker.js';
 import { transformKeysToCamelCase } from '@/shared/objects.js';
-import networkInfo from './networkInfo.js';
 import env from '../config/env.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
@@ -30,14 +29,12 @@ export const encodeVaultSwapData = async (
 
   if (!result.success) throw ServiceError.badRequest(result.reason);
 
-  const { cfBrokerCommissionBps } = await networkInfo();
-
   const response = await brokerClient.sendRequest(
     'broker_request_swap_parameter_encoding',
     input.srcAsset,
     input.destAsset,
     input.destAddress,
-    cfBrokerCommissionBps,
+    env.BROKER_COMMISSION_BPS,
     input.extraParams,
     input.ccmParams,
     input.maxBoostFeeBps,

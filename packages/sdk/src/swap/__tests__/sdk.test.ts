@@ -454,6 +454,21 @@ describe(SwapSDK, () => {
       );
       expect(getQuoteV2).not.toHaveBeenCalled();
     });
+
+    it('rejects an unsupported broker name', async () => {
+      sdk = new SwapSDK({ broker: { name: 'other.broker' as BrokerName }, network: 'sisyphos' });
+
+      await expect(
+        sdk.getQuoteV2({
+          srcChain: 'Ethereum',
+          srcAsset: 'ETH',
+          destChain: 'Ethereum',
+          destAsset: 'USDC',
+          amount: '1',
+        }),
+      ).rejects.toThrow('Broker name "other.broker" is not supported');
+      expect(getQuoteV2).not.toHaveBeenCalled();
+    });
   });
 
   describe(SwapSDK.prototype.getStatusV2, () => {

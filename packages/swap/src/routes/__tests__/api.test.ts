@@ -7,7 +7,6 @@ import * as broker from '@/shared/broker.js';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
 import prisma from '../../client.js';
 import env from '../../config/env.js';
-import networkInfo from '../../handlers/networkInfo.js';
 import server from '../../server.js';
 
 vi.mock('@/shared/broker.js', async (importOriginal) => ({
@@ -15,8 +14,6 @@ vi.mock('@/shared/broker.js', async (importOriginal) => ({
   requestSwapDepositAddress: vi.fn(),
   requestSwapParameterEncoding: vi.fn(),
 }));
-
-vi.mock('../../handlers/networkInfo.js');
 
 const client = initClient(createApiContract('mainnet'), {
   baseUrl: 'http://not-used.com',
@@ -631,8 +628,8 @@ describe('encodeVaultSwapData', () => {
     Object.assign(env, oldEnv);
   });
 
-  it('calls the broker api with the commission from network info', async () => {
-    vi.mocked(networkInfo).mockResolvedValueOnce({ assets: [], cfBrokerCommissionBps: 30 });
+  it('calls the broker api with the broker commission', async () => {
+    env.BROKER_COMMISSION_BPS = 30;
     const postSpy = mockRpcResponse((url, data: any) => {
       if (data.method === 'cf_environment') {
         return Promise.resolve({ data: environment({ maxSwapAmount: '0x10000000000' }) });

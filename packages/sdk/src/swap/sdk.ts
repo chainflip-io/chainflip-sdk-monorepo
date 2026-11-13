@@ -70,6 +70,8 @@ const brokerNames: readonly string[] = Object.values(BrokerName);
 
 export type BrokerOption = { url: string } | { name: BrokerName };
 
+type BrokerFees = { brokerCommissionBps?: number; affiliates?: unknown[] };
+
 export type SwapSDKOptions = {
   network?: ChainflipNetwork;
   backendUrl?: string;
@@ -222,29 +224,22 @@ export class SwapSDK {
       .filter((asset) => !chain || asset.chain === chain);
   }
 
-  private getBroker(): BrokerOption {
+  private resolveBroker(fees: BrokerFees = {}): BrokerOption | undefined {
     const { broker } = this.options;
-    assert(broker, 'A broker url or name is required to open channels or encode swaps');
-    if ('name' in broker) {
+    if (broker && 'name' in broker) {
       assert(brokerNames.includes(broker.name), `Broker name "${broker.name}" is not supported`);
+      assert(
+        fees.brokerCommissionBps === undefined && !fees.affiliates?.length,
+        `Broker commission and affiliates are not supported with the ${broker.name} broker`,
+      );
     }
     return broker;
   }
 
-  private getBrokerName(): BrokerName | undefined {
-    const { broker } = this.options;
-    return broker && 'name' in broker ? broker.name : undefined;
-  }
-
-  private static assertNoBrokerFeesAndAffiliates(
-    brokerName: BrokerName,
-    brokerCommissionBps: number | undefined,
-    affiliates: unknown[] | undefined,
-  ) {
-    assert(
-      brokerCommissionBps === undefined && !affiliates?.length,
-      `Broker commission and affiliates are not supported with the ${brokerName} broker`,
-    );
+  private requireBroker(fees: BrokerFees = {}): BrokerOption {
+    const broker = this.resolveBroker(fees);
+    assert(broker, 'A broker url or name is required to open channels or encode swaps');
+    return broker;
   }
 
   private async estimateExpiryTime(
@@ -264,11 +259,9 @@ export class SwapSDK {
     brokerCommissionBps,
     affiliateBrokers,
   }: QuoteRequest): Promise<number> {
-    const brokerName = this.getBrokerName();
-    if (brokerName) {
-      SwapSDK.assertNoBrokerFeesAndAffiliates(brokerName, brokerCommissionBps, affiliateBrokers);
-      if (brokerName === BrokerName.ChainflipSwap)
-        return (await this.cache.read('networkInfo')).cfBrokerCommissionBps;
+    const broker = this.resolveBroker({ brokerCommissionBps, affiliates: affiliateBrokers });
+    if (broker && 'name' in broker && broker.name === BrokerName.ChainflipSwap) {
+      return (await this.cache.read('networkInfo')).cfBrokerCommissionBps;
     }
     return brokerCommissionBps ?? 0;
   }
@@ -402,7 +395,7 @@ export class SwapSDK {
     ccmParams,
     brokerCommissionBps,
   }: DepositAddressRequestV2): Promise<DepositAddressResponseV2> {
-    const broker = this.getBroker();
+    const broker = this.requireBroker({ brokerCommissionBps, affiliates });
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(!quote.isVaultSwap, 'Cannot open a deposit channel for a vault swap quote');
@@ -448,8 +441,6 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
-      SwapSDK.assertNoBrokerFeesAndAffiliates(broker.name, brokerCommissionBps, affiliates);
-
       const res = await this.apiClient.openSwapDepositChannel({
         body: { ...depositAddressRequest, quote },
       });
@@ -487,7 +478,7 @@ export class SwapSDK {
     brokerCommissionBps,
     extraParams,
   }: VaultSwapRequest): Promise<VaultSwapResponse> {
-    const broker = this.getBroker();
+    const broker = this.requireBroker({ brokerCommissionBps, affiliates });
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(quote.isVaultSwap, 'Cannot encode vault swap data for non-vault swap quotes');
@@ -517,8 +508,6 @@ export class SwapSDK {
       return requestSwapParameterEncoding(vaultSwapRequest, broker, this.options.network);
     }
 
-    SwapSDK.assertNoBrokerFeesAndAffiliates(broker.name, brokerCommissionBps, affiliates);
-
     const res = await this.apiClient.encodeVaultSwapData({ body: vaultSwapRequest });
 
     if (res.status !== 200) throw apiError('encode vault swap data', res);
@@ -543,7 +532,7 @@ export class SwapSDK {
     ccmParams,
     brokerCommissionBps,
   }: EncodeCfParametersRequest): Promise<HexString> {
-    const broker = this.getBroker();
+    const broker = this.requireBroker({ brokerCommissionBps, affiliates });
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
 
@@ -571,8 +560,6 @@ export class SwapSDK {
       return requestCfParametersEncoding(requestParams, broker, this.options.network);
     }
 
-    SwapSDK.assertNoBrokerFeesAndAffiliates(broker.name, brokerCommissionBps, affiliates);
-
     const res = await this.apiClient.encodeCfParameters({ body: requestParams });
 
     if (res.status !== 200) throw apiError('encode cf parameters', res);
@@ -592,7 +579,7 @@ export class SwapSDK {
     transactionMetadata: AccountCreationDepositChannelParams['transactionMetadata'],
     boostFeeBps = 0,
   ) {
-    const broker = this.getBroker();
+    const broker = this.requireBroker();
     const rpcAsset = internalAssetToRpcAsset[asset];
     const request = {
       asset: rpcAsset,

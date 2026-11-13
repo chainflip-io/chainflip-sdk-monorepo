@@ -2,7 +2,6 @@ import { HttpClient } from '@chainflip/rpc';
 import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { getParameterEncodingRequestSchema } from '@/shared/broker.js';
-import networkInfo from './networkInfo.js';
 import env from '../config/env.js';
 import { assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
@@ -29,14 +28,12 @@ export const encodeCfParameters = async (
 
   if (!result.success) throw ServiceError.badRequest(result.reason);
 
-  const { cfBrokerCommissionBps } = await networkInfo();
-
   const response = await brokerClient.sendRequest(
     'broker_encode_cf_parameters',
     input.srcAsset,
     input.destAsset,
     input.destAddress,
-    cfBrokerCommissionBps,
+    env.BROKER_COMMISSION_BPS,
     input.fillOrKillParams,
     input.ccmParams,
     input.maxBoostFeeBps,
