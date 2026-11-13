@@ -11,7 +11,7 @@ which it is deprecated.
 
 ### Added
 
-- The `broker` option accepts `{ name: 'swap.chainflip.io' }` (exported as `DEFAULT_BROKER`)
+- The `broker` option accepts `{ name: 'swap.chainflip.io' }` (`BrokerName.ChainflipSwap`)
   to open channels and encode vault swaps through the Chainflip broker. Quotes include its
   commission. Passing `brokerCommissionBps` or `affiliateBrokers` to `getQuoteV2()`,
   `requestDepositAddressV2()`, `encodeVaultSwapData()` or `encodeCfParameters()` throws when

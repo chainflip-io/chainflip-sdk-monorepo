@@ -61,8 +61,14 @@ import {
   EncodeCfParametersRequest,
 } from './v2/types.js';
 
-export const DEFAULT_BROKER = 'swap.chainflip.io';
-export type BrokerOption = { url: string } | { name: typeof DEFAULT_BROKER };
+export const BrokerName = {
+  ChainflipSwap: 'swap.chainflip.io',
+} as const;
+export type BrokerName = (typeof BrokerName)[keyof typeof BrokerName];
+
+const brokerNames: readonly string[] = Object.values(BrokerName);
+
+export type BrokerOption = { url: string } | { name: BrokerName };
 
 export type SwapSDKOptions = {
   network?: ChainflipNetwork;
@@ -220,23 +226,24 @@ export class SwapSDK {
     const { broker } = this.options;
     assert(broker, 'A broker url or name is required to open channels or encode swaps');
     if ('name' in broker) {
-      assert(broker.name === DEFAULT_BROKER, `Broker name "${broker.name}" is not supported`);
+      assert(brokerNames.includes(broker.name), `Broker name "${broker.name}" is not supported`);
     }
     return broker;
   }
 
-  private useDefaultBroker(): boolean {
+  private getBrokerName(): BrokerName | undefined {
     const { broker } = this.options;
-    return broker !== undefined && 'name' in broker && broker.name === DEFAULT_BROKER;
+    return broker && 'name' in broker ? broker.name : undefined;
   }
 
   private static assertNoBrokerFeesAndAffiliates(
+    brokerName: BrokerName,
     brokerCommissionBps: number | undefined,
     affiliates: unknown[] | undefined,
   ) {
     assert(
       brokerCommissionBps === undefined && !affiliates?.length,
-      `Broker commission and affiliates are not supported with the ${DEFAULT_BROKER} broker`,
+      `Broker commission and affiliates are not supported with the ${brokerName} broker`,
     );
   }
 
@@ -257,9 +264,11 @@ export class SwapSDK {
     brokerCommissionBps,
     affiliateBrokers,
   }: QuoteRequest): Promise<number> {
-    if (this.useDefaultBroker()) {
-      SwapSDK.assertNoBrokerFeesAndAffiliates(brokerCommissionBps, affiliateBrokers);
-      return (await this.cache.read('networkInfo')).cfBrokerCommissionBps;
+    const brokerName = this.getBrokerName();
+    if (brokerName) {
+      SwapSDK.assertNoBrokerFeesAndAffiliates(brokerName, brokerCommissionBps, affiliateBrokers);
+      if (brokerName === BrokerName.ChainflipSwap)
+        return (await this.cache.read('networkInfo')).cfBrokerCommissionBps;
     }
     return brokerCommissionBps ?? 0;
   }
@@ -439,7 +448,7 @@ export class SwapSDK {
         channelOpeningFee: result.channelOpeningFee,
       };
     } else {
-      SwapSDK.assertNoBrokerFeesAndAffiliates(brokerCommissionBps, affiliates);
+      SwapSDK.assertNoBrokerFeesAndAffiliates(broker.name, brokerCommissionBps, affiliates);
 
       const res = await this.apiClient.openSwapDepositChannel({
         body: { ...depositAddressRequest, quote },
@@ -508,7 +517,7 @@ export class SwapSDK {
       return requestSwapParameterEncoding(vaultSwapRequest, broker, this.options.network);
     }
 
-    SwapSDK.assertNoBrokerFeesAndAffiliates(brokerCommissionBps, affiliates);
+    SwapSDK.assertNoBrokerFeesAndAffiliates(broker.name, brokerCommissionBps, affiliates);
 
     const res = await this.apiClient.encodeVaultSwapData({ body: vaultSwapRequest });
 
@@ -562,7 +571,7 @@ export class SwapSDK {
       return requestCfParametersEncoding(requestParams, broker, this.options.network);
     }
 
-    SwapSDK.assertNoBrokerFeesAndAffiliates(brokerCommissionBps, affiliates);
+    SwapSDK.assertNoBrokerFeesAndAffiliates(broker.name, brokerCommissionBps, affiliates);
 
     const res = await this.apiClient.encodeCfParameters({ body: requestParams });
 

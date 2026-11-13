@@ -9,7 +9,7 @@ import {
   mockRpcResponse,
   supplyPoolsDepth,
 } from '@/shared/tests/fixtures.js';
-import { DEFAULT_BROKER, SwapSDK, SwapSDKOptions } from '../sdk.js';
+import { BrokerName, SwapSDK, SwapSDKOptions } from '../sdk.js';
 import { getQuoteV2, getStatusV2 } from '../services/ApiService.js';
 import { QuoteRequest } from '../types.js';
 
@@ -338,7 +338,7 @@ describe(SwapSDK, () => {
     });
 
     it('calls api with commission', async () => {
-      sdk = mockNetworkStatus(true, 15, { broker: { name: DEFAULT_BROKER } });
+      sdk = mockNetworkStatus(true, 15, { broker: { name: BrokerName.ChainflipSwap } });
       const params: QuoteRequest = {
         srcChain: 'Ethereum',
         srcAsset: 'ETH',
@@ -438,7 +438,7 @@ describe(SwapSDK, () => {
         ] as QuoteRequest['affiliateBrokers'],
       },
     ])('rejects %o with the default broker', async (fees) => {
-      sdk = new SwapSDK({ broker: { name: DEFAULT_BROKER }, network: 'sisyphos' });
+      sdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap }, network: 'sisyphos' });
 
       await expect(
         sdk.getQuoteV2({
@@ -492,7 +492,7 @@ describe(SwapSDK, () => {
     });
 
     it('throws with an unsupported broker name', async () => {
-      const brokerSdk = new SwapSDK({ broker: { name: 'other.broker' as typeof DEFAULT_BROKER } });
+      const brokerSdk = new SwapSDK({ broker: { name: 'other.broker' as BrokerName } });
 
       await expect(
         brokerSdk.requestDepositAddressV2({
@@ -532,7 +532,7 @@ describe(SwapSDK, () => {
       };
 
       it('opens the channel through the swap server', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
         vi.mocked(brokerSdk['apiClient'].openSwapDepositChannel).mockResolvedValueOnce({
           status: 201,
           body: {
@@ -624,7 +624,7 @@ describe(SwapSDK, () => {
       });
 
       it('rejects broker commission', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
 
         await expect(
           brokerSdk.requestDepositAddressV2({ ...request, brokerCommissionBps: 0 }),
@@ -635,7 +635,7 @@ describe(SwapSDK, () => {
       });
 
       it('throws with the message of the swap server', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
         vi.mocked(brokerSdk['apiClient'].openSwapDepositChannel).mockResolvedValueOnce({
           status: 400,
           body: { message: 'too many channels' },
@@ -1716,7 +1716,7 @@ describe(SwapSDK, () => {
       };
 
       it('encodes through the swap server', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
         vi.mocked(brokerSdk['apiClient'].encodeVaultSwapData).mockResolvedValueOnce({
           status: 200,
           body: {
@@ -1778,7 +1778,7 @@ describe(SwapSDK, () => {
       });
 
       it('rejects affiliates', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
 
         await expect(
           brokerSdk.encodeVaultSwapData({
@@ -1794,7 +1794,7 @@ describe(SwapSDK, () => {
       });
 
       it('throws with the message of the swap server', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
         vi.mocked(brokerSdk['apiClient'].encodeVaultSwapData).mockResolvedValueOnce({
           status: 400,
           body: { message: 'setting brokerAccount is not supported' },
@@ -2299,7 +2299,7 @@ describe(SwapSDK, () => {
       };
 
       it('encodes through the swap server', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
         vi.mocked(brokerSdk['apiClient'].encodeCfParameters).mockResolvedValueOnce({
           status: 200,
           body: '0x1234',
@@ -2346,7 +2346,7 @@ describe(SwapSDK, () => {
       });
 
       it('rejects broker commission', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
 
         await expect(
           brokerSdk.encodeCfParameters({ ...request, brokerCommissionBps: 15 }),
@@ -2357,7 +2357,7 @@ describe(SwapSDK, () => {
       });
 
       it('throws with the message of the swap server', async () => {
-        const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+        const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
         vi.mocked(brokerSdk['apiClient'].encodeCfParameters).mockResolvedValueOnce({
           status: 400,
           body: { message: 'route disabled' },
@@ -2872,7 +2872,7 @@ describe(SwapSDK, () => {
     });
 
     it('opens the channel through the swap server with the default broker', async () => {
-      const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+      const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
       const channel = {
         id: '123-Bitcoin-15',
         depositAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
@@ -2910,7 +2910,7 @@ describe(SwapSDK, () => {
     });
 
     it('throws with the message of the swap server with the default broker', async () => {
-      const brokerSdk = new SwapSDK({ broker: { name: DEFAULT_BROKER } });
+      const brokerSdk = new SwapSDK({ broker: { name: BrokerName.ChainflipSwap } });
       vi.mocked(brokerSdk['apiClient'].openAccountCreationDepositChannel).mockResolvedValueOnce({
         status: 400,
         body: { message: 'AccountAlreadyExists: account already exists' },
