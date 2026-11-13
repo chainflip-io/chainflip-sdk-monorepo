@@ -36,7 +36,6 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
             recommendedLivePriceSlippageTolerancePercent: z.number().optional(),
           })
           .optional(),
-        takeCommission: z.boolean().optional(),
       }),
     )
     .superRefine(({ ...val }, ctx) => {

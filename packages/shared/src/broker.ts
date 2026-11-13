@@ -13,6 +13,10 @@ import { priceX128ToPrice } from '@chainflip/utils/tickMath';
 import { HexString } from '@chainflip/utils/types';
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
+import {
+  AccountCreationDepositChannelParams,
+  getAccountCreationDepositChannelSchema,
+} from './api/openAccountCreationDepositChannel.js';
 import { transformKeysToCamelCase } from './objects.js';
 import {
   numericString,
@@ -362,4 +366,28 @@ export async function requestCfParametersEncoding(
   );
 
   return response;
+}
+
+export async function requestAccountCreationDepositAddress(
+  request: AccountCreationDepositChannelParams,
+  opts: { url: string },
+  network: ChainflipNetwork,
+) {
+  const client = new HttpClient(opts.url);
+
+  const params = getAccountCreationDepositChannelSchema(network).parse(request);
+
+  const response = await client.sendRequest(
+    'broker_request_account_creation_deposit_address',
+    params.signatureData,
+    params.transactionMetadata,
+    params.asset,
+    params.boostFeeBps,
+    params.refundAddress,
+  );
+
+  return {
+    ...transformKeysToCamelCase(response),
+    address: formatBrokerDepositAddress(params.asset.chain, response.address),
+  };
 }

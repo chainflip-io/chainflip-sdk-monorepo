@@ -254,7 +254,6 @@ export interface VaultSwapRequest {
   fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
-  brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
   extraParams?: { seed?: `0x${string}` };
 }
@@ -298,6 +297,5 @@ export interface EncodeCfParametersRequest {
   fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
-  brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
 }
