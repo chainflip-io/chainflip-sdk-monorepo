@@ -1,7 +1,7 @@
 import { HttpClient } from '@chainflip/rpc';
-import { ApiFetcherArgs, initClient } from '@ts-rest/core';
 import request from 'supertest';
 import { vi, describe, it, beforeAll, beforeEach, afterEach, expect } from 'vitest';
+import { createApiClient } from '@/shared/api/client.js';
 import { createApiContract } from '@/shared/api/contract.js';
 import * as broker from '@/shared/broker.js';
 import { environment, mockRpcResponse } from '@/shared/tests/fixtures.js';
@@ -15,26 +15,21 @@ vi.mock('@/shared/broker.js', async (importOriginal) => ({
   requestSwapParameterEncoding: vi.fn(),
 }));
 
-const client = initClient(createApiContract('mainnet'), {
+const client = createApiClient(createApiContract('mainnet'), {
   baseUrl: 'http://not-used.com',
-  api: async (args: ApiFetcherArgs) => {
+  fetcher: async ({ method, path, headers, body }) => {
     let result;
 
-    switch (args.route.method) {
+    switch (method) {
       case 'GET':
-        result = await request(server)
-          .get(args.route.path)
-          .set(args.headers || {});
+        result = await request(server).get(path).set(headers);
         break;
       case 'POST':
-        result = await request(server)
-          .post(args.route.path)
-          .send(args.body as string)
-          .set(args.headers || {});
+        result = await request(server).post(path).set(headers).send(body);
         break;
 
       default:
-        throw new Error(`Unsupported method ${args.method}`);
+        throw new Error(`Unsupported method ${method}`);
     }
 
     return {

@@ -14,7 +14,7 @@ import {
 } from '@chainflip/utils/chainflip';
 import { calculateTotalEffectiveBorrowableAmount, ppmToBps } from '@chainflip/utils/lending';
 import { HexString } from '@chainflip/utils/types';
-import { initClient } from '@ts-rest/core';
+import { ApiClient, createApiClient } from '@/shared/api/client.js';
 import { createApiContract } from '@/shared/api/contract.js';
 import { AccountCreationDepositChannelParams } from '@/shared/api/openAccountCreationDepositChannel.js';
 import {
@@ -96,7 +96,7 @@ export class SwapSDK {
 
   private readonly rpcConfig: RpcConfig;
 
-  private readonly apiClient;
+  private readonly apiClient: ApiClient;
 
   private cache;
 
@@ -110,11 +110,9 @@ export class SwapSDK {
       backendUrl: options.backendUrl ?? BACKEND_SERVICE_URLS[network],
     };
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
-    this.apiClient = initClient(createApiContract(this.options.network), {
-      // remove trailing slashes. this bug has been fixed in `@ts-rest/core`
-      // but it hasn't been released yet
-      baseUrl: this.options.backendUrl.replace(/\/+$/, ''),
-      baseHeaders: CF_SDK_VERSION_HEADERS,
+    this.apiClient = createApiClient(createApiContract(this.options.network), {
+      baseUrl: this.options.backendUrl,
+      headers: CF_SDK_VERSION_HEADERS,
     });
     this.dcaV2Enabled = options.enabledFeatures?.dcaV2 ?? false;
     this.cache = new MultiCache({

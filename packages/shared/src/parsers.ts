@@ -36,16 +36,16 @@ export const chainflipAddress = z.string().refine(
       return false;
     }
   },
-  (address) => ({ message: `${address} is not a valid Chainflip address` }),
+  { error: (issue) => `${issue.input} is not a valid Chainflip address` },
 );
 
-export const solanaAddress = z.string().refine(isValidSolanaAddress, (address) => ({
-  message: `${address} is not a valid Solana address`,
-}));
+export const solanaAddress = z.string().refine(isValidSolanaAddress, {
+  error: (issue) => `${issue.input} is not a valid Solana address`,
+});
 
-export const tronAddress = z.string().refine(isValidTronAddress, (address) => ({
-  message: `${address} is not a valid Tron address`,
-}));
+export const tronAddress = z.string().refine(isValidTronAddress, {
+  error: (issue) => `${issue.input} is not a valid Tron address`,
+});
 
 export const u16 = z.number().int().nonnegative().max(0xffff); // 2^16 - 1 = 65_535
 export const u32 = z.number().int().nonnegative().max(0xffffffff); // 2^32 - 1 = 4_294_967_295
