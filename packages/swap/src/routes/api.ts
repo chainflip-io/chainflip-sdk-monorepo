@@ -1,5 +1,5 @@
 import type { ChainflipNetwork } from '@chainflip/utils/chainflip';
-import express, { type Response } from 'express';
+import express, { type Request, type Response } from 'express';
 import type { z } from 'zod';
 import type { EncodedVaultSwapData } from '@/shared/api/encodeVaultSwapData.js';
 import { getAccountCreationDepositChannelSchema } from '@/shared/api/openAccountCreationDepositChannel.js';
@@ -21,7 +21,7 @@ import { openSwapDepositChannel } from '../handlers/openSwapDepositChannel.js';
 
 const withBody = <T extends z.ZodType>(
   schema: T,
-  handler: (body: z.output<T>, res: Response) => Promise<void>,
+  handler: (body: z.output<T>, res: Response, req: Request) => Promise<void>,
 ) =>
   asyncHandler(async (req, res) => {
     const result = schema.safeParse(req.body);
@@ -32,7 +32,7 @@ const withBody = <T extends z.ZodType>(
       return;
     }
 
-    await handler(result.data, res);
+    await handler(result.data, res, req);
   });
 
 export const createApiRouter = (network: ChainflipNetwork) => {
@@ -70,8 +70,10 @@ export const createApiRouter = (network: ChainflipNetwork) => {
     '/openSwapDepositChannel',
     maintenanceMode,
     jsonBodyParser(),
-    withBody(getOpenSwapDepositChannelSchema(network), async (body, res) => {
-      const data = stringifyBigInts(await openSwapDepositChannel(body));
+    withBody(getOpenSwapDepositChannelSchema(network), async (body, res, req) => {
+      const data = stringifyBigInts(
+        await openSwapDepositChannel(body, { origin: req.headers.origin }),
+      );
       res.status(201).json(data satisfies z.input<typeof DepositChannelInfo>);
     }),
   );

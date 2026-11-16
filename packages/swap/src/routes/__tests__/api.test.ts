@@ -19,9 +19,16 @@ vi.mock('@/shared/broker.js', async (importOriginal) => ({
 
 const post =
   <T extends (network: ChainflipNetwork) => z.ZodType>(path: string, _schema: T) =>
-  async ({ body }: { body: z.input<ReturnType<T>> }) => {
+  async ({
+    body,
+    headers = {},
+  }: {
+    body: z.input<ReturnType<T>>;
+    headers?: Record<string, string>;
+  }) => {
     const result = await request(server)
       .post(path)
+      .set(headers)
       .send(body as object);
 
     return {
@@ -115,6 +122,45 @@ describe('openSwapDepositChannel', () => {
         createdAt: expect.any(Date),
       },
     );
+  });
+
+  it.each([
+    { origin: 'https://swap.chainflip.io', expected: 'https://swap.chainflip.io' },
+    { origin: 'HTTPS://Swap.Chainflip.io:443', expected: 'https://swap.chainflip.io' },
+    { origin: 'null', expected: null },
+    { origin: 'not a url', expected: null },
+    { origin: `https://${'a.'.repeat(130)}io`, expected: null },
+  ])('stores $origin as the request origin $expected', async ({ origin, expected }) => {
+    mockRpcResponse({ data: environment() });
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: 888,
+      issuedBlock: 123,
+      channelOpeningFee: 100n,
+    });
+
+    const result = await client.openSwapDepositChannel({
+      headers: { origin },
+      body: {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        amount: '777',
+        fillOrKillParams: {
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundCcmMetadata: null,
+          retryDurationBlocks: 2,
+          minPriceX128: '1',
+          maxOraclePriceSlippage: 50,
+        },
+      },
+    });
+
+    expect(result.status).toBe(201);
+    expect(await prisma.swapDepositChannel.findFirstOrThrow()).toMatchObject({
+      requestOrigin: expected,
+    });
   });
 
   it('creates channel and stores channel and quote in the database', async () => {
