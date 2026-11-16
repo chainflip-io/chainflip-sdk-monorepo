@@ -15,7 +15,7 @@ if (!process.env.ARBITRUM_SECRET_KEY) {
 const swapSDK = new SwapSDK({
   network: 'perseverance',
   enabledFeatures: { dcaV2: true },
-  // broker: {url: 'http://10.5.2.143:8080/ '}
+  broker: { url: process.env.BROKER_URL as string },
 });
 
 // arb-sepolia (chain id 421614) is the arbitrum network used by perseverance

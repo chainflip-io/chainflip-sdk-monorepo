@@ -38,7 +38,7 @@ const swapSDK = new SwapSDK({
   network: 'perseverance',
   // network: 'backspin',
   enabledFeatures: { dcaV2: true },
-  // broker: { url: 'https://rpc.backspin.chainflip.io' },
+  broker: { url: process.env.BROKER_URL as string },
 });
 
 const { quotes } = await swapSDK.getQuoteV2({

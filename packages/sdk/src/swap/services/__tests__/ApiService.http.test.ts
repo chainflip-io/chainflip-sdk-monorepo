@@ -94,43 +94,41 @@ describe('ApiService backend endpoints', () => {
     expect(received[0].headers['x-chainflip-sdk-version']).toEqual(expect.any(String));
   });
 
-  it.each([
-    ['getNetworkInfo', () => getNetworkInfo(baseUrl), 'Failed to fetch network info'],
-    [
-      'openSwapDepositChannel',
-      () => openSwapDepositChannel(baseUrl, {} as never),
-      'Failed to open swap deposit channel',
-    ],
-  ])('%s rejects with the same error for unexpected statuses', async (_name, call, message) => {
+  it('rejects getNetworkInfo for unexpected statuses', async () => {
     reply = { status: 400, body: '{"message":"too many channels"}' };
 
-    const error = await call().catch((e: unknown) => e);
+    const error = await getNetworkInfo(baseUrl).catch((e: unknown) => e);
 
     expect(error).toBeInstanceOf(Error);
-    expect(error).toHaveProperty('message', message);
+    expect(error).toHaveProperty('message', 'Failed to fetch network info');
     expect(error).not.toHaveProperty('cause');
   });
 
   it.each([
     [
+      'openSwapDepositChannel',
+      () => openSwapDepositChannel(baseUrl, {} as never),
+      'Failed to open swap deposit channel (400): too many channels',
+    ],
+    [
       'encodeVaultSwapData',
       () => encodeVaultSwapData(baseUrl, {} as never),
-      'Failed to encode vault swap data',
+      'Failed to encode vault swap data (400): too many channels',
     ],
     [
       'encodeCfParameters',
       () => encodeCfParameters(baseUrl, {} as never),
-      'Failed to encode cf parameters',
+      'Failed to encode cf parameters (400): too many channels',
     ],
     [
       'openAccountCreationDepositChannel',
       () => openAccountCreationDepositChannel(baseUrl, {} as never),
-      'Failed to request account creation deposit channel',
+      'Failed to open account creation deposit channel (400): too many channels',
     ],
   ])(
-    '%s rejects with the response as the cause for unexpected statuses',
+    '%s rejects with the backend message and the response as the cause',
     async (_name, call, message) => {
-      reply = { status: 400, body: '{"issues":[],"name":"ZodError"}' };
+      reply = { status: 400, body: '{"message":"too many channels"}' };
 
       const error = await call().catch((e: unknown) => e);
 
@@ -138,13 +136,21 @@ describe('ApiService backend endpoints', () => {
       expect(error).toHaveProperty('message', message);
       expect((error as Error).cause).toMatchObject({
         status: 400,
-        body: { issues: [], name: 'ZodError' },
+        body: { message: 'too many channels' },
       });
       const { headers } = (error as Error).cause as { headers: Headers };
       expect(headers).toBeInstanceOf(Headers);
       expect(headers.get('x-request-id')).toBe('request-id');
     },
   );
+
+  it('includes the body in the error message if it has no message', async () => {
+    reply = { status: 400, body: '{"issues":[],"name":"ZodError"}' };
+
+    await expect(encodeCfParameters(baseUrl, {} as never)).rejects.toThrow(
+      'Failed to encode cf parameters (400): {"issues":[],"name":"ZodError"}',
+    );
+  });
 
   it('includes text bodies in the cause', async () => {
     reply = { status: 502, body: '<html>bad gateway</html>', contentType: 'text/html' };

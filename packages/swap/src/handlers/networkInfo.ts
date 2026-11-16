@@ -3,6 +3,7 @@ import { RpcMethod, RpcRequest, RpcResult } from '@chainflip/rpc/common';
 import {
   assetConstants,
   chainflipAssetToPriceAssetMap,
+  chainflipChains,
   getInternalAsset,
 } from '@chainflip/utils/chainflip';
 import { uncapitalize } from '@chainflip/utils/string';
@@ -10,6 +11,7 @@ import { z } from 'zod';
 import type { NetworkInfo } from '@/shared/api/networkInfo.js';
 import { MultiCache, Fetcher } from '@/shared/dataStructures.js';
 import { isNotNullish } from '@/shared/guards.js';
+import prisma from '../client.js';
 import env from '../config/env.js';
 
 const httpClient = new HttpClient(env.RPC_NODE_HTTP_URL);
@@ -45,11 +47,15 @@ class RpcCache<T extends SimpleRpcMethod> extends MultiCache<RpcFetcherMap<T>> {
 const cache = new RpcCache(['cf_available_pools', 'cf_safe_mode_statuses']);
 
 const networkInfo = async (): Promise<z.output<typeof NetworkInfo>> => {
-  const [assets, safeModeStatuses] = await Promise.all([
+  const [assets, safeModeStatuses, chainTracking] = await Promise.all([
     cache
       .read('cf_available_pools')
       .then((pools) => ['Usdc' as const, ...pools.map((p) => getInternalAsset(p.base))]),
     cache.read('cf_safe_mode_statuses'),
+    prisma.chainTracking.findMany({
+      where: { chain: { in: [...chainflipChains] } },
+      orderBy: { chain: 'asc' },
+    }),
   ]);
 
   const assetInfo = assets.map((asset) => {
@@ -81,6 +87,11 @@ const networkInfo = async (): Promise<z.output<typeof NetworkInfo>> => {
   return {
     assets: assetInfo,
     cfBrokerCommissionBps: env.BROKER_COMMISSION_BPS,
+    chainTracking: chainTracking.map(({ chain, height, blockTrackedAt }) => ({
+      chain: chain as (typeof chainflipChains)[number],
+      height: Number(height),
+      blockTrackedAt: blockTrackedAt.getTime(),
+    })),
   };
 };
 
