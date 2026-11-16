@@ -91,7 +91,7 @@ const chainString = z
   .transform((maybeChain) =>
     chainflipChains.find((chain) => chain.toLowerCase() === maybeChain.toLowerCase()),
   )
-  .refine(isNotNullish);
+  .pipe(z.enum(chainflipChains));
 
 const channelIdSchema = z
   .string()

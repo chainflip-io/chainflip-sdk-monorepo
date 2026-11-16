@@ -87,10 +87,10 @@ describe('quoteQuerySchema', () => {
         [ZodError: [
           {
             "code": "custom",
-            "message": "not-an-address is not a valid Chainflip address",
             "path": [
               "brokerAccount"
-            ]
+            ],
+            "message": "not-an-address is not a valid Chainflip address"
           }
         ]]
       `);

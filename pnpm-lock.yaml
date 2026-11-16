@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       zod:
-        specifier: ^3.25.76
-        version: 3.25.76
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@types/node':
         specifier: ^26.6.4
@@ -112,54 +112,17 @@ importers:
   packages/sdk:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: 2.3.2
-        version: 2.3.2(typescript@5.9.3)
-      '@chainflip/rpc':
         specifier: 2.3.3
-        version: 2.3.3
+        version: 2.3.3(typescript@5.9.3)
+      '@chainflip/rpc':
+        specifier: 2.3.4
+        version: 2.3.4
       '@chainflip/solana':
-        specifier: 2.3.2
-        version: 2.3.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+        specifier: 2.3.3
+        version: 2.3.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: 2.3.7
         version: 2.3.7
-      '@ts-rest/core':
-        specifier: ^3.52.1
-        version: 3.52.1(@types/node@26.6.4)(zod@3.25.76)
-      axios:
-        specifier: ^1.15.0
-        version: 1.15.0
-      bignumber.js:
-        specifier: ^9.3.0
-        version: 9.3.0
-      ethers:
-        specifier: ^6.14.4
-        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
-    devDependencies:
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.7.0)(postcss@8.5.16)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0)
-
-  packages/shared:
-    dependencies:
-      '@chainflip/bitcoin':
-        specifier: 2.3.2
-        version: 2.3.2(typescript@5.9.3)
-      '@chainflip/rpc':
-        specifier: 2.3.3
-        version: 2.3.3
-      '@chainflip/solana':
-        specifier: 2.3.2
-        version: 2.3.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      '@chainflip/utils':
-        specifier: 2.3.7
-        version: 2.3.7
-      '@ts-rest/core':
-        specifier: ^3.52.1
-        version: 3.52.1(@types/node@26.6.4)(zod@3.25.76)
       axios:
         specifier: ^1.15.0
         version: 1.15.0
@@ -169,25 +132,56 @@ importers:
       ethers:
         specifier: ^6.14.4
         version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.7.0)(postcss@8.5.16)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0)
+
+  packages/shared:
+    dependencies:
+      '@chainflip/bitcoin':
+        specifier: 2.3.3
+        version: 2.3.3(typescript@5.9.3)
+      '@chainflip/rpc':
+        specifier: 2.3.4
+        version: 2.3.4
+      '@chainflip/solana':
+        specifier: 2.3.3
+        version: 2.3.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
+      '@chainflip/utils':
+        specifier: 2.3.7
+        version: 2.3.7
+      axios:
+        specifier: ^1.15.0
+        version: 1.15.0
+      bignumber.js:
+        specifier: ^9.3.0
+        version: 9.3.0
+      ethers:
+        specifier: ^6.14.4
+        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       ioredis:
         specifier: ^5.6.1
         version: 5.6.1
       ws:
         specifier: ^8.18.2
-        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       zod:
-        specifier: ^3.25.76
-        version: 3.25.76
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@ethersproject/abi':
         specifier: ^5.8.0
         version: 5.8.0
       '@ethersproject/providers':
         specifier: ^5.8.0
-        version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+        version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
+        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -204,20 +198,20 @@ importers:
   packages/swap:
     dependencies:
       '@chainflip/bitcoin':
-        specifier: 2.3.2
-        version: 2.3.2(typescript@5.9.3)
+        specifier: 2.3.3
+        version: 2.3.3(typescript@5.9.3)
       '@chainflip/processor':
-        specifier: 2.3.1
-        version: 2.3.1
+        specifier: 2.3.5
+        version: 2.3.5(winston@3.17.0)
       '@chainflip/redis':
-        specifier: 2.3.2
-        version: 2.3.2
-      '@chainflip/rpc':
         specifier: 2.3.3
         version: 2.3.3
+      '@chainflip/rpc':
+        specifier: 2.3.4
+        version: 2.3.4
       '@chainflip/solana':
-        specifier: 2.3.2
-        version: 2.3.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        specifier: 2.3.3
+        version: 2.3.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@chainflip/utils':
         specifier: 2.3.7
         version: 2.3.7
@@ -233,9 +227,6 @@ importers:
       '@prisma/client':
         specifier: ^7.10.0
         version: 7.10.0(prisma@7.10.0(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
-      '@ts-rest/express':
-        specifier: ^3.52.1
-        version: 3.52.1(@ts-rest/core@3.52.1(@types/node@26.6.4)(zod@3.25.76))(express@4.21.2)(zod@3.25.76)
       axios:
         specifier: ^1.15.0
         version: 1.15.0
@@ -288,9 +279,6 @@ importers:
       '@dotenvx/dotenvx':
         specifier: ^1.45.1
         version: 1.45.1
-      '@ts-rest/core':
-        specifier: ^3.52.1
-        version: 3.52.1(@types/node@26.6.4)(zod@3.25.76)
       '@types/cors':
         specifier: ^2.8.19
         version: 2.8.19
@@ -424,29 +412,25 @@ packages:
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
     engines: {node: '>=18'}
 
-  '@chainflip/bitcoin@2.3.2':
-    resolution: {integrity: sha512-vGyFH27FNN2EHF6Vmxk0O6p5foO3TnP5LSlINbbWMxcpXEZD1GQHLIoQBd/AOEY3idgxLKnSEIWvmUrSelNH2g==}
+  '@chainflip/bitcoin@2.3.3':
+    resolution: {integrity: sha512-e82qvjJTktr38i4khleoUREZXU/wPzi0U81bonH9wdlUCHiuFgcYaRf10PBe6QzIFztw2JvmbDbVcoXQU5KUbA==}
 
-  '@chainflip/processor@2.3.1':
-    resolution: {integrity: sha512-WYR2sYtlNA5EJmOQVf1vjVJT3FeGEwKSrv687UpRYyxEg4m9fI5SOe8qYA9udqsxckAd5CrT2WjkpZVgU2YaJw==}
+  '@chainflip/processor@2.3.5':
+    resolution: {integrity: sha512-ytNswv+MFu6uRHSsiP4uv2ZqJgLaJqAaEIUk9p1kTyp4hf/xZz4vpyns9opL9/DNtM8odJw05m4o8c/DZF6WPA==}
+    peerDependencies:
+      winston: ^3
 
-  '@chainflip/redis@2.3.2':
-    resolution: {integrity: sha512-2wYNqPjrM9IlpCSU3pVpnsOdPP6OdKCTn6YJZgZGUNitGl3JNhFFYnh2hZLB/ofPKuppPzORtfU/lEt/ZU47Ow==}
+  '@chainflip/redis@2.3.3':
+    resolution: {integrity: sha512-HaCSMObEbCPxWv3UxxTH2nSgR33TW/oGtWKovt2AMpxvo4iB3Rgji5/I6YzPF9aTKXcx3fFtX4wasGPTfBOtQA==}
 
-  '@chainflip/rpc@2.3.0-dev.4':
-    resolution: {integrity: sha512-YfMWjJGRYfdDUM+GDFsnlWWSfxCvFb0WxwR9kij89RdgTlV+CUMuZjcNA/ENrKWEnz6gShMMJaeJm3hURwBmiw==}
-
-  '@chainflip/rpc@2.3.3':
-    resolution: {integrity: sha512-Irwkhm17u6QWLAudZFoPAIfVNz56KkVivcyFhBQUE1QjC/9zO+9C1LeDqxJiMfT9Rb2TNA0kNCcyscHREXowWw==}
+  '@chainflip/rpc@2.3.4':
+    resolution: {integrity: sha512-MjjfESIGRctgawP/dECAPwHArx0Vj3yHtRHE+LwUTXqvyy4JiToRsdLWTECvKyAkjWB1dL7h+CjYO/ddZHsudg==}
 
   '@chainflip/scale@2.3.1':
     resolution: {integrity: sha512-n9cLSfWCbzFlc9boXISn7fXjL60AVRG700h7rnANxdcIFdE6M2hCK5qCoMM6yMriY/1yUeVzp4tc8MUzNVyYUg==}
 
-  '@chainflip/solana@2.3.2':
-    resolution: {integrity: sha512-NBn4Veg33iCBfbo3qGu58FMpWxFVlP0M215YRd+MP8x7g1UAZ0bskPJ2VU1scT+glOXle/yV1JAfeXriJE9DgA==}
-
-  '@chainflip/utils@2.3.0-dev.4':
-    resolution: {integrity: sha512-CFm4D9VXqBPDTkGKijC3ksIKtE5HubK7QM0ZYSdzyqENn5ITNcnDpZu0NnL2D73e+8UeqMNZEZae59EXn8qEng==}
+  '@chainflip/solana@2.3.3':
+    resolution: {integrity: sha512-H0mMrfUHDa1gSRQ1Dw0cZJMPxeiJ7vrSK7sOOoQT62b6ieBAOJ4XRZMLy3sSiaGgUz7fjmiy4Cs3F7KkFc80sw==}
 
   '@chainflip/utils@2.3.3':
     resolution: {integrity: sha512-Syz0In/6b3CTni/8UHcFI5vtx7+PJinvRo30/BuhW+PeVmk4JT9exrhG4zqhVGYbihuhbwU0v8TSy14l4gMR8g==}
@@ -1706,27 +1690,6 @@ packages:
 
   '@ts-morph/common@0.29.0':
     resolution: {integrity: sha512-35oUmphHbJvQ/+UTwFNme/t2p3FoKiGJ5auTjjpNTop2dyREspirjMy82PLSC1pnDJ8ah1GU98hwpVt64YXQsg==}
-
-  '@ts-rest/core@3.52.1':
-    resolution: {integrity: sha512-tAjz7Kxq/grJodcTA1Anop4AVRDlD40fkksEV5Mmal88VoZeRKAG8oMHsDwdwPZz+B/zgnz0q2sF+cm5M7Bc7g==}
-    peerDependencies:
-      '@types/node': ^18.18.7 || >=20.8.4
-      zod: ^3.22.3
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      zod:
-        optional: true
-
-  '@ts-rest/express@3.52.1':
-    resolution: {integrity: sha512-ttVynyJSWYnVzn7FazSFvShD5j3Lq1JsIhSKereV2Z51zxWEQwo35CpCO3Q8rELzkfD9CYoT6eNSBJRlJLogIw==}
-    peerDependencies:
-      '@ts-rest/core': ~3.52.0
-      express: ^4.0.0
-      zod: ^3.22.3
-    peerDependenciesMeta:
-      zod:
-        optional: true
 
   '@typechain/ethers-v6@0.5.1':
     resolution: {integrity: sha512-F+GklO8jBWlsaVV+9oHaPh5NJdd6rAKN4tklGfInX1Q7h0xPgVLP39Jl3eCulPB5qexI71ZFHwbljx4ZXNfouA==}
@@ -5734,8 +5697,8 @@ packages:
   zeptomatch@2.1.0:
     resolution: {integrity: sha512-KiGErG2J0G82LSpniV0CtIzjlJ10E04j02VOudJsPyPwNZgGnRKQy7I1R7GMyg/QswnE4l7ohSGrQbQbjXPPDA==}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
 
@@ -5867,47 +5830,43 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@chainflip/bitcoin@2.3.2(typescript@5.9.3)':
+  '@chainflip/bitcoin@2.3.3(typescript@5.9.3)':
     dependencies:
       '@chainflip/utils': 2.3.3
       bignumber.js: 11.1.5
       bitcoinjs-lib: 7.0.1(typescript@5.9.3)
       scale-ts: 1.6.1
-      zod: 3.25.76
+      zod: 4.6.7
     transitivePeerDependencies:
       - typescript
 
-  '@chainflip/processor@2.3.1':
+  '@chainflip/processor@2.3.5(winston@3.17.0)':
     dependencies:
-      '@chainflip/rpc': 2.3.0-dev.4
-      '@chainflip/utils': 2.3.0-dev.4
-      zod: 3.25.76
+      '@chainflip/rpc': 2.3.4
+      '@chainflip/utils': 2.3.3
+      winston: 3.17.0
+      zod: 4.6.7
 
-  '@chainflip/redis@2.3.2':
+  '@chainflip/redis@2.3.3':
     dependencies:
       '@chainflip/utils': 2.3.3
       bignumber.js: 11.1.5
       ioredis: 5.11.1
-      zod: 3.25.76
+      zod: 4.6.7
     transitivePeerDependencies:
       - supports-color
 
-  '@chainflip/rpc@2.3.0-dev.4':
-    dependencies:
-      '@chainflip/utils': 2.3.0-dev.4
-      zod: 3.25.76
-
-  '@chainflip/rpc@2.3.3':
+  '@chainflip/rpc@2.3.4':
     dependencies:
       '@chainflip/utils': 2.3.3
-      zod: 3.25.76
+      zod: 4.6.7
 
   '@chainflip/scale@2.3.1':
     dependencies:
       '@chainflip/utils': 2.3.3
       scale-ts: 1.6.1
 
-  '@chainflip/solana@2.3.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@chainflip/solana@2.3.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@chainflip/scale': 2.3.1
       '@chainflip/utils': 2.3.3
@@ -5915,14 +5874,14 @@ snapshots:
       '@solana/web3.js': 1.99.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       bn.js: 5.2.5
       scale-ts: 1.6.1
-      zod: 3.25.76
+      zod: 4.6.7
     transitivePeerDependencies:
       - bufferutil
       - encoding
       - typescript
       - utf-8-validate
 
-  '@chainflip/solana@2.3.2(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
+  '@chainflip/solana@2.3.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
     dependencies:
       '@chainflip/scale': 2.3.1
       '@chainflip/utils': 2.3.3
@@ -5930,19 +5889,12 @@ snapshots:
       '@solana/web3.js': 1.99.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       bn.js: 5.2.5
       scale-ts: 1.6.1
-      zod: 3.25.76
+      zod: 4.6.7
     transitivePeerDependencies:
       - bufferutil
       - encoding
       - typescript
       - utf-8-validate
-
-  '@chainflip/utils@2.3.0-dev.4':
-    dependencies:
-      '@date-fns/utc': 2.1.1
-      '@noble/hashes': 2.4.0
-      bignumber.js: 11.1.5
-      date-fns: 4.4.0
 
   '@chainflip/utils@2.3.3':
     dependencies:
@@ -6326,7 +6278,7 @@ snapshots:
     dependencies:
       '@ethersproject/logger': 5.8.0
 
-  '@ethersproject/providers@5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
+  '@ethersproject/providers@5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
     dependencies:
       '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
@@ -6347,7 +6299,7 @@ snapshots:
       '@ethersproject/transactions': 5.8.0
       '@ethersproject/web': 5.8.0
       bech32: 1.1.4
-      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -7181,7 +7133,7 @@ snapshots:
 
   '@solana/errors@2.1.1(typescript@5.9.3)':
     dependencies:
-      chalk: 5.4.1
+      chalk: 5.6.2
       commander: 13.1.0
       typescript: 5.9.3
 
@@ -7308,21 +7260,9 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@ts-rest/core@3.52.1(@types/node@26.6.4)(zod@3.25.76)':
-    optionalDependencies:
-      '@types/node': 26.6.4
-      zod: 3.25.76
-
-  '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@26.6.4)(zod@3.25.76))(express@4.21.2)(zod@3.25.76)':
+  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
-      '@ts-rest/core': 3.52.1(@types/node@26.6.4)(zod@3.25.76)
-      express: 4.21.2
-    optionalDependencies:
-      zod: 3.25.76
-
-  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
-    dependencies:
-      ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@5.9.3)
       typechain: 8.3.2(typescript@5.9.3)
@@ -8652,7 +8592,7 @@ snapshots:
     dependencies:
       '@ecies/ciphers': 0.2.3(@noble/ciphers@1.3.0)
       '@noble/ciphers': 1.3.0
-      '@noble/curves': 1.9.2
+      '@noble/curves': 1.9.7
       '@noble/hashes': 1.8.0
 
   ecpair@3.0.1(typescript@5.9.3):
@@ -11905,10 +11845,10 @@ snapshots:
       bufferutil: 4.1.0
       utf-8-validate: 6.0.6
 
-  ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10):
+  ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     optionalDependencies:
       bufferutil: 4.1.0
-      utf-8-validate: 5.0.10
+      utf-8-validate: 6.0.6
 
   ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10):
     optionalDependencies:
@@ -11953,4 +11893,4 @@ snapshots:
       grammex: 3.1.12
       graphmatch: 1.1.1
 
-  zod@3.25.76: {}
+  zod@4.6.7: {}

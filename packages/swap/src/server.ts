@@ -1,21 +1,13 @@
-import { createExpressEndpoints } from '@ts-rest/express';
 import cors from 'cors';
 import { randomUUID } from 'crypto';
 import express from 'express';
-import { Request } from 'express-serve-static-core';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { createApiContract } from '@/shared/api/contract.js';
 import env from './config/env.js';
 import authenticate from './quoting/authenticate.js';
 import Quoter from './quoting/Quoter.js';
 import { createApiRouter } from './routes/api.js';
-import {
-  handleError,
-  jsonBodyParser,
-  maintenanceMode,
-  quoteMiddleware,
-} from './routes/middlewares/common.js';
+import { handleError, jsonBodyParser, quoteMiddleware } from './routes/middlewares/common.js';
 import { createIpBlacklist } from './routes/middlewares/ipBlacklist.js';
 import { createNotFoundRateLimit } from './routes/middlewares/notFoundRateLimit.js';
 import { createQuoteRateLimit } from './routes/middlewares/quoteRateLimit.js';
@@ -68,13 +60,7 @@ app.get('/healthcheck', (req, res) => {
 
 app.use('/v2/quote', createQuoteRateLimit(), quoteMiddleware, quoteRouterV2(quoter));
 
-const contract = createApiContract(env.CHAINFLIP_NETWORK);
-createExpressEndpoints(contract, createApiRouter(contract), app, {
-  globalMiddleware: [
-    (req, res, next) => maintenanceMode(req as Request, res, next),
-    jsonBodyParser(),
-  ],
-});
+app.use('/api', createApiRouter(env.CHAINFLIP_NETWORK));
 
 app.use(handleError);
 

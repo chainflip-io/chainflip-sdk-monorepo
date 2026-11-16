@@ -48,7 +48,7 @@ export const quoteQuerySchema = z
         z.literal('undefined').transform(() => undefined), // sdk version 1.8.2 sends undefined string if not set
       ])
       .optional(),
-    dcaV2Enabled: booleanString.default('false'),
+    dcaV2Enabled: booleanString.prefault('false'),
     isVaultSwap: booleanString.optional(),
     isOnChain: booleanString.optional(),
     brokerAccount: chainflipAddress.optional(),

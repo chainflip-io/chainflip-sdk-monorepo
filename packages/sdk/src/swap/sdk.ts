@@ -14,8 +14,6 @@ import {
 } from '@chainflip/utils/chainflip';
 import { calculateTotalEffectiveBorrowableAmount, ppmToBps } from '@chainflip/utils/lending';
 import { HexString } from '@chainflip/utils/types';
-import { initClient } from '@ts-rest/core';
-import { createApiContract } from '@/shared/api/contract.js';
 import { AccountCreationDepositChannelParams } from '@/shared/api/openAccountCreationDepositChannel.js';
 import {
   CfParametersEncodingRequest,
@@ -41,7 +39,7 @@ import { BoostQuote, Quote } from '@/shared/schemas.js';
 import { Required } from '@/shared/types.js';
 import { getAssetData } from './assets.js';
 import { getChainData } from './chains.js';
-import { BACKEND_SERVICE_URLS, CF_SDK_VERSION_HEADERS } from './consts.js';
+import { BACKEND_SERVICE_URLS } from './consts.js';
 import * as ApiService from './services/ApiService.js';
 import {
   ChainData,
@@ -96,8 +94,6 @@ export class SwapSDK {
 
   private readonly rpcConfig: RpcConfig;
 
-  private readonly apiClient;
-
   private cache;
 
   private dcaV2Enabled = false;
@@ -110,12 +106,6 @@ export class SwapSDK {
       backendUrl: options.backendUrl ?? BACKEND_SERVICE_URLS[network],
     };
     this.rpcConfig = options.rpcUrl ? { rpcUrl: options.rpcUrl } : { network };
-    this.apiClient = initClient(createApiContract(this.options.network), {
-      // remove trailing slashes. this bug has been fixed in `@ts-rest/core`
-      // but it hasn't been released yet
-      baseUrl: this.options.backendUrl.replace(/\/+$/, ''),
-      baseHeaders: CF_SDK_VERSION_HEADERS,
-    });
     this.dcaV2Enabled = options.enabledFeatures?.dcaV2 ?? false;
     this.cache = new MultiCache({
       environment: {
@@ -123,11 +113,7 @@ export class SwapSDK {
         ttl: 60_000,
       },
       networkInfo: {
-        fetch: async () => {
-          const res = await this.apiClient.networkInfo();
-          assert(res.status === 200, 'Failed to fetch network info');
-          return res.body;
-        },
+        fetch: () => ApiService.getNetworkInfo(this.options.backendUrl),
         ttl: 60_000,
       },
     });
@@ -403,17 +389,11 @@ export class SwapSDK {
         'Affiliate brokers are supported only when initializing the SDK with a brokerUrl',
       );
 
-      const res = await this.apiClient.openSwapDepositChannel({
-        body: {
-          ...depositAddressRequest,
-          quote,
-          takeCommission: this.shouldTakeCommission(),
-        },
+      response = await ApiService.openSwapDepositChannel(this.options.backendUrl, {
+        ...depositAddressRequest,
+        quote,
+        takeCommission: this.shouldTakeCommission(),
       });
-
-      assert(res.status === 201, 'Failed to open swap deposit channel');
-
-      response = res.body;
     }
 
     return {
@@ -497,20 +477,16 @@ export class SwapSDK {
       'Affiliate brokers are supported only when setting a broker account',
     );
 
-    const res = await this.apiClient.encodeVaultSwapData({ body: vaultSwapRequest });
+    const body = await ApiService.encodeVaultSwapData(this.options.backendUrl, vaultSwapRequest);
 
-    if (res.status !== 200) {
-      throw new Error('Failed to encode vault swap data', { cause: res });
-    }
-
-    switch (res.body.chain) {
+    switch (body.chain) {
       case 'Arbitrum':
       case 'Ethereum':
       case 'Tron':
       case 'Bsc':
-        return { ...res.body, value: BigInt(res.body.value) };
+        return { ...body, value: BigInt(body.value) };
       default:
-        return res.body;
+        return body;
     }
   }
 
@@ -568,15 +544,10 @@ export class SwapSDK {
       'Affiliate brokers are supported only when setting a broker account',
     );
 
-    const res = await this.apiClient.encodeCfParameters({
-      body: { ...requestParams, brokerAccount },
+    return ApiService.encodeCfParameters(this.options.backendUrl, {
+      ...requestParams,
+      brokerAccount,
     });
-
-    if (res.status !== 200) {
-      throw new Error('Failed to encode cf parameters', { cause: res });
-    }
-
-    return res.body;
   }
 
   async checkBoostEnabled(): Promise<boolean> {
@@ -591,20 +562,12 @@ export class SwapSDK {
     transactionMetadata: AccountCreationDepositChannelParams['transactionMetadata'],
     boostFeeBps = 0,
   ) {
-    const res = await this.apiClient.openAccountCreationDepositChannel({
-      body: {
-        asset: internalAssetToRpcAsset[asset],
-        refundAddress,
-        signatureData,
-        transactionMetadata,
-        boostFeeBps,
-      },
+    return ApiService.openAccountCreationDepositChannel(this.options.backendUrl, {
+      asset: internalAssetToRpcAsset[asset],
+      refundAddress,
+      signatureData,
+      transactionMetadata,
+      boostFeeBps,
     });
-
-    if (res.status !== 201) {
-      throw new Error('Failed to request account creation deposit channel', { cause: res });
-    }
-
-    return res.body;
   }
 }
