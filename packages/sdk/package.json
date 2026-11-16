@@ -66,9 +66,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@chainflip/bitcoin": "2.3.2",
-    "@chainflip/rpc": "2.3.3",
-    "@chainflip/solana": "2.3.2",
+    "@chainflip/bitcoin": "2.3.3",
+    "@chainflip/rpc": "2.3.4",
+    "@chainflip/solana": "2.3.3",
     "@chainflip/utils": "2.3.7",
     "axios": "^1.15.0",
     "bignumber.js": "^9.3.0",
