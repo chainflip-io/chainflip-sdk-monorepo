@@ -45,9 +45,11 @@ app.use((req, res, next) => {
   logStorage.run(info.reqId, next);
 });
 
+const ipBlacklist = createIpBlacklist();
+
 app.use(
   '/v2/swaps',
-  createIpBlacklist(),
+  ipBlacklist,
   createNotFoundRateLimit(),
   lastUpdateHeader,
   jsonBodyParser(),
@@ -58,9 +60,9 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/v2/quote', createQuoteRateLimit(), quoteMiddleware, quoteRouterV2(quoter));
+app.use('/v2/quote', ipBlacklist, createQuoteRateLimit(), quoteMiddleware, quoteRouterV2(quoter));
 
-app.use('/api', createApiRouter(env.CHAINFLIP_NETWORK));
+app.use('/api', ipBlacklist, createApiRouter(env.CHAINFLIP_NETWORK));
 
 app.use(handleError);
 
