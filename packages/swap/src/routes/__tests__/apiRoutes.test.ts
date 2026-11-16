@@ -65,7 +65,6 @@ describe(createApiRouter, () => {
 
     const [input] = vi.mocked(openSwapDepositChannel).mock.calls[0];
     expect(input).not.toHaveProperty('unknownField');
-    // schema transforms are applied before the handler is called
     expect(input).toHaveProperty('expectedDepositAmount', '777');
     expect(input).not.toHaveProperty('amount');
   });

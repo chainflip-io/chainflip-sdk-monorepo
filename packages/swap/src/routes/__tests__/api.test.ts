@@ -17,7 +17,6 @@ vi.mock('@/shared/broker.js', async (importOriginal) => ({
   requestSwapParameterEncoding: vi.fn(),
 }));
 
-// calls the endpoints through the express app, typing the request bodies with the schema inputs
 const post =
   <T extends (network: ChainflipNetwork) => z.ZodType>(path: string, _schema: T) =>
   async ({ body }: { body: z.input<ReturnType<T>> }) => {

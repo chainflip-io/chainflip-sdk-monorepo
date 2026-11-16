@@ -9,8 +9,6 @@ import {
   openSwapDepositChannel,
 } from '../ApiService.js';
 
-// uses a real http server (and fetch) to check the requests and how responses are handled
-
 type Received = {
   method?: string;
   url?: string;

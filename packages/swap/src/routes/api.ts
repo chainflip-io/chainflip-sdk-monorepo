@@ -19,10 +19,6 @@ import networkInfo from '../handlers/networkInfo.js';
 import { openAccountCreationDepositChannel } from '../handlers/openAccountCreationDepositChannel.js';
 import { openSwapDepositChannel } from '../handlers/openSwapDepositChannel.js';
 
-/**
- * parses the request body with the given schema and responds with the zod issues
- * if it is invalid, otherwise calls the handler with the parsed body
- */
 const withBody = <T extends z.ZodType>(
   schema: T,
   handler: (body: z.output<T>, res: Response) => Promise<void>,
