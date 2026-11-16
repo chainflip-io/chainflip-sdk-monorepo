@@ -11,6 +11,17 @@ import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
 
+const parseOrigin = (origin: string | undefined) => {
+  if (!origin) return undefined;
+
+  try {
+    const parsed = new URL(origin).origin;
+    return parsed !== 'null' && parsed.length <= 255 ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 const getSlippageTolerancePercent = (
   input: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>,
 ) => {
@@ -26,8 +37,10 @@ const getSlippageTolerancePercent = (
 
 export const openSwapDepositChannel = async (
   input: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>,
+  { origin }: { origin?: string } = {},
 ) => {
   const commissionBps = env.BROKER_COMMISSION_BPS;
+  const requestOrigin = parseOrigin(origin);
 
   logger.info('Opening swap deposit channel', input);
 
@@ -147,6 +160,7 @@ export const openSwapDepositChannel = async (
       totalBrokerCommissionBps: commissionBps,
       maxBoostFeeBps: Number(maxBoostFeeBps) || 0,
       openedThroughBackend: true,
+      requestOrigin,
       openingFeePaid: channelOpeningFee.toString(),
       fokMinPriceX128: fillOrKillParams.minPriceX128,
       fokRetryDurationBlocks: fillOrKillParams.retryDurationBlocks,
@@ -159,6 +173,7 @@ export const openSwapDepositChannel = async (
     },
     update: {
       openedThroughBackend: true,
+      requestOrigin,
       quote: quoteParam,
     },
   });
