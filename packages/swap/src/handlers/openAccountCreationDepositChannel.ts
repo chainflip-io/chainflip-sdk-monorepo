@@ -4,9 +4,9 @@ import { z } from 'zod';
 import { getAccountCreationDepositChannelSchema } from '@/shared/api/openAccountCreationDepositChannel.js';
 import { DepositChannelInfo } from '@/shared/api/openSwapDepositChannel.js';
 import { formatBrokerDepositAddress } from '@/shared/broker.js';
+import { calculateExpiryTime } from '@/shared/functions.js';
 import prisma from '../client.js';
 import env from '../config/env.js';
-import { calculateExpiryTime } from '../utils/function.js';
 
 const broker = new HttpClient(env.RPC_BROKER_HTTPS_URL);
 

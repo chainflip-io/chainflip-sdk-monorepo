@@ -1,4 +1,4 @@
-export { SwapSDK, type SwapSDKOptions } from './sdk.js';
+export { SwapSDK, BrokerName, type SwapSDKOptions, type BrokerOption } from './sdk.js';
 export * from './types.js';
 export * from './v2/types.js';
 export {

@@ -2,6 +2,7 @@ import { assetConstants, getInternalAsset } from '@chainflip/utils/chainflip';
 import BigNumber from 'bignumber.js';
 import { describe, it, expect } from 'vitest';
 import {
+  calculateExpiryTime,
   getHundredthPipAmountFromAmount,
   getPipAmountFromAmount,
   getPriceFromPriceX128,
@@ -365,5 +366,52 @@ describe(parseFoKParams, () => {
         quote,
       );
     }).toThrow('Live price slippage tolerance must be between 0 and 100 inclusive');
+  });
+});
+
+describe(calculateExpiryTime, () => {
+  const trackedAt = new Date('2026-01-01T12:00:00Z');
+
+  it.each([
+    { chain: 'Bitcoin', expiryBlock: 1150, expected: '2026-01-02T13:00:00.000Z' },
+    { chain: 'Bitcoin', expiryBlock: 1288, expected: '2026-01-03T12:00:00.000Z' },
+    { chain: 'Ethereum', expiryBlock: 8500, expected: '2026-01-02T13:00:00.000Z' },
+    { chain: 'Ethereum', expiryBlock: 15400, expected: '2026-01-03T12:00:00.000Z' },
+  ] as const)(
+    'expires $chain block $expiryBlock at $expected when block 1000 was tracked at 12:00',
+    ({ chain, expiryBlock, expected }) => {
+      const result = calculateExpiryTime({
+        chainInfo: { chain, height: 1000, blockTrackedAt: trackedAt },
+        expiryBlock,
+      });
+
+      expect(result?.toISOString()).toBe(expected);
+    },
+  );
+
+  it('returns a time in the past for an expired block', () => {
+    const result = calculateExpiryTime({
+      chainInfo: { chain: 'Ethereum', height: 1000, blockTrackedAt: trackedAt },
+      expiryBlock: 990,
+    });
+
+    expect(result?.toISOString()).toBe('2026-01-01T11:58:00.000Z');
+  });
+
+  it('accepts bigint heights and a timestamp', () => {
+    const result = calculateExpiryTime({
+      chainInfo: { chain: 'Bitcoin', height: 1000n, blockTrackedAt: trackedAt.getTime() },
+      expiryBlock: 1150n,
+    });
+
+    expect(result?.toISOString()).toBe('2026-01-02T13:00:00.000Z');
+  });
+
+  it.each([
+    { chainInfo: null, expiryBlock: 1000 },
+    { chainInfo: undefined, expiryBlock: 1000 },
+    { chainInfo: { chain: 'Bitcoin', height: 1000, blockTrackedAt: trackedAt }, expiryBlock: null },
+  ] as const)('returns null without chain info or expiry block', (args) => {
+    expect(calculateExpiryTime(args)).toBeNull();
   });
 });
