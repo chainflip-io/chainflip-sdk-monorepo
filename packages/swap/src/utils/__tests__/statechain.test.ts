@@ -145,6 +145,32 @@ describe(getSwapRateV3, () => {
     `);
   });
 
+  it.each([
+    2n ** 128n - 1n, // u128::MAX
+    10n ** 21n, // serialized as `1e+21` by `JSON.stringify(Number(x))`
+    2n ** 53n + 1n, // not representable as a JS number
+  ])('serializes ccm gas budget %s as an exact JSON integer', async (gasBudget) => {
+    const sendSpy = vi.spyOn(WsClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      broker_commission: buildFee('Usdc', 0).bigint,
+      ingress_fee: buildFee('Usdc', 0).bigint,
+      egress_fee: buildFee('Eth', 0).bigint,
+      network_fee: buildFee('Usdc', 100100).bigint,
+      intermediary: null,
+      output: BigInt(1e18),
+    });
+
+    await getSwapRateV3({
+      srcAsset: 'Usdc',
+      destAsset: 'Eth',
+      depositAmount: 1000n,
+      ccmParams: { gasBudget, messageLengthBytes: 202 },
+    });
+
+    expect(JSON.stringify(sendSpy.mock.calls[0][6])).toBe(
+      `{"gas_budget":${gasBudget},"message_length":202}`,
+    );
+  });
+
   it('calls sendRequest with internal swap flag for v1.10', async () => {
     vi.mocked(isAtLeastSpecVersion).mockResolvedValueOnce(true);
 

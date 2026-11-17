@@ -41,6 +41,14 @@ export type SwapRateResult = {
   egressAmount: bigint;
 };
 
+const { rawJSON } = JSON as unknown as { rawJSON: (text: string) => unknown };
+
+// The state chain expects `gas_budget` as a JSON integer (u128).
+const encodeGasBudget = (gasBudget: bigint): number =>
+  gasBudget <= BigInt(Number.MAX_SAFE_INTEGER)
+    ? Number(gasBudget)
+    : (rawJSON(gasBudget.toString()) as number);
+
 export const getSwapRateV3 = async ({
   srcAsset,
   destAsset,
@@ -61,7 +69,7 @@ export const getSwapRateV3 = async ({
     : undefined;
   const ccmParams = _ccmParams
     ? {
-        gas_budget: Number(_ccmParams.gasBudget),
+        gas_budget: encodeGasBudget(_ccmParams.gasBudget),
         message_length: _ccmParams.messageLengthBytes,
       }
     : undefined;
@@ -74,7 +82,12 @@ export const getSwapRateV3 = async ({
     depositAmount: hexEncodeNumber(depositAmount),
     brokerCommissionBps: brokerCommissionBps ?? 0,
     dcaParams,
-    ccmParams,
+    ccmParams: _ccmParams
+      ? {
+          gas_budget: _ccmParams.gasBudget.toString(),
+          message_length: _ccmParams.messageLengthBytes,
+        }
+      : undefined,
     excludeFees,
     additionalOrders,
     isInternal,
