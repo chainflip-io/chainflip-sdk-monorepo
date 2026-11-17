@@ -16,7 +16,7 @@ RUN curl -sSf https://sh.rustup.rs -o /tmp/rustup.sh && \
     rm /tmp/rustup.sh
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN npm install -g pnpm@10
+RUN npm install -g pnpm@12.21.0
 
 RUN pnpm install --frozen-lockfile
 
@@ -34,7 +34,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates openssl wget && \
     rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g pnpm@10
+RUN npm install -g pnpm@12.21.0
 
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package.json /app/package.json

@@ -15,7 +15,7 @@ FROM node:26.12.1-trixie-slim
 
 WORKDIR /app
 
-RUN npm install -g pnpm@10
+RUN npm install -g pnpm@12.21.0
 
 # Build context is the repo root (see docker-compose `build.context: ../..`).
 # The root .dockerignore keeps host node_modules / dist / logs out of the context.
