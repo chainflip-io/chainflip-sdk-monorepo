@@ -76,7 +76,9 @@ describe('env', () => {
         "QUOTE_TIMEOUT": 1000,
         "QUOTING_ALLOWED_ORIGINS": Set {},
         "QUOTING_BASE_SLIPPAGE": {},
-        "RESERVED_BROKER_ACCOUNTS": Set {},
+        "RESERVED_BROKER_ACCOUNTS": Set {
+          "cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7",
+        },
         "RPC_BROKER_HTTPS_URL": "https://broker.rpc",
         "RPC_NODE_HTTP_URL": "https://chainflip.rpc",
         "RPC_NODE_WSS_URL": "wss://chainflip.rpc",
@@ -165,7 +167,9 @@ describe('env', () => {
         "QUOTE_TIMEOUT": 1000,
         "QUOTING_ALLOWED_ORIGINS": Set {},
         "QUOTING_BASE_SLIPPAGE": {},
-        "RESERVED_BROKER_ACCOUNTS": Set {},
+        "RESERVED_BROKER_ACCOUNTS": Set {
+          "cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7",
+        },
         "RPC_BROKER_HTTPS_URL": "https://broker.rpc",
         "RPC_NODE_HTTP_URL": "https://chainflip.rpc",
         "RPC_NODE_WSS_URL": "wss://chainflip.rpc",
