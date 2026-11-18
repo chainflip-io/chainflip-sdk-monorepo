@@ -135,6 +135,7 @@ export const getVaultSwapParameterEncodingRequestSchema = (network: ChainflipNet
       fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),
       extraParams: z.object({ seed: hexString.optional() }).optional(),
+      // TODO: remove after brokerAccount is deprecated
       brokerAccount: chainflipAddress.optional(),
     })
     .superRefine((val, ctx) => {
@@ -313,6 +314,7 @@ export const getParameterEncodingRequestSchema = (network: ChainflipNetwork) =>
       affiliates: z.array(affiliateBroker).optional(),
       fillOrKillParams: transformedFokSchema,
       dcaParams: transformedDcaParamsSchema.optional(),
+      // TODO: remove after brokerAccount is deprecated
       brokerAccount: chainflipAddress.optional(),
     })
     .superRefine(({ ...val }, ctx) => {

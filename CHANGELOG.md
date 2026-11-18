@@ -23,8 +23,13 @@ which it is deprecated.
   to be initialized with a `broker`, either `{ url }` for your own broker or
   `{ name: 'swap.chainflip.io' }`. They throw if no broker is configured.
 - `encodeVaultSwapData()` and `encodeCfParameters()` require either a `brokerAccount` or a
-  configured `broker`. With a `brokerAccount`, the swap is encoded for that account with the
-  given `brokerCommissionBps` and `affiliateBrokers`, as before.
+  configured `broker`, not both. With a `brokerAccount`, the swap is encoded for that account
+  with the given `brokerCommissionBps` and `affiliateBrokers`, as before.
+
+### Deprecated
+
+- The `brokerAccount` parameter of `encodeVaultSwapData()` and `encodeCfParameters()`.
+  Initialize the SDK with `broker: { url }` for your own broker instead.
 
 ### Removed
 

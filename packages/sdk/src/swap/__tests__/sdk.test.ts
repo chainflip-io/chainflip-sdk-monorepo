@@ -1866,11 +1866,7 @@ describe(SwapSDK, () => {
         ],
       };
 
-      it.each([
-        ['without a broker', {}],
-        ['with the swap.chainflip.io broker', { broker: { name: BrokerName.ChainflipSwap } }],
-      ] as const)('encodes through the swap server %s', async (_, options) => {
-        const brokerSdk = new SwapSDK(options);
+      it('encodes through the swap server without a configured broker', async () => {
         vi.mocked(encodeVaultSwapData).mockResolvedValueOnce({
           chain: 'Ethereum',
           calldata: '0x1234',
@@ -1879,10 +1875,10 @@ describe(SwapSDK, () => {
           sourceTokenAddress: undefined,
         });
 
-        const result = await brokerSdk.encodeVaultSwapData(request);
+        const result = await sdk.encodeVaultSwapData(request);
 
         expect(encodeVaultSwapData).toHaveBeenCalledWith(
-          'https://chainflip-swap-perseverance.chainflip.io/',
+          expect.any(String),
           expect.objectContaining({
             brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
             commissionBps: 15,
@@ -1894,11 +1890,14 @@ describe(SwapSDK, () => {
         expect(result).toMatchObject({ chain: 'Ethereum', value: 1000000000000000000n });
       });
 
-      it('throws if the sdk is initialized with a broker url', async () => {
-        const brokerSdk = new SwapSDK({ broker: { url: 'https://chainflap.org/broker' } });
+      it.each([
+        ['url', { url: 'https://chainflap.org/broker' }],
+        ['name', { name: BrokerName.ChainflipSwap }],
+      ] as const)('throws if the sdk is initialized with a broker %s', async (_, broker) => {
+        const brokerSdk = new SwapSDK({ broker });
 
         await expect(brokerSdk.encodeVaultSwapData(request)).rejects.toThrow(
-          'Cannot overwrite broker account when initializing the SDK with a broker url',
+          'Setting brokerAccount is not supported when the SDK is initialized with a broker',
         );
         expect(encodeVaultSwapData).not.toHaveBeenCalled();
       });
@@ -2483,11 +2482,14 @@ describe(SwapSDK, () => {
         expect(result).toBe('0x1234');
       });
 
-      it('throws if the sdk is initialized with a broker url', async () => {
-        const brokerSdk = new SwapSDK({ broker: { url: 'https://chainflap.org/broker' } });
+      it.each([
+        ['url', { url: 'https://chainflap.org/broker' }],
+        ['name', { name: BrokerName.ChainflipSwap }],
+      ] as const)('throws if the sdk is initialized with a broker %s', async (_, broker) => {
+        const brokerSdk = new SwapSDK({ broker });
 
         await expect(brokerSdk.encodeCfParameters(request)).rejects.toThrow(
-          'Cannot overwrite broker account when initializing the SDK with a broker url',
+          'Setting brokerAccount is not supported when the SDK is initialized with a broker',
         );
         expect(encodeCfParameters).not.toHaveBeenCalled();
       });

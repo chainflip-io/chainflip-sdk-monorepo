@@ -46,16 +46,24 @@ class RpcCache<T extends SimpleRpcMethod> extends MultiCache<RpcFetcherMap<T>> {
 
 const cache = new RpcCache(['cf_available_pools', 'cf_safe_mode_statuses']);
 
+const chainTrackingCache = new MultiCache({
+  chainTracking: {
+    fetch: () =>
+      prisma.chainTracking.findMany({
+        where: { chain: { in: [...chainflipChains] } },
+        orderBy: { chain: 'asc' },
+      }),
+    ttl: 30_000,
+  },
+});
+
 const networkInfo = async (): Promise<z.output<typeof NetworkInfo>> => {
   const [assets, safeModeStatuses, chainTracking] = await Promise.all([
     cache
       .read('cf_available_pools')
       .then((pools) => ['Usdc' as const, ...pools.map((p) => getInternalAsset(p.base))]),
     cache.read('cf_safe_mode_statuses'),
-    prisma.chainTracking.findMany({
-      where: { chain: { in: [...chainflipChains] } },
-      orderBy: { chain: 'asc' },
-    }),
+    chainTrackingCache.read('chainTracking'),
   ]);
 
   const assetInfo = assets.map((asset) => {

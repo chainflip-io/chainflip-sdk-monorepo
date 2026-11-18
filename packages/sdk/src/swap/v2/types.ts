@@ -255,8 +255,8 @@ export interface VaultSwapRequest {
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
   /**
-   * Encodes the swap for this broker account instead of the broker the SDK was initialized with.
-   * The swap and its commission are attributed to this account.
+   * @deprecated Initialize the SDK with `broker: { url }` for your own broker instead. Not
+   * supported when the SDK is initialized with a broker.
    */
   brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
@@ -303,8 +303,8 @@ export interface EncodeCfParametersRequest {
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
   /**
-   * Encodes the swap for this broker account instead of the broker the SDK was initialized with.
-   * The swap and its commission are attributed to this account.
+   * @deprecated Initialize the SDK with `broker: { url }` for your own broker instead. Not
+   * supported when the SDK is initialized with a broker.
    */
   brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;

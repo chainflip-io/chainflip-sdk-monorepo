@@ -162,7 +162,8 @@ export default z
     QUOTER_USE_MEV_FACTOR: optionalBoolean,
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_BROKER_HTTPS_URL: httpUrl,
-    RESERVED_BROKER_ACCOUNTS: optionalString('')
+    // TODO: remove after brokerAccount is deprecated
+    RESERVED_BROKER_ACCOUNTS: optionalString('cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7')
       .transform(
         (string) =>
           new Set(

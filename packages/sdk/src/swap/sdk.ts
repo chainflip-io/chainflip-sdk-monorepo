@@ -222,18 +222,16 @@ export class SwapSDK {
     return broker;
   }
 
-  // Vault swaps can be encoded for an explicit broker account through the backend. Without one,
-  // the SDK must be initialized with a broker
+  // TODO: remove after brokerAccount is deprecated
   private resolveEncodingBroker(
     brokerAccount: `cF${string}` | undefined,
     fees: BrokerFees,
   ): BrokerOption | undefined {
     if (!brokerAccount) return this.requireBroker(fees);
 
-    const { broker } = this.options;
     assert(
-      !(broker && 'url' in broker),
-      'Cannot overwrite broker account when initializing the SDK with a broker url',
+      !this.options.broker,
+      'Setting brokerAccount is not supported when the SDK is initialized with a broker',
     );
     return undefined;
   }

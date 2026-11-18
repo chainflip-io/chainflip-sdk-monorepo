@@ -3,11 +3,7 @@ import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { getParameterEncodingRequestSchema } from '@/shared/broker.js';
 import env from '../config/env.js';
-import {
-  assertBrokerAccountAllowed,
-  assertBrokerCommission,
-  assertRouteEnabled,
-} from '../utils/env.js';
+import { assertBrokerConditions, assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
@@ -20,25 +16,15 @@ export const encodeCfParameters = async (
 ) => {
   logger.info('Encoding CF parameters', input);
 
-  if (input.brokerAccount) {
-    assertBrokerAccountAllowed(input.brokerAccount);
-  } else {
-    if (input.affiliates?.length) {
-      throw ServiceError.badRequest('setting affiliates requires a brokerAccount');
-    }
-    assertBrokerCommission(input.commissionBps);
-  }
-
   const srcAsset = getInternalAsset(input.srcAsset);
   const destAsset = getInternalAsset(input.destAsset);
   assertRouteEnabled({ srcAsset, destAsset });
+  assertBrokerConditions(input);
 
   const result = await validateSwapAmount(srcAsset, BigInt(input.amount));
 
   if (!result.success) throw ServiceError.badRequest(result.reason);
 
-  // with a brokerAccount, the node only encodes the payload and the swap is attributed to that
-  // account. our broker is not involved
   const response = input.brokerAccount
     ? await nodeClient.sendRequest(
         'cf_encode_cf_parameters',
