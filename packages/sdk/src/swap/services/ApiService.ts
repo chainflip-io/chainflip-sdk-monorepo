@@ -119,12 +119,12 @@ const backendRequest = async (
 
 const apiError = (action: string, res: BackendResponse) => {
   const { body } = res;
-  const reason =
+  const message =
     body && typeof body === 'object' && 'message' in body && typeof body.message === 'string'
-      ? body.message
-      : JSON.stringify(body);
+      ? `: ${body.message}`
+      : '';
 
-  return new Error(`Failed to ${action} (${res.status}): ${reason}`, { cause: res });
+  return new Error(`Failed to ${action} (${res.status})${message}`, { cause: res });
 };
 
 export const getNetworkInfo = async (baseUrl: string): Promise<z.output<typeof NetworkInfo>> => {

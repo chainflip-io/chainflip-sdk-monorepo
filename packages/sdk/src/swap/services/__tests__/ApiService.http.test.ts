@@ -144,18 +144,20 @@ describe('ApiService backend endpoints', () => {
     },
   );
 
-  it('includes the body in the error message if it has no message', async () => {
+  it('only includes the status in the error message if the body has no message', async () => {
     reply = { status: 400, body: '{"issues":[],"name":"ZodError"}' };
 
     await expect(encodeCfParameters(baseUrl, {} as never)).rejects.toThrow(
-      'Failed to encode cf parameters (400): {"issues":[],"name":"ZodError"}',
+      /^Failed to encode cf parameters \(400\)$/,
     );
   });
 
-  it('includes text bodies in the cause', async () => {
+  it('keeps text bodies out of the message and in the cause', async () => {
     reply = { status: 502, body: '<html>bad gateway</html>', contentType: 'text/html' };
 
     const error = await encodeCfParameters(baseUrl, {} as never).catch((e: unknown) => e);
+
+    expect(error).toHaveProperty('message', 'Failed to encode cf parameters (502)');
 
     expect((error as Error).cause).toMatchObject({ status: 502, body: '<html>bad gateway</html>' });
   });
