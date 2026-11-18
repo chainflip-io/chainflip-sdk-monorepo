@@ -1841,6 +1841,69 @@ describe(SwapSDK, () => {
       });
     });
 
+    describe('with a broker account', () => {
+      const request = {
+        quote: {
+          srcAsset: { asset: 'ETH', chain: 'Ethereum' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+          isVaultSwap: true,
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+          retryDurationBlocks: 500,
+        },
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa' as const,
+        brokerCommissionBps: 15,
+        affiliateBrokers: [
+          {
+            account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n' as const,
+            commissionBps: 10,
+          },
+        ],
+      };
+
+      it.each([
+        ['without a broker', {}],
+        ['with the swap.chainflip.io broker', { broker: { name: BrokerName.ChainflipSwap } }],
+      ] as const)('encodes through the swap server %s', async (_, options) => {
+        const brokerSdk = new SwapSDK(options);
+        vi.mocked(encodeVaultSwapData).mockResolvedValueOnce({
+          chain: 'Ethereum',
+          calldata: '0x1234',
+          value: '1000000000000000000',
+          to: '0xb7a5bd0345ef1cc5e66bf61bdec17d2461fbd968',
+          sourceTokenAddress: undefined,
+        });
+
+        const result = await brokerSdk.encodeVaultSwapData(request);
+
+        expect(encodeVaultSwapData).toHaveBeenCalledWith(
+          'https://chainflip-swap-perseverance.chainflip.io/',
+          expect.objectContaining({
+            brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+            commissionBps: 15,
+            affiliates: [
+              { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+            ],
+          }),
+        );
+        expect(result).toMatchObject({ chain: 'Ethereum', value: 1000000000000000000n });
+      });
+
+      it('throws if the sdk is initialized with a broker url', async () => {
+        const brokerSdk = new SwapSDK({ broker: { url: 'https://chainflap.org/broker' } });
+
+        await expect(brokerSdk.encodeVaultSwapData(request)).rejects.toThrow(
+          'Cannot overwrite broker account when initializing the SDK with a broker url',
+        );
+        expect(encodeVaultSwapData).not.toHaveBeenCalled();
+      });
+    });
+
     it('calls the configured broker api with the given affiliate brokers', async () => {
       const postSpy = mockRpcResponse((url, data: any) => {
         if (data.method === 'broker_request_swap_parameter_encoding') {
@@ -2381,6 +2444,50 @@ describe(SwapSDK, () => {
           brokerSdk.encodeCfParameters({ ...request, brokerCommissionBps: 15 }),
         ).rejects.toThrow(
           'Broker commission and affiliates are not supported with the swap.chainflip.io broker',
+        );
+        expect(encodeCfParameters).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('with a broker account', () => {
+      const request = {
+        quote: {
+          srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+          destAsset: { asset: 'FLIP', chain: 'Ethereum' },
+          depositAmount: BigInt(1e18).toString(),
+          type: 'REGULAR',
+          isVaultSwap: true,
+        } as Quote,
+        destAddress: '0x717e15853fd5f2ac6123e844c3a7c75976eaec9b',
+        fillOrKillParams: {
+          minPrice: '10000000000000',
+          refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          retryDurationBlocks: 500,
+        },
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        brokerCommissionBps: 15,
+      } as const;
+
+      it('encodes through the swap server without a configured broker', async () => {
+        vi.mocked(encodeCfParameters).mockResolvedValueOnce('0x1234');
+
+        const result = await sdk.encodeCfParameters(request);
+
+        expect(encodeCfParameters).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+            commissionBps: 15,
+          }),
+        );
+        expect(result).toBe('0x1234');
+      });
+
+      it('throws if the sdk is initialized with a broker url', async () => {
+        const brokerSdk = new SwapSDK({ broker: { url: 'https://chainflap.org/broker' } });
+
+        await expect(brokerSdk.encodeCfParameters(request)).rejects.toThrow(
+          'Cannot overwrite broker account when initializing the SDK with a broker url',
         );
         expect(encodeCfParameters).not.toHaveBeenCalled();
       });

@@ -222,6 +222,22 @@ export class SwapSDK {
     return broker;
   }
 
+  // Vault swaps can be encoded for an explicit broker account through the backend. Without one,
+  // the SDK must be initialized with a broker
+  private resolveEncodingBroker(
+    brokerAccount: `cF${string}` | undefined,
+    fees: BrokerFees,
+  ): BrokerOption | undefined {
+    if (!brokerAccount) return this.requireBroker(fees);
+
+    const { broker } = this.options;
+    assert(
+      !(broker && 'url' in broker),
+      'Cannot overwrite broker account when initializing the SDK with a broker url',
+    );
+    return undefined;
+  }
+
   private async estimateExpiryTime(
     chain: ChainflipChain,
     expiryBlock: bigint | number,
@@ -457,10 +473,11 @@ export class SwapSDK {
     fillOrKillParams: inputFoKParams,
     affiliateBrokers: affiliates,
     ccmParams,
+    brokerAccount,
     brokerCommissionBps,
     extraParams,
   }: VaultSwapRequest): Promise<VaultSwapResponse> {
-    const broker = this.requireBroker({ brokerCommissionBps, affiliates });
+    const broker = this.resolveEncodingBroker(brokerAccount, { brokerCommissionBps, affiliates });
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
     assert(quote.isVaultSwap, 'Cannot encode vault swap data for non-vault swap quotes');
@@ -486,14 +503,16 @@ export class SwapSDK {
       affiliates,
     };
 
-    if ('url' in broker) {
+    if (broker && 'url' in broker) {
       return requestSwapParameterEncoding(vaultSwapRequest, broker, this.options.network);
     }
 
-    const body = await ApiService.encodeVaultSwapData(this.options.backendUrl, {
-      ...vaultSwapRequest,
-      commissionBps: await this.getQuotedBrokerCommissionBps(),
-    });
+    const body = await ApiService.encodeVaultSwapData(
+      this.options.backendUrl,
+      brokerAccount
+        ? { ...vaultSwapRequest, brokerAccount, commissionBps: brokerCommissionBps ?? 0 }
+        : { ...vaultSwapRequest, commissionBps: await this.getQuotedBrokerCommissionBps() },
+    );
 
     switch (body.chain) {
       case 'Arbitrum':
@@ -513,9 +532,10 @@ export class SwapSDK {
     fillOrKillParams,
     affiliateBrokers: affiliates,
     ccmParams,
+    brokerAccount,
     brokerCommissionBps,
   }: EncodeCfParametersRequest): Promise<HexString> {
-    const broker = this.requireBroker({ brokerCommissionBps, affiliates });
+    const broker = this.resolveEncodingBroker(brokerAccount, { brokerCommissionBps, affiliates });
     await this.validateSwapAmount(quote.srcAsset, BigInt(quote.depositAmount));
     assertQuoteValid(quote);
 
@@ -539,14 +559,16 @@ export class SwapSDK {
       affiliates,
     };
 
-    if ('url' in broker) {
+    if (broker && 'url' in broker) {
       return requestCfParametersEncoding(requestParams, broker, this.options.network);
     }
 
-    return ApiService.encodeCfParameters(this.options.backendUrl, {
-      ...requestParams,
-      commissionBps: await this.getQuotedBrokerCommissionBps(),
-    });
+    return ApiService.encodeCfParameters(
+      this.options.backendUrl,
+      brokerAccount
+        ? { ...requestParams, brokerAccount, commissionBps: brokerCommissionBps ?? 0 }
+        : { ...requestParams, commissionBps: await this.getQuotedBrokerCommissionBps() },
+    );
   }
 
   async checkBoostEnabled(): Promise<boolean> {

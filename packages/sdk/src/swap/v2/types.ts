@@ -254,6 +254,11 @@ export interface VaultSwapRequest {
   fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
+  /**
+   * Encodes the swap for this broker account instead of the broker the SDK was initialized with.
+   * The swap and its commission are attributed to this account.
+   */
+  brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
   extraParams?: { seed?: `0x${string}` };
 }
@@ -297,5 +302,10 @@ export interface EncodeCfParametersRequest {
   fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
+  /**
+   * Encodes the swap for this broker account instead of the broker the SDK was initialized with.
+   * The swap and its commission are attributed to this account.
+   */
+  brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
 }

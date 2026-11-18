@@ -801,8 +801,29 @@ describe('encodeVaultSwapData', () => {
     });
   });
 
-  it('rejects requests with a broker account', async () => {
-    const postSpy = mockRpcResponse({ data: environment() });
+  it('calls the node rpc with the correct params if broker account is given', async () => {
+    const postSpy = mockRpcResponse((url, data: any) => {
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({ data: environment({ maxSwapAmount: '0x10000000000' }) });
+      }
+
+      if (data.method === 'cf_request_swap_parameter_encoding') {
+        return Promise.resolve({
+          data: {
+            id: '1',
+            jsonrpc: '2.0',
+            result: {
+              chain: 'Bitcoin',
+              nulldata_payload:
+                '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+              deposit_address: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+            },
+          },
+        });
+      }
+
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+    });
 
     const result = await client.encodeVaultSwapData({
       body: {
@@ -811,6 +832,95 @@ describe('encodeVaultSwapData', () => {
         destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
         amount: '12500000',
         brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        commissionBps: 15,
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+          refundCcmMetadata: null,
+          minPriceX128: 0x152d02c7e14af680000000000000000000000000000000000000n.toString(),
+          maxOraclePriceSlippage: 50,
+        },
+        ccmParams: {
+          gasBudget: '0x75bcd15',
+          message: '0xdeadc0de',
+          ccmAdditionalData: '0x',
+        },
+        maxBoostFeeBps: 35,
+        affiliates: [
+          {
+            account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n',
+            commissionBps: 10,
+          },
+        ],
+        dcaParams: {
+          numberOfChunks: 100,
+          chunkIntervalBlocks: 5,
+        },
+      },
+    });
+
+    expect(result.status).toBe(200);
+
+    expect(postSpy).toHaveBeenNthCalledWith(2, 'http://rpc-node.test', [
+      {
+        id: expect.any(String),
+        jsonrpc: '2.0',
+        method: 'cf_request_swap_parameter_encoding',
+        params: [
+          'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+          {
+            asset: 'BTC',
+            chain: 'Bitcoin',
+          },
+          {
+            asset: 'ETH',
+            chain: 'Ethereum',
+          },
+          '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+          15,
+          {
+            chain: 'Bitcoin',
+            max_oracle_price_slippage: 50,
+            min_output_amount: '0xfc6f7c40458122964d0000000',
+            retry_duration: 500,
+          },
+          {
+            gas_budget: '0x75bcd15',
+            message: '0xdeadc0de',
+            ccm_additional_data: '0x',
+          },
+          35,
+          [
+            {
+              account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n',
+              bps: 10,
+            },
+          ],
+          {
+            chunk_interval: 5,
+            number_of_chunks: 100,
+          },
+        ],
+      },
+    ]);
+    expect(result.body).toEqual({
+      chain: 'Bitcoin',
+      nulldataPayload:
+        '0x0003656623d865425c0a4955ef7e7a39d09f58554d0800000000000000000000000000000000000001000200000100',
+      depositAddress: 'bcrt1pmrhjpvq2w7cgesrcrvuhqw6n6j487l6uc7tmwtx9jen7ezesunhqllvzxx',
+    });
+  });
+
+  it('rejects our own broker accounts', async () => {
+    const postSpy = mockRpcResponse({ data: environment() });
+
+    const result = await client.encodeVaultSwapData({
+      body: {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+        amount: '12500000',
+        brokerAccount: 'cFJySAo3RbrtKWWb9J86jqnfTjpDCXAQ4bcJR9kt6S37i7eey',
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
@@ -823,12 +933,14 @@ describe('encodeVaultSwapData', () => {
 
     expect(result).toMatchObject({
       status: 400,
-      body: { message: 'setting brokerAccount is not supported' },
+      body: {
+        message: 'broker account cFJySAo3RbrtKWWb9J86jqnfTjpDCXAQ4bcJR9kt6S37i7eey is not allowed',
+      },
     });
     expect(postSpy).not.toHaveBeenCalled();
   });
 
-  it('rejects requests with affiliates', async () => {
+  it('rejects affiliates without a broker account', async () => {
     env.BROKER_COMMISSION_BPS = 30;
     const postSpy = mockRpcResponse({ data: environment() });
 
@@ -854,7 +966,7 @@ describe('encodeVaultSwapData', () => {
 
     expect(result).toMatchObject({
       status: 400,
-      body: { message: 'setting affiliates is not supported' },
+      body: { message: 'setting affiliates requires a brokerAccount' },
     });
     expect(postSpy).not.toHaveBeenCalled();
   });
@@ -1021,21 +1133,75 @@ describe('encodeCfParameters', () => {
     ]);
   });
 
-  it('rejects requests with a broker account', async () => {
+  it('calls the node rpc with the correct params if broker account is given', async () => {
+    const postSpy = mockRpcResponse((url, data: any) => {
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({ data: environment({ maxSwapAmount: '0x10000000000' }) });
+      }
+
+      if (data.method === 'cf_encode_cf_parameters') {
+        return Promise.resolve({ data: { id: '1', jsonrpc: '2.0', result: '0x1234' } });
+      }
+
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+    });
+
+    const result = await client.encodeCfParameters({
+      body: {
+        ...body,
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        commissionBps: 15,
+        affiliates: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+        ],
+      },
+    });
+
+    expect(result).toMatchObject({ status: 200, body: '0x1234' });
+    expect(postSpy).toHaveBeenNthCalledWith(2, 'http://rpc-node.test', [
+      {
+        id: expect.any(String),
+        jsonrpc: '2.0',
+        method: 'cf_encode_cf_parameters',
+        params: [
+          'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'ETH', chain: 'Ethereum' },
+          '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+          15,
+          {
+            max_oracle_price_slippage: null,
+            min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+            refund_address: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+            refund_ccm_metadata: null,
+            retry_duration: 500,
+          },
+          null,
+          null,
+          [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
+          null,
+        ],
+      },
+    ]);
+  });
+
+  it('rejects our own broker accounts', async () => {
     const postSpy = mockRpcResponse({ data: environment() });
 
     const result = await client.encodeCfParameters({
-      body: { ...body, brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa' },
+      body: { ...body, brokerAccount: 'cFJySAo3RbrtKWWb9J86jqnfTjpDCXAQ4bcJR9kt6S37i7eey' },
     });
 
     expect(result).toMatchObject({
       status: 400,
-      body: { message: 'setting brokerAccount is not supported' },
+      body: {
+        message: 'broker account cFJySAo3RbrtKWWb9J86jqnfTjpDCXAQ4bcJR9kt6S37i7eey is not allowed',
+      },
     });
     expect(postSpy).not.toHaveBeenCalled();
   });
 
-  it('rejects requests with affiliates', async () => {
+  it('rejects affiliates without a broker account', async () => {
     const postSpy = mockRpcResponse({ data: environment() });
 
     const result = await client.encodeCfParameters({
@@ -1049,7 +1215,7 @@ describe('encodeCfParameters', () => {
 
     expect(result).toMatchObject({
       status: 400,
-      body: { message: 'setting affiliates is not supported' },
+      body: { message: 'setting affiliates requires a brokerAccount' },
     });
     expect(postSpy).not.toHaveBeenCalled();
   });

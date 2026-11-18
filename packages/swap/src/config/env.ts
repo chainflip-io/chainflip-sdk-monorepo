@@ -162,6 +162,19 @@ export default z
     QUOTER_USE_MEV_FACTOR: optionalBoolean,
     BROKER_COMMISSION_BPS: optionalNumber(0),
     RPC_BROKER_HTTPS_URL: httpUrl,
+    RESERVED_BROKER_ACCOUNTS: optionalString('')
+      .transform(
+        (string) =>
+          new Set(
+            string
+              .split(',')
+              .map((account) => account.trim())
+              .filter(Boolean),
+          ),
+      )
+      .describe(
+        'Broker accounts operated by chainflip that may not be passed as `brokerAccount` when encoding vault swaps',
+      ),
     ENABLE_QUOTE_TIMING_LOGS: optionalBoolean.prefault('false'),
     DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE: optionalBoolean,
     ENABLE_POOL_CACHE_WARMING: optionalBoolean.prefault('false'),

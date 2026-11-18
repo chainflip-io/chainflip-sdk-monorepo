@@ -19,15 +19,15 @@ which it is deprecated.
 
 ### Changed
 
-- `requestDepositAddressV2()`, `encodeVaultSwapData()`, `encodeCfParameters()` and
-  `requestAccountCreationDepositAddress()` now require the SDK to be initialized with a
-  `broker`, either `{ url }` for your own broker or `{ name: 'swap.chainflip.io' }`. They throw
-  if no broker is configured.
+- `requestDepositAddressV2()` and `requestAccountCreationDepositAddress()` now require the SDK
+  to be initialized with a `broker`, either `{ url }` for your own broker or
+  `{ name: 'swap.chainflip.io' }`. They throw if no broker is configured.
+- `encodeVaultSwapData()` and `encodeCfParameters()` require either a `brokerAccount` or a
+  configured `broker`. With a `brokerAccount`, the swap is encoded for that account with the
+  given `brokerCommissionBps` and `affiliateBrokers`, as before.
 
 ### Removed
 
-- The `brokerAccount` parameter of `encodeVaultSwapData()` and `encodeCfParameters()`.
-  Configure a broker instead.
 - The protected `shouldTakeCommission()` method of `SwapSDK`.
 
 ## 2.3.2

@@ -26,9 +26,17 @@ export const assertRouteEnabled = ({
   }
 };
 
-// Older SDKs quoted without the broker commission and don't send it, so rejecting a mismatch
-// stops them from encoding vault swaps with a fee their quote didn't show.
-// TODO: can remove
+// Our own broker accounts can't be passed as `brokerAccount`. Otherwise anyone could encode vault
+// swaps attributed to us with an arbitrary (or zero) commission
+export const assertBrokerAccountAllowed = (brokerAccount: string) => {
+  if (env.RESERVED_BROKER_ACCOUNTS.has(brokerAccount)) {
+    throw ServiceError.badRequest(`broker account ${brokerAccount} is not allowed`);
+  }
+};
+
+// Sending the swap broker's commission is the explicit opt-in to the swap.chainflip.io broker.
+// Older SDKs quoted without the broker commission and send 0, so rejecting a mismatch stops them
+// from silently defaulting to our broker with a fee their quote didn't show.
 export const assertBrokerCommission = (commissionBps: number) => {
   if (commissionBps !== env.BROKER_COMMISSION_BPS) {
     throw ServiceError.badRequest(
