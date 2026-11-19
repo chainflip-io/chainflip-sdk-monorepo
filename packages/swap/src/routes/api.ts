@@ -82,8 +82,10 @@ export const createApiRouter = (network: ChainflipNetwork) => {
     '/openAccountCreationDepositChannel',
     maintenanceMode,
     jsonBodyParser(),
-    withBody(getAccountCreationDepositChannelSchema(network), async (body, res) => {
-      res.status(201).json(await openAccountCreationDepositChannel(body));
+    withBody(getAccountCreationDepositChannelSchema(network), async (body, res, req) => {
+      res
+        .status(201)
+        .json(await openAccountCreationDepositChannel(body, { origin: req.headers.origin }));
     }),
   );
 

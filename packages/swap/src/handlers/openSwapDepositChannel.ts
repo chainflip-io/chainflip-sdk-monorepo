@@ -10,17 +10,7 @@ import { assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
-
-const parseOrigin = (origin: string | undefined) => {
-  if (!origin) return undefined;
-
-  try {
-    const parsed = new URL(origin).origin;
-    return parsed !== 'null' && parsed.length <= 255 ? parsed : undefined;
-  } catch {
-    return undefined;
-  }
-};
+import { parseOrigin } from '../utils/string.js';
 
 const getSlippageTolerancePercent = (
   input: z.output<ReturnType<typeof getOpenSwapDepositChannelSchema>>,

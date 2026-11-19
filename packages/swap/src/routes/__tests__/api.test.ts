@@ -1365,9 +1365,48 @@ describe('openAccountCreationDepositChannel', () => {
         "openedThroughBackend": true,
         "openingFeePaid": "0",
         "refundAddress": "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
+        "requestOrigin": null,
       }
     `,
     );
+  });
+
+  it.each([
+    { origin: 'https://lp.chainflip.io', expected: 'https://lp.chainflip.io' },
+    { origin: 'null', expected: null },
+    { origin: undefined, expected: null },
+  ])('stores $origin as the request origin $expected', async ({ origin, expected }) => {
+    vi.spyOn(HttpClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      issued_block: 53948,
+      channel_id: 3,
+      address: '0xc2774b2f1972f50ac6113e81721cc7214388434d',
+      requested_for: 'cFHsUq1uK5opJudRDczt7w4baiRDHR6Kdezw77u2JnRnCGKcs',
+      deposit_chain_expiry_block: 27208n,
+      channel_opening_fee: 0n,
+      refund_address: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+    } satisfies ChannelInfo);
+
+    const result = await client.openAccountCreationDepositChannel({
+      headers: origin ? { origin } : {},
+      body: {
+        asset: { asset: 'ETH', chain: 'Ethereum' },
+        refundAddress: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+        signatureData: {
+          Ethereum: {
+            signature: '0x1234567890',
+            signer: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+            sigType: 'Eip712',
+          },
+        },
+        transactionMetadata: { nonce: 0, expiryBlock: 55000 },
+        boostFeeBps: 30,
+      },
+    });
+
+    expect(result.status).toBe(201);
+    expect(await prisma.accountCreationDepositChannel.findFirstOrThrow()).toMatchObject({
+      requestOrigin: expected,
+    });
   });
 
   it('ss58 encodes the hex encoded address returned for Assethub', async () => {

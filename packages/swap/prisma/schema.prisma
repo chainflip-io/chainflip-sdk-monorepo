@@ -91,6 +91,7 @@ model AccountCreationDepositChannel {
   maxBoostFeeBps          Int
   isExpired               Boolean
   openedThroughBackend    Boolean
+  requestOrigin           String?              @db.VarChar(255)
   createdAt               DateTime             @db.Timestamptz(3)
   estimatedExpiryAt       DateTime?            @db.Timestamptz(3)
   swapRequests            SwapRequest[]

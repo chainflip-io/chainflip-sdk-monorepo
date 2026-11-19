@@ -24,7 +24,7 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
         srcAddress: z.string().optional(),
         fillOrKillParams,
         dcaParams: dcaParams.optional(),
-        /** @deprecated only sent by older sdks; will be removed */
+        /** @deprecated DEPRECATED(2.3): only sent by older sdks; will be removed */
         takeCommission: z.boolean().optional(),
         quote: z
           .object({
