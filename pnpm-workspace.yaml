@@ -5,3 +5,17 @@ packages:
 minimumReleaseAge: 20160 # in minutes
 minimumReleaseAgeExclude:
   - '@chainflip/*'
+
+# no shame here
+# intellisense grinds to a halt if the packages are not hoisted ¯\_(ツ)_/¯
+shamefullyHoist: true
+verifyDepsBeforeRun: false
+
+allowBuilds:
+  '@prisma/engines': false
+  bufferutil: false
+  dtrace-provider: false
+  esbuild: false
+  msgpackr-extract: false
+  prisma: false
+  utf-8-validate: false
