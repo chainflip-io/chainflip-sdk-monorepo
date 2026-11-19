@@ -1,12 +1,10 @@
 import { HttpClient } from '@chainflip/rpc';
 import { getInternalAsset } from '@chainflip/utils/chainflip';
-import assert from 'assert';
 import { z } from 'zod';
 import { getVaultSwapParameterEncodingRequestSchema } from '@/shared/broker.js';
 import { transformKeysToCamelCase } from '@/shared/objects.js';
-import { u16 } from '@/shared/parsers.js';
 import env from '../config/env.js';
-import { assertRouteEnabled } from '../utils/env.js';
+import { assertBrokerConditions, assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
@@ -14,29 +12,17 @@ import ServiceError from '../utils/ServiceError.js';
 const brokerClient = new HttpClient(env.RPC_BROKER_HTTPS_URL);
 const nodeClient = new HttpClient(env.RPC_NODE_HTTP_URL);
 
-export const encodeVaultSwapDataSchema = getVaultSwapParameterEncodingRequestSchema(
-  env.CHAINFLIP_NETWORK,
-).and(
-  z.object({
-    brokerCommissionBps: u16.optional(), // sdk version 1.8.3 sends brokerCommissionBps instead of commissionBps
-  }),
-);
-
-export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwapDataSchema>) => {
+export const encodeVaultSwapData = async (
+  input: z.output<ReturnType<typeof getVaultSwapParameterEncodingRequestSchema>>,
+) => {
   logger.info('Fetching vault swap data', input);
 
   const srcAsset = getInternalAsset(input.srcAsset);
   const destAsset = getInternalAsset(input.destAsset);
   assertRouteEnabled({ srcAsset, destAsset });
+  assertBrokerConditions(input);
 
   const result = await validateSwapAmount(srcAsset, BigInt(input.amount));
-
-  if (!input.brokerAccount) {
-    assert(
-      !input.commissionBps && !input.brokerCommissionBps,
-      'Cannot set commission without broker',
-    );
-  }
 
   if (!result.success) throw ServiceError.badRequest(result.reason);
 
@@ -47,7 +33,7 @@ export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwap
         input.srcAsset,
         input.destAsset,
         input.destAddress,
-        input.commissionBps || input.brokerCommissionBps || 0,
+        input.commissionBps,
         input.extraParams,
         input.ccmParams,
         input.maxBoostFeeBps,
@@ -59,11 +45,11 @@ export const encodeVaultSwapData = async (input: z.output<typeof encodeVaultSwap
         input.srcAsset,
         input.destAsset,
         input.destAddress,
-        0, // default broker account does not support commission
+        env.BROKER_COMMISSION_BPS,
         input.extraParams,
         input.ccmParams,
         input.maxBoostFeeBps,
-        undefined, // default broker account does not support affiliates
+        undefined, // swap broker does not support affiliates
         input.dcaParams,
       );
 

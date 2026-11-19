@@ -8,6 +8,7 @@ import {
 } from '@chainflip/utils/chainflip';
 import { uncapitalize } from '@chainflip/utils/string';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import prisma from '../../client.js';
 
 vi.mock('@chainflip/rpc');
 
@@ -84,6 +85,7 @@ describe('networkStatus', () => {
   beforeEach(async () => {
     vi.restoreAllMocks();
     vi.resetModules();
+    await prisma.$queryRaw`TRUNCATE TABLE "ChainTracking" CASCADE`;
     networkStatusV2 = (await import('../networkInfo.js'))
       .default as unknown as typeof import('../networkInfo.js').default;
     env = (await import('../../config/env.js'))
@@ -289,6 +291,7 @@ describe('networkStatus', () => {
           },
         ],
         "cfBrokerCommissionBps": 0,
+        "chainTracking": [],
       }
     `);
   });
@@ -483,6 +486,7 @@ describe('networkStatus', () => {
           },
         ],
         "cfBrokerCommissionBps": 0,
+        "chainTracking": [],
       }
     `);
   });
@@ -678,6 +682,7 @@ describe('networkStatus', () => {
           },
         ],
         "cfBrokerCommissionBps": 0,
+        "chainTracking": [],
       }
     `);
   });
@@ -873,6 +878,7 @@ describe('networkStatus', () => {
           },
         ],
         "cfBrokerCommissionBps": 0,
+        "chainTracking": [],
       }
     `);
   });
@@ -1087,6 +1093,7 @@ describe('networkStatus', () => {
           },
         ],
         "cfBrokerCommissionBps": 0,
+        "chainTracking": [],
       }
     `);
   });
@@ -1284,8 +1291,33 @@ describe('networkStatus', () => {
           },
         ],
         "cfBrokerCommissionBps": 0,
+        "chainTracking": [],
       }
     `);
+  });
+
+  it('returns the chain tracking of chainflip chains', async () => {
+    mockRpc({});
+    await prisma.chainTracking.createMany({
+      data: [
+        {
+          chain: 'Bitcoin',
+          height: 900_000n,
+          blockTrackedAt: new Date('2026-11-13T10:00:00.000Z'),
+          eventWitnessedBlock: 1,
+        },
+        {
+          chain: 'Polkadot',
+          height: 100n,
+          blockTrackedAt: new Date('2026-11-13T10:00:00.000Z'),
+          eventWitnessedBlock: 1,
+        },
+      ],
+    });
+
+    expect((await networkStatusV2()).chainTracking).toEqual([
+      { chain: 'Bitcoin', height: 900_000, blockTrackedAt: 1794564000000 },
+    ]);
   });
 
   it('returns the chainflip broker commission', async () => {
@@ -1481,6 +1513,7 @@ describe('networkStatus', () => {
           },
         ],
         "cfBrokerCommissionBps": 100,
+        "chainTracking": [],
       }
     `);
   });

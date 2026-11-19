@@ -6,6 +6,7 @@ import 'dotenv/config';
 const swapSDK = new SwapSDK({
   network: 'perseverance',
   enabledFeatures: { dcaV2: true },
+  broker: { url: process.env.BROKER_URL as string },
 });
 
 // CCM params

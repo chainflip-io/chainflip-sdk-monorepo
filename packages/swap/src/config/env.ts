@@ -100,7 +100,6 @@ export default z
     START_HTTP_SERVICE: optionalBoolean,
     START_PROCESSOR: optionalBoolean,
     SWAPPING_APP_PORT: optionalNumber(8080),
-    RPC_BROKER_HTTPS_URL: httpUrl,
     RPC_NODE_WSS_URL: wsUrl,
     SOLANA_RPC_HTTP_URL: httpUrl.optional(),
     BITCOIN_RPC_HTTP_URL: httpUrl.optional(),
@@ -115,7 +114,6 @@ export default z
     REDIS_URL_BACKOFFICE: redisUrl.optional(),
     MESSAGE_QUEUE_DELAY_MS: optionalNumber(0),
     MAINTENANCE_MODE: optionalBoolean,
-    DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK: optionalBoolean,
     LIQUIDITY_WARNING_THRESHOLD: optionalNumber(-5),
     COINGECKO_API_KEY: z.string().optional(),
     DCA_DEFAULT_SELL_CHUNK_SIZE_USD: optionalNumber(10000),
@@ -163,7 +161,21 @@ export default z
     QUOTER_BALANCE_TOLERANCE_PERCENT: optionalNumber(10),
     QUOTER_USE_MEV_FACTOR: optionalBoolean,
     BROKER_COMMISSION_BPS: optionalNumber(0),
-    RPC_COMMISSION_BROKER_HTTPS_URL: httpUrl.optional(),
+    RPC_BROKER_HTTPS_URL: httpUrl,
+    // TODO: remove after brokerAccount is deprecated
+    RESERVED_BROKER_ACCOUNTS: optionalString('cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7')
+      .transform(
+        (string) =>
+          new Set(
+            string
+              .split(',')
+              .map((account) => account.trim())
+              .filter(Boolean),
+          ),
+      )
+      .describe(
+        'Broker accounts operated by chainflip that may not be passed as `brokerAccount` when encoding vault swaps',
+      ),
     ENABLE_QUOTE_TIMING_LOGS: optionalBoolean.prefault('false'),
     DISABLE_RECOMMENDED_LIVE_PRICE_SLIPPAGE: optionalBoolean,
     ENABLE_POOL_CACHE_WARMING: optionalBoolean.prefault('false'),

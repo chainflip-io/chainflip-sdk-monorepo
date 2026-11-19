@@ -91,6 +91,7 @@ model AccountCreationDepositChannel {
   maxBoostFeeBps          Int
   isExpired               Boolean
   openedThroughBackend    Boolean
+  requestOrigin           String?              @db.VarChar(255)
   createdAt               DateTime             @db.Timestamptz(3)
   estimatedExpiryAt       DateTime?            @db.Timestamptz(3)
   swapRequests            SwapRequest[]
@@ -124,6 +125,7 @@ model SwapDepositChannel {
   failedSwaps                  FailedSwap[]
   estimatedExpiryAt            DateTime?
   openedThroughBackend         Boolean              @default(false)
+  requestOrigin                String?              @db.VarChar(255)
   openingFeePaid               Decimal              @db.Decimal(30, 0)
   beneficiaries                SwapBeneficiary[]
   failedBoosts                 FailedBoost[]

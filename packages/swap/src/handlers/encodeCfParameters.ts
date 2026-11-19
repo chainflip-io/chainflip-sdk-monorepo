@@ -3,7 +3,7 @@ import { getInternalAsset } from '@chainflip/utils/chainflip';
 import { z } from 'zod';
 import { getParameterEncodingRequestSchema } from '@/shared/broker.js';
 import env from '../config/env.js';
-import { assertRouteEnabled } from '../utils/env.js';
+import { assertBrokerConditions, assertRouteEnabled } from '../utils/env.js';
 import logger from '../utils/logger.js';
 import { validateSwapAmount } from '../utils/rpc.js';
 import ServiceError from '../utils/ServiceError.js';
@@ -19,6 +19,7 @@ export const encodeCfParameters = async (
   const srcAsset = getInternalAsset(input.srcAsset);
   const destAsset = getInternalAsset(input.destAsset);
   assertRouteEnabled({ srcAsset, destAsset });
+  assertBrokerConditions(input);
 
   const result = await validateSwapAmount(srcAsset, BigInt(input.amount));
 
@@ -43,15 +44,15 @@ export const encodeCfParameters = async (
         input.srcAsset,
         input.destAsset,
         input.destAddress,
-        0, // default broker account does not support commission
+        env.BROKER_COMMISSION_BPS,
         input.fillOrKillParams,
         input.ccmParams,
         input.maxBoostFeeBps,
-        undefined, // default broker account does not support affiliates
+        undefined, // swap broker does not support affiliates
         input.dcaParams,
       );
 
-  logger.info('Vault swap data fetched', response);
+  logger.info('CF parameters encoded', response);
 
   return response;
 };

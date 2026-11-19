@@ -254,6 +254,10 @@ export interface VaultSwapRequest {
   fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
+  /**
+   * @deprecated DEPRECATED(2.3): Initialize the SDK with `broker: { url }` for your own broker instead.
+   * When the SDK is initialized with a broker, that broker takes precedence here.
+   */
   brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
   extraParams?: { seed?: `0x${string}` };
@@ -298,6 +302,10 @@ export interface EncodeCfParametersRequest {
   fillOrKillParams: FillOrKillParams;
   affiliateBrokers?: { account: `cF${string}` | `0x${string}`; commissionBps: number }[];
   ccmParams?: CcmParams;
+  /**
+   * @deprecated DEPRECATED(2.3): Initialize the SDK with `broker: { url }` for your own broker instead.
+   * When the SDK is initialized with a broker, that broker takes precedence here.
+   */
   brokerAccount?: `cF${string}`;
   brokerCommissionBps?: number;
 }

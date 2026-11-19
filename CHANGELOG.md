@@ -7,6 +7,34 @@ intended to be used with.
 Deprecated functionality will be retained for two releases after the release in
 which it is deprecated.
 
+## Unreleased
+
+### Added
+
+- The `broker` option accepts a named broker eg: `{ name: 'swap.chainflip.io' }`
+  to open channels and encode vault swaps. Quotes include its
+  commission. Passing `brokerCommissionBps` or `affiliateBrokers` to `getQuoteV2()`,
+  `requestDepositAddressV2()`, `encodeVaultSwapData()` or `encodeCfParameters()` throws when
+  it is set.
+
+### Changed
+
+- `requestDepositAddressV2()` and `requestAccountCreationDepositAddress()` now require the SDK
+  to be initialized with a `broker`, either `{ url }` for your own broker or
+  `{ name: 'swap.chainflip.io' }`. They throw if no broker is configured.
+- `encodeVaultSwapData()` and `encodeCfParameters()` require either a `brokerAccount` or a
+  configured `broker`, not both. With a `brokerAccount`, the swap is encoded for that account
+  with the given `brokerCommissionBps` and `affiliateBrokers`, as before.
+
+### Deprecated
+
+- The `brokerAccount` parameter of `encodeVaultSwapData()` and `encodeCfParameters()`.
+  Initialize the SDK with `broker: { url }` for your own broker instead.
+
+### Removed
+
+- The protected `shouldTakeCommission()` method of `SwapSDK`.
+
 ## 2.3.2
 
 ### Added

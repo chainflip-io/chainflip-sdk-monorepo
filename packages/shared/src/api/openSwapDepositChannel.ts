@@ -24,6 +24,8 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
         srcAddress: z.string().optional(),
         fillOrKillParams,
         dcaParams: dcaParams.optional(),
+        /** @deprecated DEPRECATED(2.3): only sent by older sdks; will be removed */
+        takeCommission: z.boolean().optional(),
         quote: z
           .object({
             intermediateAmount: amountString.optional(),
@@ -36,7 +38,6 @@ export const getOpenSwapDepositChannelSchema = (network: ChainflipNetwork) =>
             recommendedLivePriceSlippageTolerancePercent: z.number().optional(),
           })
           .optional(),
-        takeCommission: z.boolean().optional(),
       }),
     )
     .superRefine(({ ...val }, ctx) => {

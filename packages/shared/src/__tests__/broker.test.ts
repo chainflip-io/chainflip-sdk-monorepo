@@ -1643,6 +1643,81 @@ describe(broker.requestCfParametersEncoding, () => {
   });
 });
 
+describe(broker.requestAccountCreationDepositAddress, () => {
+  const request = {
+    asset: { asset: 'BTC', chain: 'Bitcoin' },
+    refundAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+    signatureData: {
+      Ethereum: { signature: '0x1234', signer: '0x5678', sigType: 'Eip712' },
+    },
+    transactionMetadata: { nonce: 1, expiryBlock: 1000 },
+    boostFeeBps: 5,
+  } as const;
+
+  it('gets a response from the broker', async () => {
+    const postSpy = mockRpcResponse({
+      data: {
+        id: '1',
+        jsonrpc: '2.0',
+        result: {
+          address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+          issued_block: 123,
+          channel_id: 15,
+          deposit_chain_expiry_block: 1234,
+          channel_opening_fee: '0x10',
+          requested_for: 'cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7',
+          refund_address: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+        },
+      },
+    });
+
+    const result = await broker.requestAccountCreationDepositAddress(
+      request,
+      { url: 'https://example.com' },
+      'perseverance',
+    );
+
+    expect(postSpy).toHaveBeenCalledWith('https://example.com', [
+      {
+        id: expect.any(String),
+        jsonrpc: '2.0',
+        method: 'broker_request_account_creation_deposit_address',
+        params: [
+          { Ethereum: { signature: '0x1234', signer: '0x5678', sig_type: 'Eip712' } },
+          { nonce: 1, expiry_block: 1000 },
+          { asset: 'BTC', chain: 'Bitcoin' },
+          5,
+          'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
+        ],
+      },
+    ]);
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "address": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+        "channelId": 15,
+        "channelOpeningFee": 16n,
+        "depositChainExpiryBlock": 1234n,
+        "issuedBlock": 123,
+        "refundAddress": "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+        "requestedFor": "cFLRQDfEdmnv6d2XfHJNRBQHi4fruPMReLSfvB8WWD2ENbqj7",
+      }
+    `);
+  });
+
+  it('rejects an invalid refund address', async () => {
+    const postSpy = mockRpcResponse({ data: {} });
+
+    await expect(
+      broker.requestAccountCreationDepositAddress(
+        { ...request, refundAddress: '0x5678' },
+        { url: 'https://example.com' },
+        'perseverance',
+      ),
+    ).rejects.toThrow('Address \\"0x5678\\" is not a valid \\"Bitcoin\\" address');
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+});
+
 describe(broker.formatBrokerDepositAddress, () => {
   it('ss58 encodes hex encoded Assethub addresses', () => {
     expect(

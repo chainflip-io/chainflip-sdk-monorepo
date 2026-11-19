@@ -117,6 +117,16 @@ const backendRequest = async (
   return { status: res.status, body: await res.blob(), headers: res.headers };
 };
 
+const apiError = (action: string, res: BackendResponse) => {
+  const { body } = res;
+  const message =
+    body && typeof body === 'object' && 'message' in body && typeof body.message === 'string'
+      ? `: ${body.message}`
+      : '';
+
+  return new Error(`Failed to ${action} (${res.status})${message}`, { cause: res });
+};
+
 export const getNetworkInfo = async (baseUrl: string): Promise<z.output<typeof NetworkInfo>> => {
   const res = await backendRequest(baseUrl, 'GET', '/api/networkInfo');
   assert(res.status === 200, 'Failed to fetch network info');
@@ -128,7 +138,7 @@ export const openSwapDepositChannel = async (
   body: RequestBody<typeof getOpenSwapDepositChannelSchema>,
 ): Promise<z.output<typeof DepositChannelInfo>> => {
   const res = await backendRequest(baseUrl, 'POST', '/api/openSwapDepositChannel', body);
-  assert(res.status === 201, 'Failed to open swap deposit channel');
+  if (res.status !== 201) throw apiError('open swap deposit channel', res);
   return res.body as z.output<typeof DepositChannelInfo>;
 };
 
@@ -137,9 +147,7 @@ export const encodeVaultSwapData = async (
   body: RequestBody<typeof getVaultSwapParameterEncodingRequestSchema>,
 ): Promise<z.output<typeof EncodedVaultSwapData>> => {
   const res = await backendRequest(baseUrl, 'POST', '/api/encodeVaultSwapData', body);
-  if (res.status !== 200) {
-    throw new Error('Failed to encode vault swap data', { cause: res });
-  }
+  if (res.status !== 200) throw apiError('encode vault swap data', res);
   return res.body as z.output<typeof EncodedVaultSwapData>;
 };
 
@@ -148,9 +156,7 @@ export const encodeCfParameters = async (
   body: RequestBody<typeof getParameterEncodingRequestSchema>,
 ): Promise<`0x${string}`> => {
   const res = await backendRequest(baseUrl, 'POST', '/api/encodeCfParameters', body);
-  if (res.status !== 200) {
-    throw new Error('Failed to encode cf parameters', { cause: res });
-  }
+  if (res.status !== 200) throw apiError('encode cf parameters', res);
   return res.body as `0x${string}`;
 };
 
@@ -159,8 +165,6 @@ export const openAccountCreationDepositChannel = async (
   body: RequestBody<typeof getAccountCreationDepositChannelSchema>,
 ): Promise<z.output<typeof DepositChannelInfo>> => {
   const res = await backendRequest(baseUrl, 'POST', '/api/openAccountCreationDepositChannel', body);
-  if (res.status !== 201) {
-    throw new Error('Failed to request account creation deposit channel', { cause: res });
-  }
+  if (res.status !== 201) throw apiError('open account creation deposit channel', res);
   return res.body as z.output<typeof DepositChannelInfo>;
 };

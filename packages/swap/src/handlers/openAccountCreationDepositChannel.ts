@@ -4,15 +4,19 @@ import { z } from 'zod';
 import { getAccountCreationDepositChannelSchema } from '@/shared/api/openAccountCreationDepositChannel.js';
 import { DepositChannelInfo } from '@/shared/api/openSwapDepositChannel.js';
 import { formatBrokerDepositAddress } from '@/shared/broker.js';
+import { calculateExpiryTime } from '@/shared/functions.js';
 import prisma from '../client.js';
 import env from '../config/env.js';
-import { calculateExpiryTime } from '../utils/function.js';
+import { parseOrigin } from '../utils/string.js';
 
 const broker = new HttpClient(env.RPC_BROKER_HTTPS_URL);
 
 export const openAccountCreationDepositChannel = async (
   params: z.output<ReturnType<typeof getAccountCreationDepositChannelSchema>>,
+  { origin }: { origin?: string } = {},
 ): Promise<z.input<typeof DepositChannelInfo>> => {
+  const requestOrigin = parseOrigin(origin);
+
   const [result, chainInfo] = await Promise.all([
     broker.sendRequest(
       'broker_request_account_creation_deposit_address',
@@ -53,9 +57,11 @@ export const openAccountCreationDepositChannel = async (
       openedThroughBackend: true,
       refundAddress: params.refundAddress,
       estimatedExpiryAt: estimatedExpiryTime,
+      requestOrigin,
     },
     update: {
       openedThroughBackend: true,
+      requestOrigin,
     },
   });
 

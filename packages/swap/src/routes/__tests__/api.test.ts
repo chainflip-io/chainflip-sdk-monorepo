@@ -19,9 +19,16 @@ vi.mock('@/shared/broker.js', async (importOriginal) => ({
 
 const post =
   <T extends (network: ChainflipNetwork) => z.ZodType>(path: string, _schema: T) =>
-  async ({ body }: { body: z.input<ReturnType<T>> }) => {
+  async ({
+    body,
+    headers = {},
+  }: {
+    body: z.input<ReturnType<T>>;
+    headers?: Record<string, string>;
+  }) => {
     const result = await request(server)
       .post(path)
+      .set(headers)
       .send(body as object);
 
     return {
@@ -37,6 +44,7 @@ const client = {
     '/api/encodeVaultSwapData',
     broker.getVaultSwapParameterEncodingRequestSchema,
   ),
+  encodeCfParameters: post('/api/encodeCfParameters', broker.getParameterEncodingRequestSchema),
   openAccountCreationDepositChannel: post(
     '/api/openAccountCreationDepositChannel',
     getAccountCreationDepositChannelSchema,
@@ -114,6 +122,45 @@ describe('openSwapDepositChannel', () => {
         createdAt: expect.any(Date),
       },
     );
+  });
+
+  it.each([
+    { origin: 'https://swap.chainflip.io', expected: 'https://swap.chainflip.io' },
+    { origin: 'HTTPS://Swap.Chainflip.io:443', expected: 'https://swap.chainflip.io' },
+    { origin: 'null', expected: null },
+    { origin: 'not a url', expected: null },
+    { origin: `https://${'a.'.repeat(130)}io`, expected: null },
+  ])('stores $origin as the request origin $expected', async ({ origin, expected }) => {
+    mockRpcResponse({ data: environment() });
+    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
+      sourceChainExpiryBlock: BigInt('1000'),
+      address: 'address',
+      channelId: 888,
+      issuedBlock: 123,
+      channelOpeningFee: 100n,
+    });
+
+    const result = await client.openSwapDepositChannel({
+      headers: { origin },
+      body: {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        amount: '777',
+        fillOrKillParams: {
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundCcmMetadata: null,
+          retryDurationBlocks: 2,
+          minPriceX128: '1',
+          maxOraclePriceSlippage: 50,
+        },
+      },
+    });
+
+    expect(result.status).toBe(201);
+    expect(await prisma.swapDepositChannel.findFirstOrThrow()).toMatchObject({
+      requestOrigin: expected,
+    });
   });
 
   it('creates channel and stores channel and quote in the database', async () => {
@@ -384,7 +431,7 @@ describe('openSwapDepositChannel', () => {
   it('creates channel with a commission', async () => {
     mockRpcResponse({ data: environment() });
     env.BROKER_COMMISSION_BPS = 100;
-    env.RPC_COMMISSION_BROKER_HTTPS_URL = 'https://broker-2.test';
+    env.RPC_BROKER_HTTPS_URL = 'https://broker-2.test';
     vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
       sourceChainExpiryBlock: BigInt('1000'),
       address: 'address',
@@ -406,7 +453,6 @@ describe('openSwapDepositChannel', () => {
           minPriceX128: '1',
           maxOraclePriceSlippage: 50,
         },
-        takeCommission: true,
       },
     });
 
@@ -429,6 +475,36 @@ describe('openSwapDepositChannel', () => {
         createdAt: expect.any(Date),
       },
     );
+  });
+
+  it('rejects channels from sdks that quote without the broker commission', async () => {
+    env.BROKER_COMMISSION_BPS = 30;
+
+    const result = await client.openSwapDepositChannel({
+      body: {
+        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
+        destAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+        amount: '777',
+        takeCommission: false,
+        fillOrKillParams: {
+          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
+          refundCcmMetadata: null,
+          retryDurationBlocks: 2,
+          minPriceX128: '1',
+          maxOraclePriceSlippage: 50,
+        },
+      },
+    });
+
+    expect(result).toMatchObject({
+      status: 400,
+      body: {
+        message:
+          'broker commission is not included in the quote, please upgrade the sdk and request a new quote',
+      },
+    });
+    expect(broker.requestSwapDepositAddress).not.toHaveBeenCalled();
   });
 
   it('rejects if source asset is disabled', async () => {
@@ -489,68 +565,6 @@ describe('openSwapDepositChannel', () => {
         "status": 503,
       }
     `);
-  });
-
-  it('rejects if opening swap deposit channels through the chainflip sdk is disabled', async () => {
-    env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK = true;
-
-    await expect(
-      client.openSwapDepositChannel({
-        body: {
-          srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
-          destAsset: { asset: 'BTC', chain: 'Bitcoin' },
-          destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
-          amount: '777',
-          fillOrKillParams: {
-            maxOraclePriceSlippage: 100,
-            refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-            refundCcmMetadata: null,
-            retryDurationBlocks: 2,
-            minPriceX128: '1',
-          },
-        },
-      }),
-    ).resolves.toMatchObject({
-      status: 503,
-      body: { message: 'Opening swap deposit channels is currently unavailable' },
-    });
-
-    expect(broker.requestSwapDepositAddress).not.toHaveBeenCalled();
-    expect(await prisma.swapDepositChannel.count()).toBe(0);
-  });
-
-  it('does not reject requests using the commission broker if opening swap deposit channels through the chainflip sdk is disabled', async () => {
-    env.DISABLE_SWAP_DEPOSIT_CHANNEL_OPENING_THROUGH_CHAINFLIP_SDK = true;
-    env.RPC_COMMISSION_BROKER_HTTPS_URL = 'https://broker-2.test';
-    mockRpcResponse({ data: environment() });
-    vi.mocked(broker.requestSwapDepositAddress).mockResolvedValueOnce({
-      sourceChainExpiryBlock: BigInt('1000'),
-      address: 'address',
-      channelId: 888,
-      issuedBlock: 123,
-      channelOpeningFee: 100n,
-    });
-
-    const result = await client.openSwapDepositChannel({
-      body: {
-        srcAsset: { asset: 'FLIP', chain: 'Ethereum' },
-        destAsset: { asset: 'BTC', chain: 'Bitcoin' },
-        destAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
-        amount: '777',
-        fillOrKillParams: {
-          maxOraclePriceSlippage: 100,
-          refundAddress: '0xa56A6be23b6Cf39D9448FF6e897C29c41c8fbDFF',
-          refundCcmMetadata: null,
-          retryDurationBlocks: 2,
-          minPriceX128: '1',
-        },
-        takeCommission: true,
-      },
-    });
-
-    expect(result.status).toBe(201);
-    expect(broker.requestSwapDepositAddress).toHaveBeenCalledTimes(1);
-    expect(await prisma.swapDepositChannel.count()).toBe(1);
   });
 
   it('rejects if too many channels are open', async () => {
@@ -689,7 +703,8 @@ describe('encodeVaultSwapData', () => {
     Object.assign(env, oldEnv);
   });
 
-  it('calls the broker api with the correct params', async () => {
+  it('calls the broker api with the broker commission', async () => {
+    env.BROKER_COMMISSION_BPS = 30;
     const postSpy = mockRpcResponse((url, data: any) => {
       if (data.method === 'cf_environment') {
         return Promise.resolve({ data: environment({ maxSwapAmount: '0x10000000000' }) });
@@ -719,7 +734,7 @@ describe('encodeVaultSwapData', () => {
         destAsset: { asset: 'ETH', chain: 'Ethereum' },
         destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
         amount: '12500000',
-        commissionBps: 0,
+        commissionBps: 30,
         fillOrKillParams: {
           retryDurationBlocks: 500,
           refundAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
@@ -733,12 +748,6 @@ describe('encodeVaultSwapData', () => {
           ccmAdditionalData: '0x',
         },
         maxBoostFeeBps: 35,
-        affiliates: [
-          {
-            account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n',
-            commissionBps: 10,
-          },
-        ],
         dcaParams: {
           numberOfChunks: 100,
           chunkIntervalBlocks: 5,
@@ -763,7 +772,7 @@ describe('encodeVaultSwapData', () => {
             chain: 'Ethereum',
           },
           '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
-          0, // ignores commission
+          30,
           {
             chain: 'Bitcoin',
             max_oracle_price_slippage: null,
@@ -776,7 +785,7 @@ describe('encodeVaultSwapData', () => {
             ccm_additional_data: '0x',
           },
           35,
-          null, // ignores affiliates
+          null,
           {
             chunk_interval: 5,
             number_of_chunks: 100,
@@ -902,6 +911,95 @@ describe('encodeVaultSwapData', () => {
     });
   });
 
+  it('rejects our own broker accounts', async () => {
+    const postSpy = mockRpcResponse({ data: environment() });
+
+    const result = await client.encodeVaultSwapData({
+      body: {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+        amount: '12500000',
+        brokerAccount: 'cFJySAo3RbrtKWWb9J86jqnfTjpDCXAQ4bcJR9kt6S37i7eey',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+          refundCcmMetadata: null,
+          minPriceX128: 0x152d02c7e14af680000000000000000000000000000000000000n.toString(),
+          maxOraclePriceSlippage: 50,
+        },
+      },
+    });
+
+    expect(result).toMatchObject({
+      status: 400,
+      body: {
+        message: 'broker account cFJySAo3RbrtKWWb9J86jqnfTjpDCXAQ4bcJR9kt6S37i7eey is not allowed',
+      },
+    });
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
+  it('rejects affiliates without a broker account', async () => {
+    env.BROKER_COMMISSION_BPS = 30;
+    const postSpy = mockRpcResponse({ data: environment() });
+
+    const result = await client.encodeVaultSwapData({
+      body: {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+        amount: '12500000',
+        commissionBps: 30,
+        affiliates: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+        ],
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+          refundCcmMetadata: null,
+          minPriceX128: 0x152d02c7e14af680000000000000000000000000000000000000n.toString(),
+          maxOraclePriceSlippage: 50,
+        },
+      },
+    });
+
+    expect(result).toMatchObject({
+      status: 400,
+      body: { message: 'setting affiliates requires a brokerAccount' },
+    });
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
+  it('rejects a commission that does not match the broker commission', async () => {
+    env.BROKER_COMMISSION_BPS = 30;
+    const postSpy = mockRpcResponse({ data: environment() });
+
+    const result = await client.encodeVaultSwapData({
+      body: {
+        srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+        destAsset: { asset: 'ETH', chain: 'Ethereum' },
+        destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+        amount: '12500000',
+        fillOrKillParams: {
+          retryDurationBlocks: 500,
+          refundAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+          refundCcmMetadata: null,
+          minPriceX128: 0x152d02c7e14af680000000000000000000000000000000000000n.toString(),
+          maxOraclePriceSlippage: 50,
+        },
+      },
+    });
+
+    expect(result).toMatchObject({
+      status: 400,
+      body: {
+        message: 'broker commission must be 30 bps, please upgrade the sdk and request a new quote',
+      },
+    });
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
   it('rejects if source asset is disabled', async () => {
     env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Flip', 'Btc']);
 
@@ -962,6 +1060,199 @@ describe('encodeVaultSwapData', () => {
         "status": 503,
       }
     `);
+  });
+});
+
+describe('encodeCfParameters', () => {
+  let oldEnv: typeof env;
+
+  const body = {
+    srcAsset: { asset: 'BTC', chain: 'Bitcoin' },
+    destAsset: { asset: 'ETH', chain: 'Ethereum' },
+    destAddress: '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+    amount: '12500000',
+    commissionBps: 30,
+    fillOrKillParams: {
+      retryDurationBlocks: 500,
+      refundAddress: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+      refundCcmMetadata: null,
+      minPriceX128: 0x152d02c7e14af680000000000000000000000000000000000000n.toString(),
+      maxOraclePriceSlippage: null,
+    },
+  } as const;
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    oldEnv = structuredClone(env);
+    env.BROKER_COMMISSION_BPS = 30;
+  });
+
+  afterEach(() => {
+    Object.assign(env, oldEnv);
+  });
+
+  it('calls the broker api with the broker commission', async () => {
+    const postSpy = mockRpcResponse((url, data: any) => {
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({ data: environment({ maxSwapAmount: '0x10000000000' }) });
+      }
+
+      if (data.method === 'broker_encode_cf_parameters') {
+        return Promise.resolve({ data: { id: '1', jsonrpc: '2.0', result: '0x1234' } });
+      }
+
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+    });
+
+    const result = await client.encodeCfParameters({ body });
+
+    expect(result).toMatchObject({ status: 200, body: '0x1234' });
+    expect(postSpy).toHaveBeenNthCalledWith(2, 'https://rpc-broker.test', [
+      {
+        id: expect.any(String),
+        jsonrpc: '2.0',
+        method: 'broker_encode_cf_parameters',
+        params: [
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'ETH', chain: 'Ethereum' },
+          '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+          30,
+          {
+            max_oracle_price_slippage: null,
+            min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+            refund_address: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+            refund_ccm_metadata: null,
+            retry_duration: 500,
+          },
+          null,
+          null,
+          null,
+          null,
+        ],
+      },
+    ]);
+  });
+
+  it('calls the node rpc with the correct params if broker account is given', async () => {
+    const postSpy = mockRpcResponse((url, data: any) => {
+      if (data.method === 'cf_environment') {
+        return Promise.resolve({ data: environment({ maxSwapAmount: '0x10000000000' }) });
+      }
+
+      if (data.method === 'cf_encode_cf_parameters') {
+        return Promise.resolve({ data: { id: '1', jsonrpc: '2.0', result: '0x1234' } });
+      }
+
+      throw new Error(`unexpected axios call to ${url}: ${JSON.stringify(data)}`);
+    });
+
+    const result = await client.encodeCfParameters({
+      body: {
+        ...body,
+        brokerAccount: 'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+        commissionBps: 15,
+        affiliates: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+        ],
+      },
+    });
+
+    expect(result).toMatchObject({ status: 200, body: '0x1234' });
+    expect(postSpy).toHaveBeenNthCalledWith(2, 'http://rpc-node.test', [
+      {
+        id: expect.any(String),
+        jsonrpc: '2.0',
+        method: 'cf_encode_cf_parameters',
+        params: [
+          'cFLdocJo3bjT7JbT7R46cA89QfvoitrKr9P3TsMcdkVWeeVLa',
+          { asset: 'BTC', chain: 'Bitcoin' },
+          { asset: 'ETH', chain: 'Ethereum' },
+          '0xe983fD1798689eee00c0Fb77e79B8f372DF41060',
+          15,
+          {
+            max_oracle_price_slippage: null,
+            min_price: '0x152d02c7e14af680000000000000000000000000000000000000',
+            refund_address: 'tb1pdz3akc5wa2gr69v3x87tfg0ka597dxqvfl6zhqx4y202y63cgw0q3rgpm6',
+            refund_ccm_metadata: null,
+            retry_duration: 500,
+          },
+          null,
+          null,
+          [{ account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', bps: 10 }],
+          null,
+        ],
+      },
+    ]);
+  });
+
+  it('rejects our own broker accounts', async () => {
+    const postSpy = mockRpcResponse({ data: environment() });
+
+    const result = await client.encodeCfParameters({
+      body: { ...body, brokerAccount: 'cFJySAo3RbrtKWWb9J86jqnfTjpDCXAQ4bcJR9kt6S37i7eey' },
+    });
+
+    expect(result).toMatchObject({
+      status: 400,
+      body: {
+        message: 'broker account cFJySAo3RbrtKWWb9J86jqnfTjpDCXAQ4bcJR9kt6S37i7eey is not allowed',
+      },
+    });
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
+  it('rejects affiliates without a broker account', async () => {
+    const postSpy = mockRpcResponse({ data: environment() });
+
+    const result = await client.encodeCfParameters({
+      body: {
+        ...body,
+        affiliates: [
+          { account: 'cFHyJEHEQ1YkT9xuFnxnPWVkihpYEGjBg4WbF6vCPtSPQoE8n', commissionBps: 10 },
+        ],
+      },
+    });
+
+    expect(result).toMatchObject({
+      status: 400,
+      body: { message: 'setting affiliates requires a brokerAccount' },
+    });
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
+  it('rejects a commission that does not match the broker commission', async () => {
+    const postSpy = mockRpcResponse({ data: environment() });
+
+    const result = await client.encodeCfParameters({ body: { ...body, commissionBps: 0 } });
+
+    expect(result).toMatchObject({
+      status: 400,
+      body: {
+        message: 'broker commission must be 30 bps, please upgrade the sdk and request a new quote',
+      },
+    });
+    expect(postSpy).not.toHaveBeenCalled();
+  });
+
+  it('rejects an amount above the maximum swap amount', async () => {
+    mockRpcResponse({ data: environment({ maxSwapAmount: '0x0' }) });
+
+    const result = await client.encodeCfParameters({ body: { ...body, amount: '1' } });
+
+    expect(result.status).toBe(400);
+    expect(result.body).toMatchInlineSnapshot(`
+      {
+        "message": "expected amount is above maximum swap amount (0)",
+      }
+    `);
+  });
+
+  it('rejects if source asset is disabled', async () => {
+    env.FULLY_DISABLED_INTERNAL_ASSETS = new Set(['Btc']);
+
+    const result = await client.encodeCfParameters({ body });
+
+    expect(result).toMatchObject({ status: 503, body: { message: 'Asset Btc is disabled' } });
   });
 });
 
@@ -1074,9 +1365,48 @@ describe('openAccountCreationDepositChannel', () => {
         "openedThroughBackend": true,
         "openingFeePaid": "0",
         "refundAddress": "0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26",
+        "requestOrigin": null,
       }
     `,
     );
+  });
+
+  it.each([
+    { origin: 'https://lp.chainflip.io', expected: 'https://lp.chainflip.io' },
+    { origin: 'null', expected: null },
+    { origin: undefined, expected: null },
+  ])('stores $origin as the request origin $expected', async ({ origin, expected }) => {
+    vi.spyOn(HttpClient.prototype, 'sendRequest').mockResolvedValueOnce({
+      issued_block: 53948,
+      channel_id: 3,
+      address: '0xc2774b2f1972f50ac6113e81721cc7214388434d',
+      requested_for: 'cFHsUq1uK5opJudRDczt7w4baiRDHR6Kdezw77u2JnRnCGKcs',
+      deposit_chain_expiry_block: 27208n,
+      channel_opening_fee: 0n,
+      refund_address: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+    } satisfies ChannelInfo);
+
+    const result = await client.openAccountCreationDepositChannel({
+      headers: origin ? { origin } : {},
+      body: {
+        asset: { asset: 'ETH', chain: 'Ethereum' },
+        refundAddress: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+        signatureData: {
+          Ethereum: {
+            signature: '0x1234567890',
+            signer: '0x10C6E9530F1C1AF873a391030a1D9E8ed0630D26',
+            sigType: 'Eip712',
+          },
+        },
+        transactionMetadata: { nonce: 0, expiryBlock: 55000 },
+        boostFeeBps: 30,
+      },
+    });
+
+    expect(result.status).toBe(201);
+    expect(await prisma.accountCreationDepositChannel.findFirstOrThrow()).toMatchObject({
+      requestOrigin: expected,
+    });
   });
 
   it('ss58 encodes the hex encoded address returned for Assethub', async () => {
