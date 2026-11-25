@@ -119,37 +119,6 @@ importers:
         version: 2.3.4
       '@chainflip/solana':
         specifier: 2.3.3
-        version: 2.3.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      '@chainflip/utils':
-        specifier: 2.3.7
-        version: 2.3.7
-      axios:
-        specifier: ^1.15.0
-        version: 1.15.0
-      bignumber.js:
-        specifier: ^9.3.0
-        version: 9.3.0
-      ethers:
-        specifier: ^6.14.4
-        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
-      zod:
-        specifier: ^4.6.7
-        version: 4.6.7
-    devDependencies:
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.7.0)(postcss@8.5.16)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0)
-
-  packages/shared:
-    dependencies:
-      '@chainflip/bitcoin':
-        specifier: 2.3.3
-        version: 2.3.3(typescript@5.9.3)
-      '@chainflip/rpc':
-        specifier: 2.3.4
-        version: 2.3.4
-      '@chainflip/solana':
-        specifier: 2.3.3
         version: 2.3.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@chainflip/utils':
         specifier: 2.3.7
@@ -163,12 +132,79 @@ importers:
       ethers:
         specifier: ^6.14.4
         version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.10.0
+        version: 7.10.0
+      '@prisma/client':
+        specifier: ^7.10.0
+        version: 7.10.0(prisma@7.10.0(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
+      '@types/cors':
+        specifier: ^2.8.19
+        version: 2.8.19
+      '@types/express':
+        specifier: ^5.0.3
+        version: 5.0.3
+      '@types/supertest':
+        specifier: ^7.2.0
+        version: 7.2.0
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
+      express:
+        specifier: ^4.21.2
+        version: 4.21.2
+      pg:
+        specifier: ^8.16.2
+        version: 8.22.0
+      prisma:
+        specifier: ^7.10.0
+        version: 7.10.0(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      supertest:
+        specifier: ^7.2.2
+        version: 7.2.2
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.7.0)(postcss@8.5.16)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.0)
+      winston:
+        specifier: ^3.17.0
+        version: 3.17.0
+
+  packages/shared:
+    dependencies:
+      '@chainflip/bitcoin':
+        specifier: 2.3.3
+        version: 2.3.3(typescript@5.9.3)
+      '@chainflip/rpc':
+        specifier: 2.3.4
+        version: 2.3.4
+      '@chainflip/solana':
+        specifier: 2.3.3
+        version: 2.3.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@chainflip/utils':
+        specifier: 2.3.7
+        version: 2.3.7
+      axios:
+        specifier: ^1.15.0
+        version: 1.15.0
+      bignumber.js:
+        specifier: ^9.3.0
+        version: 9.3.0
+      ethers:
+        specifier: ^6.14.4
+        version: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       ioredis:
         specifier: ^5.6.1
         version: 5.6.1
       ws:
         specifier: ^8.18.2
-        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 8.18.2(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -178,10 +214,10 @@ importers:
         version: 5.8.0
       '@ethersproject/providers':
         specifier: ^5.8.0
-        version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        version: 5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       '@typechain/ethers-v6':
         specifier: ^0.5.1
-        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
+        version: 0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -6278,7 +6314,7 @@ snapshots:
     dependencies:
       '@ethersproject/logger': 5.8.0
 
-  '@ethersproject/providers@5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
+  '@ethersproject/providers@5.8.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@ethersproject/abstract-provider': 5.8.0
       '@ethersproject/abstract-signer': 5.8.0
@@ -6299,7 +6335,7 @@ snapshots:
       '@ethersproject/transactions': 5.8.0
       '@ethersproject/web': 5.8.0
       bech32: 1.1.4
-      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -7260,9 +7296,9 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.17
 
-  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
+  '@typechain/ethers-v6@0.5.1(ethers@6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
-      ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      ethers: 6.14.4(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       lodash: 4.17.21
       ts-essentials: 7.0.3(typescript@5.9.3)
       typechain: 8.3.2(typescript@5.9.3)
@@ -11845,10 +11881,10 @@ snapshots:
       bufferutil: 4.1.0
       utf-8-validate: 6.0.6
 
-  ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     optionalDependencies:
       bufferutil: 4.1.0
-      utf-8-validate: 6.0.6
+      utf-8-validate: 5.0.10
 
   ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10):
     optionalDependencies:

@@ -1,0 +1,76 @@
+// Integrators service schema (third-party swap providers, starting with SwapKit).
+//
+// This schema lives in the same Postgres database as the swap service but only manages the
+// `integrators` Postgres schema. The swap service owns `public` and `private`; neither package's
+// migrations touch the other's tables.
+//
+// The connection string MUST end with `?schema=integrators` so that Prisma keeps this package's
+// `_prisma_migrations` table in the `integrators` schema, separate from the swap service's.
+//
+// `pnpm prisma format` after changes :)
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/integrators"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["integrators"]
+}
+
+enum IntegratorProvider {
+  SWAPKIT
+
+  @@schema("integrators")
+}
+
+// mirrors SwapKit's `POST /track` statuses so the poller stores them without translation
+enum IntegratorSwapStatus {
+  NOT_STARTED // swap created, user hasn't sent the tx yet
+  PENDING // tx seen, waiting for confirmations
+  SWAPPING // provider is executing the swap
+  COMPLETED
+  REFUNDED
+  FAILED
+  UNKNOWN // SwapKit can't determine the status yet; keep polling
+
+  @@schema("integrators")
+}
+
+model IntegratorSwap {
+  id                 Int                  @id @default(autoincrement())
+  provider           IntegratorProvider
+  // the route the swap was built from (SwapKit `routeId` from /v3/swap); expires after 5 minutes
+  providerRouteId    String
+  // provider that executes the swap behind SwapKit (e.g. THORCHAIN, NEAR), for reporting
+  underlyingProvider String?
+  status             IntegratorSwapStatus @default(NOT_STARTED)
+  // assets use the provider's own identifiers, e.g. SwapKit `ETH.ETH`, `BTC.BTC`
+  srcAsset           String
+  // SwapKit tracks swaps by source tx hash + chain id (`POST /track`) ...
+  srcChainId         String
+  srcAmount          Decimal              @db.Decimal(78, 0)
+  srcAddress         String
+  destAsset          String
+  expectedDestAmount Decimal              @db.Decimal(78, 0)
+  destAmount         Decimal?             @db.Decimal(78, 0)
+  destAddress        String
+  // set when the frontend reports the user's signed tx; null until then
+  txHash             String?
+  // ... or by deposit channel / deposit address for deposit-channel routes (e.g. NEAR Intents)
+  depositChannelId   String?
+  depositAddress     String?
+  affiliateFeeBps    Int
+  // raw last status payload from the provider, for support and debugging
+  providerStatus     Json?
+  // when the status poller should check this swap next; null once the swap is final
+  nextCheckAt        DateTime?            @db.Timestamptz(3)
+  completedAt        DateTime?            @db.Timestamptz(3)
+  createdAt          DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime             @updatedAt @db.Timestamptz(3)
+
+  @@unique([srcChainId, txHash])
+  @@index([nextCheckAt])
+  @@schema("integrators")
+}

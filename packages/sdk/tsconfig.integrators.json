@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "outDir": "dist-integrators",
+    "sourceMap": true,
+    "declaration": false,
+    "noEmit": false
+  },
+  "include": ["src/integrators/**/*.ts"],
+  "exclude": ["src/integrators/**/__tests__/**", "src/integrators/**/*.test.ts"]
+}

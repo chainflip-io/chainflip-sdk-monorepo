@@ -1,0 +1,69 @@
+name: Release Integrators Service CI 🚀
+
+concurrency:
+  group: ${{ github.ref }}-release-integrators-service-ci
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'integrators/v*'
+    branches:
+      - main
+      - release/*
+    paths:
+      - packages/sdk/src/integrators/**
+      - packages/sdk/prisma/**
+      - packages/sdk/prisma.config.ts
+      - packages/sdk/integrators.Dockerfile
+      - packages/sdk/tsconfig.integrators.json
+      - packages/sdk/package.json
+      - packages/shared/**
+
+jobs:
+  pre-checks:
+    uses: ./.github/workflows/_01_pre_checks.yml
+    with:
+      package: sdk
+    secrets: inherit
+  checks:
+    needs: [pre-checks]
+    uses: ./.github/workflows/_02_checks.yml
+    with:
+      package: sdk
+    secrets: inherit
+
+  build-docker-images:
+    runs-on: ubuntu-latest
+    needs: checks
+    name: Trigger Docker Image Build in chainflip-io/chainflip-web-services 🪼
+    steps:
+      # these events need matching jobs in chainflip-web-services (see .github/workflows/ci-swap.yml
+      # there) that build ./packages/sdk/integrators.Dockerfile into an `integrators` image
+      - name: Dispatch build-integrators-backspin to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/heads/main') == true
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-integrators-backspin
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-integrators-backspin"}'
+
+      - name: Dispatch build-integrators-sisyphos to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/heads/release') == true
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-integrators-sisyphos
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-integrators-sisyphos"}'
+
+      - name: Dispatch build-integrators-perseverance to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/tags/') == true
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-integrators-perseverance
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-integrators-perseverance"}'
