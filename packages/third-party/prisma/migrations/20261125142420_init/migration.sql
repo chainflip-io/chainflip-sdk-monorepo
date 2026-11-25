@@ -5,7 +5,7 @@ CREATE TYPE "ThirdPartyProvider" AS ENUM ('SWAPKIT');
 CREATE TYPE "Chain" AS ENUM ('Polkadot', 'Ethereum', 'Bitcoin', 'Arbitrum', 'Solana', 'Assethub', 'Tron', 'Bsc');
 
 -- CreateEnum
-CREATE TYPE "ThirdPartySwapStatus" AS ENUM ('NOT_STARTED', 'PENDING', 'SWAPPING', 'COMPLETED', 'REFUNDED', 'PARTIALLY_REFUNDED', 'FAILED', 'UNKNOWN');
+CREATE TYPE "ThirdPartySwapStatus" AS ENUM ('PENDING', 'SWAPPING', 'COMPLETED', 'REFUNDED', 'PARTIALLY_REFUNDED', 'FAILED', 'UNKNOWN');
 
 -- CreateTable
 CREATE TABLE "ThirdPartySwaps" (
@@ -13,7 +13,7 @@ CREATE TABLE "ThirdPartySwaps" (
     "provider" "ThirdPartyProvider" NOT NULL,
     "routeId" TEXT NOT NULL,
     "protocol" TEXT[],
-    "status" "ThirdPartySwapStatus" NOT NULL DEFAULT 'NOT_STARTED',
+    "status" "ThirdPartySwapStatus" NOT NULL DEFAULT 'PENDING',
     "srcAsset" TEXT NOT NULL,
     "srcChain" "Chain" NOT NULL,
     "srcAmount" DECIMAL(78,0) NOT NULL,

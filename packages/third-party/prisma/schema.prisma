@@ -41,7 +41,6 @@ enum Chain {
 }
 
 enum ThirdPartySwapStatus {
-  NOT_STARTED
   PENDING
   SWAPPING
   COMPLETED
@@ -58,7 +57,7 @@ model ThirdPartySwap {
   provider           ThirdPartyProvider
   routeId            String
   protocol           String[]
-  status             ThirdPartySwapStatus @default(NOT_STARTED)
+  status             ThirdPartySwapStatus @default(PENDING)
   srcAsset           String
   srcChain           Chain
   srcAmount          Decimal              @db.Decimal(78, 0)
