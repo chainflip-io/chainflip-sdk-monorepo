@@ -25,15 +25,15 @@ enum ThirdPartyProvider {
   @@schema("third_party")
 }
 
-// mirrors SwapKit's `POST /track` statuses so the poller stores them without translation
 enum ThirdPartySwapStatus {
-  NOT_STARTED // swap created, user hasn't sent the tx yet
-  PENDING // tx seen, waiting for confirmations
-  SWAPPING // provider is executing the swap
+  NOT_STARTED 
+  PENDING 
+  SWAPPING 
   COMPLETED
   REFUNDED
+  PARTIALLY_REFUNDED
   FAILED
-  UNKNOWN // SwapKit can't determine the status yet; keep polling
+  UNKNOWN 
 
   @@schema("third_party")
 }
@@ -42,13 +42,14 @@ model ThirdPartySwap {
   id                 Int                  @id @default(autoincrement())
   provider           ThirdPartyProvider
   providerRouteId    String
-  underlyingProvider String?
+  protocol           String?
   status             ThirdPartySwapStatus @default(NOT_STARTED)
   srcAsset           String
   srcChainId         String
   srcAmount          Decimal              @db.Decimal(78, 0)
   srcAddress         String
   destAsset          String
+  destChainId        String
   expectedDestAmount Decimal              @db.Decimal(78, 0)
   destAmount         Decimal?             @db.Decimal(78, 0)
   destAddress        String

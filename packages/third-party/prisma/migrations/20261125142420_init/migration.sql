@@ -2,20 +2,21 @@
 CREATE TYPE "ThirdPartyProvider" AS ENUM ('SWAPKIT');
 
 -- CreateEnum
-CREATE TYPE "ThirdPartySwapStatus" AS ENUM ('NOT_STARTED', 'PENDING', 'SWAPPING', 'COMPLETED', 'REFUNDED', 'FAILED', 'UNKNOWN');
+CREATE TYPE "ThirdPartySwapStatus" AS ENUM ('NOT_STARTED', 'PENDING', 'SWAPPING', 'COMPLETED', 'REFUNDED', 'PARTIALLY_REFUNDED', 'FAILED', 'UNKNOWN');
 
 -- CreateTable
 CREATE TABLE "ThirdPartySwaps" (
     "id" SERIAL NOT NULL,
     "provider" "ThirdPartyProvider" NOT NULL,
     "providerRouteId" TEXT NOT NULL,
-    "underlyingProvider" TEXT,
+    "protocol" TEXT,
     "status" "ThirdPartySwapStatus" NOT NULL DEFAULT 'NOT_STARTED',
     "srcAsset" TEXT NOT NULL,
     "srcChainId" TEXT NOT NULL,
     "srcAmount" DECIMAL(78,0) NOT NULL,
     "srcAddress" TEXT NOT NULL,
     "destAsset" TEXT NOT NULL,
+    "destChainId" TEXT NOT NULL,
     "expectedDestAmount" DECIMAL(78,0) NOT NULL,
     "destAmount" DECIMAL(78,0),
     "destAddress" TEXT NOT NULL,
