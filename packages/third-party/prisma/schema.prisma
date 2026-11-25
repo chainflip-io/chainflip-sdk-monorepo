@@ -25,15 +25,30 @@ enum ThirdPartyProvider {
   @@schema("third_party")
 }
 
+// same values as the swap service's `Chain` enum (public schema), which Prisma can't reference
+// from this separate schema
+enum Chain {
+  Polkadot
+  Ethereum
+  Bitcoin
+  Arbitrum
+  Solana
+  Assethub
+  Tron
+  Bsc
+
+  @@schema("third_party")
+}
+
 enum ThirdPartySwapStatus {
-  NOT_STARTED 
-  PENDING 
-  SWAPPING 
+  NOT_STARTED
+  PENDING
+  SWAPPING
   COMPLETED
   REFUNDED
   PARTIALLY_REFUNDED
   FAILED
-  UNKNOWN 
+  UNKNOWN
 
   @@schema("third_party")
 }
@@ -45,11 +60,11 @@ model ThirdPartySwap {
   protocol           String?
   status             ThirdPartySwapStatus @default(NOT_STARTED)
   srcAsset           String
-  srcChainId         String
+  srcChain           Chain
   srcAmount          Decimal              @db.Decimal(78, 0)
   srcAddress         String
   destAsset          String
-  destChainId        String
+  destChain          Chain
   expectedDestAmount Decimal              @db.Decimal(78, 0)
   destAmount         Decimal?             @db.Decimal(78, 0)
   destAddress        String
@@ -58,13 +73,11 @@ model ThirdPartySwap {
   depositAddress     String?
   affiliateFeeBps    Int
   providerStatus     Json?
-  nextCheckAt        DateTime?            @db.Timestamptz(3)
   completedAt        DateTime?            @db.Timestamptz(3)
   createdAt          DateTime             @default(now()) @db.Timestamptz(3)
   updatedAt          DateTime             @updatedAt @db.Timestamptz(3)
 
-  @@unique([srcChainId, txHash])
-  @@index([nextCheckAt])
+  @@unique([srcChain, txHash])
   @@map("ThirdPartySwaps")
   @@schema("third_party")
 }
