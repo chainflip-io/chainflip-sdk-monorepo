@@ -4,7 +4,7 @@ import env from './env.js';
 const logger = createLogger({
   level: env.LOG_LEVEL,
   format: format.combine(format.timestamp(), format.errors({ stack: true }), format.json()),
-  defaultMeta: { service: 'integrators' },
+  defaultMeta: { service: 'third-party' },
   transports: [new transports.Console()],
   silent: env.NODE_ENV === 'test',
 });

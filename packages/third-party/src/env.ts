@@ -12,25 +12,25 @@ const csvSet = envVar.default('').transform(
     ),
 );
 
-const integratorsDatabaseUrl = envVar
+const thirdPartyDatabaseUrl = envVar
   .url()
   .refine((url) => /^postgres(ql)?:\/\//.test(url), 'must be a postgres connection string')
   // keeps our `_prisma_migrations` table out of the swap service's `public` schema
   .refine(
-    (url) => new URL(url).searchParams.get('schema') === 'integrators',
-    'must end with `?schema=integrators`',
+    (url) => new URL(url).searchParams.get('schema') === 'third_party',
+    'must end with `?schema=third_party`',
   );
 
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('production'),
-  INTEGRATORS_APP_PORT: envVar.default('8080').transform(Number),
-  // must end with `?schema=integrators`, see prisma/schema.prisma
-  INTEGRATORS_DATABASE_URL: integratorsDatabaseUrl,
+  THIRD_PARTY_APP_PORT: envVar.default('8080').transform(Number),
+  // must end with `?schema=third_party`, see prisma/schema.prisma
+  THIRD_PARTY_DATABASE_URL: thirdPartyDatabaseUrl,
   // origins allowed by CORS, e.g. `https://swap.chainflip.io`. empty = allow all (local dev only)
-  INTEGRATORS_ALLOWED_ORIGINS: csvSet,
+  THIRD_PARTY_ALLOWED_ORIGINS: csvSet,
   LOG_LEVEL: envVar.default('info'),
-  // max requests per client IP per minute across all /v2/integrators routes
-  INTEGRATORS_RATE_LIMIT_PER_MINUTE: envVar
+  // max requests per client IP per minute across all /v2/third-party routes
+  THIRD_PARTY_RATE_LIMIT_PER_MINUTE: envVar
     .default('120')
     .transform(Number)
     .pipe(z.number().int().positive()),

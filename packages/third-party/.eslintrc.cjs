@@ -7,7 +7,7 @@ module.exports = {
     // the Prisma client is generated into node_modules by `prisma generate` and is not a
     // package.json dependency. treating it as a core module keeps lint results the same whether or
     // not it has been generated yet
-    'import/core-modules': ['@prisma/swap-aggregations'],
+    'import/core-modules': ['@prisma/third-party'],
   },
   rules: {
     'import/no-extraneous-dependencies': [

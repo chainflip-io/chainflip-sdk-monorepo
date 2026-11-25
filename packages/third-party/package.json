@@ -1,5 +1,5 @@
 {
-  "name": "swap-aggregations",
+  "name": "third-party",
   "version": "0.0.1",
   "description": "Backend for third-party swap aggregators (SwapKit) used by swap.chainflip.io",
   "private": true,
@@ -8,7 +8,7 @@
     "build": "pnpm clean && prisma generate && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "clean": "rm -rf dist",
     "dev": "tsx watch -r dotenv/config src/index.ts",
-    "start": "node dist/packages/swap-aggregations/src/index.js",
+    "start": "node dist/packages/third-party/src/index.js",
     "postinstall": "prisma generate",
     "test": "vitest",
     "test:ci": "CI=1 pnpm test",

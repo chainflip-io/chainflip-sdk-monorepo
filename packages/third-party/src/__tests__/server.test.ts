@@ -2,13 +2,13 @@ import request from 'supertest';
 import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest';
 
 vi.hoisted(() => {
-  process.env.INTEGRATORS_DATABASE_URL =
-    'postgresql://postgres:postgres@localhost:5432/swap?schema=integrators';
+  process.env.THIRD_PARTY_DATABASE_URL =
+    'postgresql://postgres:postgres@localhost:5432/swap?schema=third_party';
   process.env.NODE_ENV = 'test';
   process.env.SWAPKIT_API_KEY = 'test-api-key';
   process.env.SWAPKIT_API_URL = 'https://swapkit.test';
   process.env.SWAPKIT_AFFILIATE_FEE_BPS = '30';
-  process.env.INTEGRATORS_RATE_LIMIT_PER_MINUTE = '5';
+  process.env.THIRD_PARTY_RATE_LIMIT_PER_MINUTE = '5';
 });
 
 const prismaMock = vi.hoisted(() => ({ $queryRaw: vi.fn() }));
@@ -30,7 +30,7 @@ const quoteBody = {
   txHints: ['simpleTransfer'],
 };
 
-describe('integrators server', () => {
+describe('third-party server', () => {
   let fetchSpy: MockInstance<typeof fetch>;
 
   beforeEach(() => {
@@ -62,7 +62,7 @@ describe('integrators server', () => {
 
   it('blocks blacklisted IPs', async () => {
     const res = await request(await loadApp())
-      .get('/v2/integrators/swapkit/providers')
+      .get('/v2/third-party/swapkit/providers')
       .set('cf-connecting-ip', '1.2.3.4');
 
     expect(res.status).toBe(429);
@@ -76,7 +76,7 @@ describe('integrators server', () => {
     const statuses = [];
     for (let i = 0; i < 6; i += 1) {
       const res = await request(app)
-        .get('/v2/integrators/swapkit/providers')
+        .get('/v2/third-party/swapkit/providers')
         .set('cf-connecting-ip', '5.6.7.8');
       statuses.push(res.status);
     }
@@ -84,8 +84,8 @@ describe('integrators server', () => {
     expect(statuses).toEqual([200, 200, 200, 200, 200, 429]);
   });
 
-  it('returns 404 for unknown integrator routes', async () => {
-    const res = await request(await loadApp()).get('/v2/integrators/nope');
+  it('returns 404 for unknown third-party routes', async () => {
+    const res = await request(await loadApp()).get('/v2/third-party/nope');
 
     expect(res.status).toBe(404);
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe('integrators server', () => {
       fetchSpy.mockResolvedValueOnce(jsonResponse(200, routes));
 
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/v3/quote')
+        .post('/v2/third-party/swapkit/v3/quote')
         .send({ ...quoteBody, unknownField: 'dropped' });
 
       expect(res.status).toBe(200);
@@ -116,7 +116,7 @@ describe('integrators server', () => {
       fetchSpy.mockResolvedValueOnce(jsonResponse(404, error));
 
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/v3/quote')
+        .post('/v2/third-party/swapkit/v3/quote')
         .send(quoteBody);
 
       expect(res.status).toBe(404);
@@ -125,7 +125,7 @@ describe('integrators server', () => {
 
     it('rejects invalid bodies without calling SwapKit', async () => {
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/v3/quote')
+        .post('/v2/third-party/swapkit/v3/quote')
         .send({ sellAsset: 'ETH.ETH' });
 
       expect(res.status).toBe(400);
@@ -135,7 +135,7 @@ describe('integrators server', () => {
 
     it('rejects malformed JSON with a 400', async () => {
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/v3/quote')
+        .post('/v2/third-party/swapkit/v3/quote')
         .set('content-type', 'application/json')
         .send('{"sellAsset":');
 
@@ -146,7 +146,7 @@ describe('integrators server', () => {
       fetchSpy.mockRejectedValueOnce(new TypeError('fetch failed'));
 
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/v3/quote')
+        .post('/v2/third-party/swapkit/v3/quote')
         .send(quoteBody);
 
       expect(res.status).toBe(502);
@@ -167,7 +167,7 @@ describe('integrators server', () => {
       };
 
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/v3/swap')
+        .post('/v2/third-party/swapkit/v3/swap')
         .send(body);
 
       expect(res.status).toBe(200);
@@ -180,7 +180,7 @@ describe('integrators server', () => {
       fetchSpy.mockResolvedValueOnce(jsonResponse(400, error));
 
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/v3/swap')
+        .post('/v2/third-party/swapkit/v3/swap')
         .send({ routeId: 'route-1', sourceAddress: '0xa', destinationAddress: '0xb' });
 
       expect(res.status).toBe(400);
@@ -196,10 +196,10 @@ describe('integrators server', () => {
       const app = await loadApp();
 
       const [a, b] = await Promise.all([
-        request(app).post('/v2/integrators/swapkit/track').send(trackBody),
-        request(app).post('/v2/integrators/swapkit/track').send(trackBody),
+        request(app).post('/v2/third-party/swapkit/track').send(trackBody),
+        request(app).post('/v2/third-party/swapkit/track').send(trackBody),
       ]);
-      const c = await request(app).post('/v2/integrators/swapkit/track').send(trackBody);
+      const c = await request(app).post('/v2/third-party/swapkit/track').send(trackBody);
 
       expect([a.body, b.body, c.body]).toEqual([
         { status: 'swapping' },
@@ -213,7 +213,7 @@ describe('integrators server', () => {
       fetchSpy.mockResolvedValueOnce(jsonResponse(404, { error: 'notFound' }));
 
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/track')
+        .post('/v2/third-party/swapkit/track')
         .send(trackBody);
 
       expect(res.status).toBe(404);
@@ -225,8 +225,8 @@ describe('integrators server', () => {
         .mockResolvedValueOnce(jsonResponse(200, { status: 'completed' }));
       const app = await loadApp();
 
-      const first = await request(app).post('/v2/integrators/swapkit/track').send(trackBody);
-      const second = await request(app).post('/v2/integrators/swapkit/track').send(trackBody);
+      const first = await request(app).post('/v2/third-party/swapkit/track').send(trackBody);
+      const second = await request(app).post('/v2/third-party/swapkit/track').send(trackBody);
 
       expect(first.status).toBe(500);
       expect(second.body).toEqual({ status: 'completed' });
@@ -236,7 +236,7 @@ describe('integrators server', () => {
       fetchSpy.mockResolvedValueOnce(jsonResponse(200, { status: 'pending' }));
 
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/track')
+        .post('/v2/third-party/swapkit/track')
         .send({ depositChannelId: '123-Ethereum-45' });
 
       expect(res.status).toBe(200);
@@ -245,7 +245,7 @@ describe('integrators server', () => {
 
     it('rejects a hash without a chain id', async () => {
       const res = await request(await loadApp())
-        .post('/v2/integrators/swapkit/track')
+        .post('/v2/third-party/swapkit/track')
         .send({ hash: '0xhash' });
 
       expect(res.status).toBe(400);
@@ -258,8 +258,8 @@ describe('integrators server', () => {
       fetchSpy.mockImplementation(async () => jsonResponse(200, [{ provider: 'THORCHAIN' }]));
       const app = await loadApp();
 
-      await request(app).get('/v2/integrators/swapkit/providers');
-      const res = await request(app).get('/v2/integrators/swapkit/providers');
+      await request(app).get('/v2/third-party/swapkit/providers');
+      const res = await request(app).get('/v2/third-party/swapkit/providers');
 
       expect(res.body).toEqual([{ provider: 'THORCHAIN' }]);
       expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -269,7 +269,7 @@ describe('integrators server', () => {
       fetchSpy.mockResolvedValueOnce(jsonResponse(200, { tokens: [] }));
 
       const res = await request(await loadApp()).get(
-        '/v2/integrators/swapkit/tokens?provider=CHAINFLIP',
+        '/v2/third-party/swapkit/tokens?provider=CHAINFLIP',
       );
 
       expect(res.status).toBe(200);

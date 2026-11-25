@@ -1,32 +1,32 @@
-// Integrators service schema (third-party swap providers, starting with SwapKit).
+// Third-party service schema (third-party swap providers, starting with SwapKit).
 //
 // This schema lives in the same Postgres database as the swap service but only manages the
-// `integrators` Postgres schema. The swap service owns `public` and `private`; neither package's
+// `third_party` Postgres schema. The swap service owns `public` and `private`; neither package's
 // migrations touch the other's tables.
 //
-// The connection string MUST end with `?schema=integrators` so that Prisma keeps this package's
-// `_prisma_migrations` table in the `integrators` schema, separate from the swap service's.
+// The connection string MUST end with `?schema=third_party` so that Prisma keeps this package's
+// `_prisma_migrations` table in the `third_party` schema, separate from the swap service's.
 //
 // `pnpm prisma format` after changes :)
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/@prisma/swap-aggregations"
+  output   = "../node_modules/@prisma/third-party"
 }
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["integrators"]
+  schemas  = ["third_party"]
 }
 
-enum IntegratorProvider {
+enum ThirdPartyProvider {
   SWAPKIT
 
-  @@schema("integrators")
+  @@schema("third_party")
 }
 
 // mirrors SwapKit's `POST /track` statuses so the poller stores them without translation
-enum IntegratorSwapStatus {
+enum ThirdPartySwapStatus {
   NOT_STARTED // swap created, user hasn't sent the tx yet
   PENDING // tx seen, waiting for confirmations
   SWAPPING // provider is executing the swap
@@ -35,15 +35,15 @@ enum IntegratorSwapStatus {
   FAILED
   UNKNOWN // SwapKit can't determine the status yet; keep polling
 
-  @@schema("integrators")
+  @@schema("third_party")
 }
 
-model IntegratorSwap {
+model ThirdPartySwap {
   id                 Int                  @id @default(autoincrement())
-  provider           IntegratorProvider
+  provider           ThirdPartyProvider
   providerRouteId    String
   underlyingProvider String?
-  status             IntegratorSwapStatus @default(NOT_STARTED)
+  status             ThirdPartySwapStatus @default(NOT_STARTED)
   srcAsset           String
   srcChainId         String
   srcAmount          Decimal              @db.Decimal(78, 0)
@@ -64,5 +64,6 @@ model IntegratorSwap {
 
   @@unique([srcChainId, txHash])
   @@index([nextCheckAt])
-  @@schema("integrators")
+  @@map("ThirdPartySwaps")
+  @@schema("third_party")
 }

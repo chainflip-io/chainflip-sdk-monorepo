@@ -8,7 +8,7 @@ import { createTtlCache } from '../utils/ttlCache.js';
 
 // SwapKit pass-through. Paths, request bodies, responses and error bodies match api.swapkit.dev, so
 // the frontend's SwapKit integration works against us by setting
-//   NEXT_PUBLIC_SWAPKIT_API_URL=<backend>/v2/integrators/swapkit
+//   NEXT_PUBLIC_SWAPKIT_API_URL=<backend>/v2/third-party/swapkit
 // and dropping NEXT_PUBLIC_SWAPKIT_API_KEY. What we add on the way through:
 //   - our API key (never reaches the browser)
 //   - our affiliate fee, forced on every quote
@@ -105,7 +105,7 @@ router.post(
       return;
     }
 
-    // TODO: record the swap (see the IntegratorSwap discussion), from parsed.data + the response
+    // TODO: record the swap (see the ThirdPartySwap discussion), from parsed.data + the response
     send(res, await swapkitRequest('/v3/swap', { method: 'POST', body: parsed.data }));
   }),
 );

@@ -1,16 +1,16 @@
 -- CreateEnum
-CREATE TYPE "IntegratorProvider" AS ENUM ('SWAPKIT');
+CREATE TYPE "ThirdPartyProvider" AS ENUM ('SWAPKIT');
 
 -- CreateEnum
-CREATE TYPE "IntegratorSwapStatus" AS ENUM ('NOT_STARTED', 'PENDING', 'SWAPPING', 'COMPLETED', 'REFUNDED', 'FAILED', 'UNKNOWN');
+CREATE TYPE "ThirdPartySwapStatus" AS ENUM ('NOT_STARTED', 'PENDING', 'SWAPPING', 'COMPLETED', 'REFUNDED', 'FAILED', 'UNKNOWN');
 
 -- CreateTable
-CREATE TABLE "IntegratorSwap" (
+CREATE TABLE "ThirdPartySwaps" (
     "id" SERIAL NOT NULL,
-    "provider" "IntegratorProvider" NOT NULL,
+    "provider" "ThirdPartyProvider" NOT NULL,
     "providerRouteId" TEXT NOT NULL,
     "underlyingProvider" TEXT,
-    "status" "IntegratorSwapStatus" NOT NULL DEFAULT 'NOT_STARTED',
+    "status" "ThirdPartySwapStatus" NOT NULL DEFAULT 'NOT_STARTED',
     "srcAsset" TEXT NOT NULL,
     "srcChainId" TEXT NOT NULL,
     "srcAmount" DECIMAL(78,0) NOT NULL,
@@ -29,11 +29,11 @@ CREATE TABLE "IntegratorSwap" (
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(3) NOT NULL,
 
-    CONSTRAINT "IntegratorSwap_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ThirdPartySwaps_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE INDEX "IntegratorSwap_nextCheckAt_idx" ON "IntegratorSwap"("nextCheckAt");
+CREATE INDEX "ThirdPartySwaps_nextCheckAt_idx" ON "ThirdPartySwaps"("nextCheckAt");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "IntegratorSwap_srcChainId_txHash_key" ON "IntegratorSwap"("srcChainId", "txHash");
+CREATE UNIQUE INDEX "ThirdPartySwaps_srcChainId_txHash_key" ON "ThirdPartySwaps"("srcChainId", "txHash");
