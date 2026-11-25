@@ -56,8 +56,8 @@ enum ThirdPartySwapStatus {
 model ThirdPartySwap {
   id                 Int                  @id @default(autoincrement())
   provider           ThirdPartyProvider
-  providerRouteId    String
-  protocol           String?
+  routeId            String
+  protocol           String[]
   status             ThirdPartySwapStatus @default(NOT_STARTED)
   srcAsset           String
   srcChain           Chain
@@ -68,7 +68,7 @@ model ThirdPartySwap {
   expectedDestAmount Decimal              @db.Decimal(78, 0)
   destAmount         Decimal?             @db.Decimal(78, 0)
   destAddress        String
-  txHash             String?
+  txHash             String
   depositChannelId   String?
   depositAddress     String?
   affiliateFeeBps    Int
@@ -78,6 +78,7 @@ model ThirdPartySwap {
   updatedAt          DateTime             @updatedAt @db.Timestamptz(3)
 
   @@unique([srcChain, txHash])
+  @@index([routeId])
   @@map("ThirdPartySwaps")
   @@schema("third_party")
 }

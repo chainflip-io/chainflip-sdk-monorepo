@@ -11,8 +11,8 @@ CREATE TYPE "ThirdPartySwapStatus" AS ENUM ('NOT_STARTED', 'PENDING', 'SWAPPING'
 CREATE TABLE "ThirdPartySwaps" (
     "id" SERIAL NOT NULL,
     "provider" "ThirdPartyProvider" NOT NULL,
-    "providerRouteId" TEXT NOT NULL,
-    "protocol" TEXT,
+    "routeId" TEXT NOT NULL,
+    "protocol" TEXT[],
     "status" "ThirdPartySwapStatus" NOT NULL DEFAULT 'NOT_STARTED',
     "srcAsset" TEXT NOT NULL,
     "srcChain" "Chain" NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE "ThirdPartySwaps" (
     "expectedDestAmount" DECIMAL(78,0) NOT NULL,
     "destAmount" DECIMAL(78,0),
     "destAddress" TEXT NOT NULL,
-    "txHash" TEXT,
+    "txHash" TEXT NOT NULL,
     "depositChannelId" TEXT,
     "depositAddress" TEXT,
     "affiliateFeeBps" INTEGER NOT NULL,
@@ -34,6 +34,9 @@ CREATE TABLE "ThirdPartySwaps" (
 
     CONSTRAINT "ThirdPartySwaps_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE INDEX "ThirdPartySwaps_routeId_idx" ON "ThirdPartySwaps"("routeId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ThirdPartySwaps_srcChain_txHash_key" ON "ThirdPartySwaps"("srcChain", "txHash");
