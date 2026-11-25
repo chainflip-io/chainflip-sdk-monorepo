@@ -1,37 +1,32 @@
-name: Release Integrators Service CI 🚀
+name: Release Swap Aggregations Service CI 🚀
 
 concurrency:
-  group: ${{ github.ref }}-release-integrators-service-ci
+  group: ${{ github.ref }}-release-swap-aggregations-service-ci
   cancel-in-progress: false
 
 on:
   workflow_dispatch:
   push:
     tags:
-      - 'integrators/v*'
+      - 'swap-aggregations/v*'
     branches:
       - main
       - release/*
     paths:
-      - packages/sdk/src/integrators/**
-      - packages/sdk/prisma/**
-      - packages/sdk/prisma.config.ts
-      - packages/sdk/integrators.Dockerfile
-      - packages/sdk/tsconfig.integrators.json
-      - packages/sdk/package.json
+      - packages/swap-aggregations/**
       - packages/shared/**
 
 jobs:
   pre-checks:
     uses: ./.github/workflows/_01_pre_checks.yml
     with:
-      package: sdk
+      package: swap-aggregations
     secrets: inherit
   checks:
     needs: [pre-checks]
     uses: ./.github/workflows/_02_checks.yml
     with:
-      package: sdk
+      package: swap-aggregations
     secrets: inherit
 
   build-docker-images:
@@ -40,30 +35,30 @@ jobs:
     name: Trigger Docker Image Build in chainflip-io/chainflip-web-services 🪼
     steps:
       # these events need matching jobs in chainflip-web-services (see .github/workflows/ci-swap.yml
-      # there) that build ./packages/sdk/integrators.Dockerfile into an `integrators` image
-      - name: Dispatch build-integrators-backspin to chainflip-web-services 🦕
+      # there) that build ./packages/swap-aggregations/Dockerfile into a `swap-aggregations` image
+      - name: Dispatch build-swap-aggregations-backspin to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/heads/main') == true
         uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
         with:
           repository: chainflip-io/chainflip-web-services
-          event-type: build-integrators-backspin
+          event-type: build-swap-aggregations-backspin
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-integrators-backspin"}'
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-aggregations-backspin"}'
 
-      - name: Dispatch build-integrators-sisyphos to chainflip-web-services 🦕
+      - name: Dispatch build-swap-aggregations-sisyphos to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/heads/release') == true
         uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
         with:
           repository: chainflip-io/chainflip-web-services
-          event-type: build-integrators-sisyphos
+          event-type: build-swap-aggregations-sisyphos
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-integrators-sisyphos"}'
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-aggregations-sisyphos"}'
 
-      - name: Dispatch build-integrators-perseverance to chainflip-web-services 🦕
+      - name: Dispatch build-swap-aggregations-perseverance to chainflip-web-services 🦕
         if: startsWith(github.ref, 'refs/tags/') == true
         uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
         with:
           repository: chainflip-io/chainflip-web-services
-          event-type: build-integrators-perseverance
+          event-type: build-swap-aggregations-perseverance
           token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
-          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-integrators-perseverance"}'
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-swap-aggregations-perseverance"}'

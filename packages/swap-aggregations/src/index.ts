@@ -1,6 +1,5 @@
-// Entry point of the integrators service (third-party swap providers, starting with SwapKit).
-// Runs as its own pod; it is NOT part of the published @chainflip/sdk package (see tsup.config.mjs
-// entries and the `files` field in package.json).
+// Entry point of the swap-aggregations service: the backend for third-party swap aggregators
+// (starting with SwapKit) used by swap.chainflip.io. Runs as its own pod.
 import { Server } from 'http';
 import env from './env.js';
 import logger from './logger.js';
@@ -22,5 +21,3 @@ server.listen(
     });
   },
 );
-
-// TODO: start the status poller here once a provider client exists

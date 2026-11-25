@@ -6,7 +6,9 @@ import env from './env.js';
 import logger from './logger.js';
 import { handleError } from './middlewares/handleError.js';
 import { createIpBlacklist } from './middlewares/ipBlacklist.js';
-import router from './routes/index.js';
+import { createRateLimit } from './middlewares/rateLimit.js';
+import swapkitRouter from './swapkit/router.js';
+import ServiceError from './utils/ServiceError.js';
 
 const app = express();
 
@@ -43,7 +45,18 @@ app.get('/healthcheck', (_req, res) => {
   res.status(200).send('OK');
 });
 
-app.use('/v2/integrators', createIpBlacklist(), express.json(), router);
+app.use(
+  '/v2/integrators',
+  createIpBlacklist(),
+  createRateLimit(env.INTEGRATORS_RATE_LIMIT_PER_MINUTE),
+  express.json(),
+);
+
+app.use('/v2/integrators/swapkit', swapkitRouter);
+
+app.use('/v2/integrators', (_req, _res, next) => {
+  next(ServiceError.notFound());
+});
 
 app.use(handleError);
 

@@ -11,7 +11,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/@prisma/integrators"
+  output   = "../node_modules/@prisma/swap-aggregations"
 }
 
 datasource db {

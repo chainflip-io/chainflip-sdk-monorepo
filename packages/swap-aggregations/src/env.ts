@@ -29,15 +29,21 @@ const schema = z.object({
   // origins allowed by CORS, e.g. `https://swap.chainflip.io`. empty = allow all (local dev only)
   INTEGRATORS_ALLOWED_ORIGINS: csvSet,
   LOG_LEVEL: envVar.default('info'),
+  // max requests per client IP per minute across all /v2/integrators routes
+  INTEGRATORS_RATE_LIMIT_PER_MINUTE: envVar
+    .default('120')
+    .transform(Number)
+    .pipe(z.number().int().positive()),
   SWAPKIT_API_URL: envVar.url().default('https://api.swapkit.dev'),
-  // optional until the SwapKit client is implemented; sent as the `x-api-key` header
-  SWAPKIT_API_KEY: envVar.optional(),
-  // our fee in bps (0-1000). when unset, the fee tiers configured in the SwapKit dashboard apply.
-  // fee payout addresses are configured per provider in the dashboard, not here.
+  // sent as the `x-api-key` header; only this pod ever sees it
+  SWAPKIT_API_KEY: envVar.min(1),
+  // our fee in bps (0-1000), forced on every quote regardless of what the browser sends.
+  // default matches the frontend's AFFILIATE_FEE_BPS. payout addresses are configured per provider
+  // in the SwapKit dashboard, not here.
   SWAPKIT_AFFILIATE_FEE_BPS: envVar
-    .optional()
-    .transform((value) => (value ? Number(value) : undefined))
-    .pipe(z.number().int().min(0).max(1000).optional()),
+    .default('30')
+    .transform(Number)
+    .pipe(z.number().int().min(0).max(1000)),
 });
 
 export type Env = z.output<typeof schema>;

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { defineConfig } from 'prisma/config';
 
-// Only used by the integrators service (see src/integrators). Nothing here is published to npm.
+// Prisma CLI config for the swap-aggregations service (migrations, client generation).
 const url = process.env.INTEGRATORS_DATABASE_URL ?? '';
 
 // Migrating with any other schema would put our `_prisma_migrations` table next to the swap

@@ -1,5 +1,6 @@
-# Integrators service (third-party swap providers, starting with SwapKit). Build from the repo root:
-#   docker build -f packages/sdk/integrators.Dockerfile .
+# swap-aggregations service (third-party swap aggregators, starting with SwapKit).
+# Build from the repo root:
+#   docker build -f packages/swap-aggregations/Dockerfile .
 FROM node:26.12.1-trixie-slim AS builder
 
 WORKDIR /app
@@ -13,15 +14,15 @@ COPY . .
 
 RUN npm install -g pnpm@10
 
-# only the root (build tooling) and the sdk package; skips the swap service's native dependencies
+# only the root (build tooling) and this package; skips the swap service's native dependencies
 RUN pnpm install --frozen-lockfile \
     --filter @chainflip-io/chainflip-sdk-monorepo \
-    --filter @chainflip/sdk
+    --filter swap-aggregations
 
 ARG node_env
 ENV NODE_ENV=$node_env
 
-RUN pnpm --filter @chainflip/sdk integrators:build
+RUN pnpm --filter swap-aggregations build
 
 FROM node:26.12.1-trixie-slim
 
@@ -37,17 +38,13 @@ RUN npm install -g pnpm@10
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/package.json /app/package.json
 COPY --from=builder /app/pnpm-workspace.yaml /app/pnpm-workspace.yaml
-COPY --from=builder /app/packages/sdk/package.json /app/packages/sdk/package.json
-COPY --from=builder /app/packages/sdk/node_modules /app/packages/sdk/node_modules
-COPY --from=builder /app/packages/sdk/dist-integrators /app/packages/sdk/dist-integrators
-# needed for `pnpm integrators:migrate:deploy`
-COPY --from=builder /app/packages/sdk/prisma /app/packages/sdk/prisma
-COPY --from=builder /app/packages/sdk/prisma.config.ts /app/packages/sdk/prisma.config.ts
+COPY --from=builder /app/packages/swap-aggregations /app/packages/swap-aggregations
 
 RUN mkdir /ca-certs
 RUN wget -q -O /ca-certs/rds.pem https://truststore.pki.rds.amazonaws.com/eu-central-1/eu-central-1-bundle.pem
 
-WORKDIR /app/packages/sdk
+WORKDIR /app/packages/swap-aggregations
 
 # using ENTRYPOINT causes signals (SIGINT) to be passed onto the node process
-ENTRYPOINT ["pnpm", "integrators:start"]
+# migrations: run the same image with `pnpm migrate:deploy`
+ENTRYPOINT ["pnpm", "start"]

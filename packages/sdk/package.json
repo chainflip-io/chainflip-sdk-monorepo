@@ -47,13 +47,7 @@
     "prettier:base": "prettier ./** --ignore-path=../../.prettierignore",
     "prettier:check": "pnpm prettier:base --check",
     "prettier:write": "pnpm prettier:base --write",
-    "typecheck": "pnpm integrators:generate && tsc --noEmit",
-    "integrators:generate": "prisma generate",
-    "integrators:build": "rm -rf dist-integrators && prisma generate && tsc -p tsconfig.integrators.json && tsc-alias -p tsconfig.integrators.json",
-    "integrators:dev": "tsx watch -r dotenv/config src/integrators/index.ts",
-    "integrators:start": "node dist-integrators/packages/sdk/src/integrators/index.js",
-    "integrators:migrate:dev": "prisma migrate dev",
-    "integrators:migrate:deploy": "prisma migrate deploy"
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -82,18 +76,6 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@prisma/adapter-pg": "^7.10.0",
-    "@prisma/client": "^7.10.0",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/supertest": "^7.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "pg": "^8.16.2",
-    "prisma": "^7.10.0",
-    "supertest": "^7.2.2",
-    "tsup": "^8.5.0",
-    "winston": "^3.17.0"
+    "tsup": "^8.5.0"
   }
 }
