@@ -3,6 +3,12 @@ const path = require('path');
 
 module.exports = {
   extends: '../../.eslintrc.json',
+  settings: {
+    // the integrators Prisma client is generated into node_modules by `pnpm integrators:generate`
+    // and is not a package.json dependency. treating it as a core module keeps lint results the
+    // same whether or not it has been generated (CI lints without generating it)
+    'import/core-modules': ['@prisma/integrators'],
+  },
   rules: {
     'import/no-extraneous-dependencies': [
       'error',

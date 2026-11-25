@@ -6,8 +6,6 @@ import ServiceError from '../utils/ServiceError.js';
 
 const CACHE_TTL_MS = 60_000;
 
-// Reads the swap service's blacklist (`private."BlacklistedIp"`, owned by packages/swap) so both
-// services block the same IPs. The integrators DB user needs SELECT on that table.
 export const createIpBlacklist = (): RequestHandler => {
   let cachedIps = Promise.resolve(new Set<string>());
   let timeout: NodeJS.Timeout;
