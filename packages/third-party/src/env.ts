@@ -21,6 +21,8 @@ const thirdPartyDatabaseUrl = envVar
     'must end with `?schema=third_party`',
   );
 
+const optionalBoolean = envVar.optional().transform((value) => value?.toUpperCase() === 'TRUE');
+
 const schema = z.object({
   // the routes are only served on mainnet, see server.ts
   CHAINFLIP_NETWORK: z.enum(['backspin', 'sisyphos', 'perseverance', 'mainnet']),
@@ -31,6 +33,8 @@ const schema = z.object({
   // origins allowed by CORS, e.g. `https://swap.chainflip.io`. empty = allow all (local dev only)
   THIRD_PARTY_ALLOWED_ORIGINS: csvSet,
   LOG_LEVEL: envVar.default('info'),
+  // rejects new quotes and swaps while keeping status available for swaps already in flight
+  THIRD_PARTY_MAINTENANCE_MODE: optionalBoolean,
   // max requests per client IP per minute across all /third-party routes
   THIRD_PARTY_RATE_LIMIT_PER_MINUTE: envVar
     .default('120')

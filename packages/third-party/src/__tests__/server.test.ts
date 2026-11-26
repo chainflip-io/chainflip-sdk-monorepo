@@ -84,6 +84,30 @@ describe('third-party server', () => {
 
       expect(res.status).toBe(400);
     });
+
+    describe('in maintenance mode', () => {
+      beforeEach(() => {
+        vi.stubEnv('THIRD_PARTY_MAINTENANCE_MODE', 'true');
+      });
+
+      it.each([
+        ['post', '/third-party/quote'],
+        ['post', '/third-party/swap'],
+      ] as const)('%s %s is unavailable', async (method, path) => {
+        const res = await request(await loadApp())[method](path);
+
+        expect(res.status).toBe(503);
+        expect(res.body).toEqual({
+          message: 'Third-party swaps are currently unavailable due to maintenance',
+        });
+      });
+
+      it('keeps serving swap status', async () => {
+        const res = await request(await loadApp()).get('/third-party/status/123');
+
+        expect(res.status).toBe(200);
+      });
+    });
   });
 
   describe.each(['backspin', 'sisyphos', 'perseverance'])('on %s', (network) => {
