@@ -56,7 +56,7 @@ if (env.CHAINFLIP_NETWORK === 'mainnet') {
   );
 }
 
-app.use('/third-party', (_req, _res, next) => {
+app.use((_req, _res, next) => {
   next(ServiceError.notFound());
 });
 
