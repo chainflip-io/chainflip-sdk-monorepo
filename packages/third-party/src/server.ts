@@ -32,7 +32,7 @@ app.use((req, res, next) => {
     logger.info('request completed', {
       reqId,
       method: req.method,
-      url: req.url,
+      url: req.originalUrl,
       statusCode: res.statusCode,
       durationMs: Math.round(performance.now() - startTime),
     });

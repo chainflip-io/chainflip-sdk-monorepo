@@ -19,8 +19,11 @@ export const createRateLimit = (maxRequestsPerMinute: number): RequestHandler =>
   handleExit(() => clearInterval(interval));
 
   return (req, res, next) => {
-    const header = req.headers['cf-connecting-ip'];
-    const ip = typeof header === 'string' ? header : (req.ip ?? 'unknown');
+    const ip = req.headers['cf-connecting-ip'];
+    if (typeof ip !== 'string') {
+      next(ServiceError.badRequest('missing client IP'));
+      return;
+    }
 
     const count = (counts.get(ip) ?? 0) + 1;
     counts.set(ip, count);

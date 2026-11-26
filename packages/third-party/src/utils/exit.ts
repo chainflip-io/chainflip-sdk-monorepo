@@ -5,9 +5,11 @@ type ExitHandler = () => unknown;
 const exitHandlers = new Set<ExitHandler>();
 
 ['SIGINT', 'SIGTERM'].forEach((signal) => {
-  process.on(signal, () => {
+  process.on(signal, async () => {
     logger.info(`handling "${signal}" signal`);
-    Promise.allSettled([...exitHandlers].map((handler) => handler()));
+    setTimeout(() => process.exit(1), 10_000).unref();
+    await Promise.allSettled([...exitHandlers].map((handler) => handler()));
+    process.exit(0);
   });
 });
 

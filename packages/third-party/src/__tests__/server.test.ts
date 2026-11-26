@@ -11,8 +11,10 @@ vi.hoisted(() => {
 const prismaMock = vi.hoisted(() => ({ $queryRaw: vi.fn() }));
 
 vi.mock('../prisma.js', () => ({ default: prismaMock }));
+vi.mock('../utils/exit.js', () => ({ handleExit: vi.fn() }));
 
-// each test loads a fresh app so the network, rate limit and IP blacklist start clean
+const CLIENT_IP = '9.9.9.9';
+
 const loadApp = async (network = 'mainnet') => {
   vi.stubEnv('CHAINFLIP_NETWORK', network);
   return (await import('../server.js')).app;
@@ -21,10 +23,12 @@ const loadApp = async (network = 'mainnet') => {
 describe('third-party server', () => {
   beforeEach(() => {
     vi.resetModules();
+    prismaMock.$queryRaw.mockReset();
     prismaMock.$queryRaw.mockResolvedValue([{ ip: '1.2.3.4' }]);
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.unstubAllEnvs();
   });
 
@@ -41,14 +45,18 @@ describe('third-party server', () => {
       ['post', '/third-party/swap'],
       ['get', '/third-party/status/123'],
     ] as const)('%s %s returns ok', async (method, path) => {
-      const res = await request(await loadApp())[method](path);
+      const res = await request(await loadApp())
+        [method](path)
+        .set('cf-connecting-ip', CLIENT_IP);
 
       expect(res.status).toBe(200);
       expect(res.text).toBe('ok');
     });
 
     it('returns 404 for unknown routes', async () => {
-      const res = await request(await loadApp()).get('/third-party/unknown');
+      const res = await request(await loadApp())
+        .get('/third-party/unknown')
+        .set('cf-connecting-ip', CLIENT_IP);
 
       expect(res.status).toBe(404);
       expect(res.body).toEqual({ message: 'resource not found' });
@@ -59,6 +67,18 @@ describe('third-party server', () => {
         .post('/third-party/quote')
         .set('cf-connecting-ip', '1.2.3.4');
 
+      expect(res.status).toBe(429);
+    });
+
+    it('keeps blocking blacklisted IPs when a refresh fails', async () => {
+      vi.useFakeTimers();
+      const app = await loadApp();
+      prismaMock.$queryRaw.mockRejectedValue(new Error('connection lost'));
+
+      await vi.advanceTimersByTimeAsync(60_000);
+      const res = await request(app).post('/third-party/quote').set('cf-connecting-ip', '1.2.3.4');
+
+      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(2);
       expect(res.status).toBe(429);
     });
 
@@ -76,9 +96,16 @@ describe('third-party server', () => {
       expect(statuses).toEqual([200, 200, 200, 200, 200, 429]);
     });
 
+    it('rejects requests without a client IP', async () => {
+      const res = await request(await loadApp()).post('/third-party/quote');
+
+      expect(res.status).toBe(400);
+    });
+
     it('rejects malformed JSON', async () => {
       const res = await request(await loadApp())
         .post('/third-party/quote')
+        .set('cf-connecting-ip', CLIENT_IP)
         .set('content-type', 'application/json')
         .send('{bad');
 
@@ -94,7 +121,9 @@ describe('third-party server', () => {
         ['post', '/third-party/quote'],
         ['post', '/third-party/swap'],
       ] as const)('%s %s is unavailable', async (method, path) => {
-        const res = await request(await loadApp())[method](path);
+        const res = await request(await loadApp())
+          [method](path)
+          .set('cf-connecting-ip', CLIENT_IP);
 
         expect(res.status).toBe(503);
         expect(res.body).toEqual({
@@ -103,7 +132,9 @@ describe('third-party server', () => {
       });
 
       it('keeps serving swap status', async () => {
-        const res = await request(await loadApp()).get('/third-party/status/123');
+        const res = await request(await loadApp())
+          .get('/third-party/status/123')
+          .set('cf-connecting-ip', CLIENT_IP);
 
         expect(res.status).toBe(200);
       });
@@ -116,7 +147,9 @@ describe('third-party server', () => {
       ['post', '/third-party/swap'],
       ['get', '/third-party/status/123'],
     ] as const)('%s %s is disabled', async (method, path) => {
-      const res = await request(await loadApp(network))[method](path);
+      const res = await request(await loadApp(network))
+        [method](path)
+        .set('cf-connecting-ip', CLIENT_IP);
 
       expect(res.status).toBe(404);
     });

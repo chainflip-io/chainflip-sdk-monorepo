@@ -7,22 +7,22 @@ import ServiceError from '../utils/ServiceError.js';
 const CACHE_TTL_MS = 60_000;
 
 export const createIpBlacklist = (): RequestHandler => {
-  let cachedIps = Promise.resolve(new Set<string>());
+  let ips = new Set<string>();
   let timeout: NodeJS.Timeout;
 
-  const refreshIps = () => {
-    cachedIps = prisma.$queryRaw<{ ip: string }[]>`SELECT "ip" FROM "private"."BlacklistedIp"`
-      .then((rows) => new Set(rows.map((r) => r.ip)))
+  const refreshIps = () =>
+    prisma.$queryRaw<{ ip: string }[]>`SELECT "ip" FROM "private"."BlacklistedIp"`
+      .then((rows) => {
+        ips = new Set(rows.map((r) => r.ip));
+      })
       .catch((error: unknown) => {
-        logger.warn('failed to refresh IP blacklist cache', { error });
-        return new Set<string>();
+        logger.error('failed to refresh IP blacklist cache', { error });
       })
       .finally(() => {
         timeout = setTimeout(refreshIps, CACHE_TTL_MS).unref();
       });
-  };
 
-  refreshIps();
+  const initialLoad = refreshIps();
 
   handleExit(() => {
     clearTimeout(timeout);
@@ -32,7 +32,9 @@ export const createIpBlacklist = (): RequestHandler => {
     const ip = req.headers['cf-connecting-ip'];
     if (typeof ip !== 'string') return next();
 
-    if ((await cachedIps).has(ip)) {
+    await initialLoad;
+
+    if (ips.has(ip)) {
       logger.info('blocked request from blacklisted IP', { ip });
       return next(ServiceError.tooManyRequests());
     }

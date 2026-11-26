@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { defineConfig } from 'prisma/config';
 
-// Prisma CLI config for the third-party service (migrations, client generation).
 const url = process.env.THIRD_PARTY_DATABASE_URL ?? '';
 
 // Migrating with any other schema would put our `_prisma_migrations` table next to the swap

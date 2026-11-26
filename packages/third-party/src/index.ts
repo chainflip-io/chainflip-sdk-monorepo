@@ -1,5 +1,3 @@
-// Entry point of the third-party service: the backend for third-party swap aggregators
-// (starting with SwapKit) used by swap.chainflip.io. Runs as its own pod.
 import { Server } from 'http';
 import env from './env.js';
 import logger from './logger.js';

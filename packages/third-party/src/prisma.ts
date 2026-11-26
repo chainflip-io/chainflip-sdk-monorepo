@@ -4,7 +4,10 @@ import env from './env.js';
 
 export * from '@prisma/third-party';
 
-const adapter = new PrismaPg({ connectionString: env.THIRD_PARTY_DATABASE_URL });
+const adapter = new PrismaPg(
+  { connectionString: env.THIRD_PARTY_DATABASE_URL },
+  { schema: 'third_party' },
+);
 
 const prisma = new PrismaClient({ adapter });
 
