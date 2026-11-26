@@ -52,32 +52,58 @@ enum ThirdPartySwapStatus {
   @@schema("third_party")
 }
 
-model ThirdPartySwap {
-  id                 Int                  @id @default(autoincrement())
-  provider           ThirdPartyProvider
-  routeId            String
-  protocol           String[]
-  status             ThirdPartySwapStatus @default(PENDING)
-  srcAsset           String
-  srcChain           Chain
-  srcAmount          Decimal              @db.Decimal(78, 0)
-  srcAddress         String
-  destAsset          String
-  destChain          Chain
-  expectedDestAmount Decimal              @db.Decimal(78, 0)
-  destAmount         Decimal?             @db.Decimal(78, 0)
-  destAddress        String
-  txHash             String
-  depositChannelId   String?
-  depositAddress     String?
-  affiliateFeeBps    Int
-  providerStatus     Json?
-  completedAt        DateTime?            @db.Timestamptz(3)
-  createdAt          DateTime             @default(now()) @db.Timestamptz(3)
-  updatedAt          DateTime             @updatedAt @db.Timestamptz(3)
+enum ThirdPartySwapType {
+  WALLET // we return tx data and the user signs it in their wallet
+  DEPOSIT_ADDRESS // the user sends funds to a provider deposit address
 
-  @@unique([srcChain, txHash])
+  @@schema("third_party")
+}
+
+// a route the user chose and asked to execute (created on /swap, before any deposit)
+model ThirdPartySwapRequest {
+  id                   String             @id
+  provider             ThirdPartyProvider
+  routeId              String
+  protocols            String[]
+  type                 ThirdPartySwapType
+  srcAsset             String
+  srcChain             Chain
+  srcAmount            Decimal            @db.Decimal(78, 0)
+  srcAddress           String?
+  destAsset            String
+  destChain            Chain
+  destAddress          String
+  minDestAmount        Decimal            @db.Decimal(78, 0)
+  expectedDestAmount   Decimal            @db.Decimal(78, 0)
+  refundAddress        String?
+  slippageToleranceBps Int
+  affiliateFeeBps      Int
+  depositChannelId     String?
+  depositAddress       String?
+  txDataHash           String? // hash of tx data returned for wallet swaps
+  expiresAt            DateTime           @db.Timestamptz(3)
+  createdAt            DateTime           @default(now()) @db.Timestamptz(3)
+  swap                 ThirdPartySwap?
+
+  @@unique([provider, depositChannelId])
   @@index([routeId])
+  @@index([expiresAt])
+  @@map("ThirdPartySwapRequests")
+  @@schema("third_party")
+}
+
+model ThirdPartySwap {
+  id             Int                   @id @default(autoincrement())
+  swapRequest    ThirdPartySwapRequest @relation(fields: [swapRequestId], references: [id])
+  swapRequestId  String                @unique
+  status         ThirdPartySwapStatus  @default(PENDING)
+  txHash         String                @unique
+  destAmount     Decimal?              @db.Decimal(78, 0)
+  providerStatus Json?
+  completedAt    DateTime?             @db.Timestamptz(3)
+  createdAt      DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime              @updatedAt @db.Timestamptz(3)
+
   @@map("ThirdPartySwaps")
   @@schema("third_party")
 }

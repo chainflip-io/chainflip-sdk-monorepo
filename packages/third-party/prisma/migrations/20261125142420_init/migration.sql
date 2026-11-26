@@ -10,26 +10,44 @@ CREATE TYPE "Chain" AS ENUM ('Polkadot', 'Ethereum', 'Bitcoin', 'Arbitrum', 'Sol
 -- CreateEnum
 CREATE TYPE "ThirdPartySwapStatus" AS ENUM ('PENDING', 'SWAPPING', 'COMPLETED', 'REFUNDED', 'PARTIALLY_REFUNDED', 'FAILED', 'UNKNOWN');
 
+-- CreateEnum
+CREATE TYPE "ThirdPartySwapType" AS ENUM ('WALLET', 'DEPOSIT_ADDRESS');
+
 -- CreateTable
-CREATE TABLE "ThirdPartySwaps" (
-    "id" SERIAL NOT NULL,
+CREATE TABLE "ThirdPartySwapRequests" (
+    "id" TEXT NOT NULL,
     "provider" "ThirdPartyProvider" NOT NULL,
     "routeId" TEXT NOT NULL,
-    "protocol" TEXT[],
-    "status" "ThirdPartySwapStatus" NOT NULL DEFAULT 'PENDING',
+    "protocols" TEXT[],
+    "type" "ThirdPartySwapType" NOT NULL,
     "srcAsset" TEXT NOT NULL,
     "srcChain" "Chain" NOT NULL,
     "srcAmount" DECIMAL(78,0) NOT NULL,
-    "srcAddress" TEXT NOT NULL,
+    "srcAddress" TEXT,
     "destAsset" TEXT NOT NULL,
     "destChain" "Chain" NOT NULL,
-    "expectedDestAmount" DECIMAL(78,0) NOT NULL,
-    "destAmount" DECIMAL(78,0),
     "destAddress" TEXT NOT NULL,
-    "txHash" TEXT NOT NULL,
+    "minDestAmount" DECIMAL(78,0) NOT NULL,
+    "expectedDestAmount" DECIMAL(78,0) NOT NULL,
+    "refundAddress" TEXT,
+    "slippageToleranceBps" INTEGER NOT NULL,
+    "affiliateFeeBps" INTEGER NOT NULL,
     "depositChannelId" TEXT,
     "depositAddress" TEXT,
-    "affiliateFeeBps" INTEGER NOT NULL,
+    "txDataHash" TEXT,
+    "expiresAt" TIMESTAMPTZ(3) NOT NULL,
+    "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ThirdPartySwapRequests_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ThirdPartySwaps" (
+    "id" SERIAL NOT NULL,
+    "swapRequestId" TEXT NOT NULL,
+    "status" "ThirdPartySwapStatus" NOT NULL DEFAULT 'PENDING',
+    "txHash" TEXT NOT NULL,
+    "destAmount" DECIMAL(78,0),
     "providerStatus" JSONB,
     "completedAt" TIMESTAMPTZ(3),
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -39,7 +57,19 @@ CREATE TABLE "ThirdPartySwaps" (
 );
 
 -- CreateIndex
-CREATE INDEX "ThirdPartySwaps_routeId_idx" ON "ThirdPartySwaps"("routeId");
+CREATE INDEX "ThirdPartySwapRequests_routeId_idx" ON "ThirdPartySwapRequests"("routeId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ThirdPartySwaps_srcChain_txHash_key" ON "ThirdPartySwaps"("srcChain", "txHash");
+CREATE INDEX "ThirdPartySwapRequests_expiresAt_idx" ON "ThirdPartySwapRequests"("expiresAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ThirdPartySwapRequests_provider_depositChannelId_key" ON "ThirdPartySwapRequests"("provider", "depositChannelId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ThirdPartySwaps_swapRequestId_key" ON "ThirdPartySwaps"("swapRequestId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ThirdPartySwaps_txHash_key" ON "ThirdPartySwaps"("txHash");
+
+-- AddForeignKey
+ALTER TABLE "ThirdPartySwaps" ADD CONSTRAINT "ThirdPartySwaps_swapRequestId_fkey" FOREIGN KEY ("swapRequestId") REFERENCES "ThirdPartySwapRequests"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
