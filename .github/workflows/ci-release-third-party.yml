@@ -1,0 +1,64 @@
+name: Release Third Party Service CI 🚀
+
+concurrency:
+  group: ${{ github.ref }}-release-third-party-service-ci
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'third-party/v*'
+    branches:
+      - main
+      - release/*
+    paths:
+      - packages/third-party/**
+      - packages/shared/**
+
+jobs:
+  pre-checks:
+    uses: ./.github/workflows/_01_pre_checks.yml
+    with:
+      package: third-party
+    secrets: inherit
+  checks:
+    needs: [pre-checks]
+    uses: ./.github/workflows/_02_checks.yml
+    with:
+      package: third-party
+    secrets: inherit
+
+  build-docker-images:
+    runs-on: ubuntu-latest
+    needs: checks
+    name: Trigger Docker Image Build in chainflip-io/chainflip-web-services 🪼
+    steps:
+      # these events need matching jobs in chainflip-web-services (see .github/workflows/ci-swap.yml
+      # there) that build ./packages/third-party/Dockerfile into a `third-party` image
+      - name: Dispatch build-third-party-backspin to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/heads/main') == true
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-third-party-backspin
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-third-party-backspin"}'
+
+      - name: Dispatch build-third-party-sisyphos to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/heads/release') == true
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-third-party-sisyphos
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-third-party-sisyphos"}'
+
+      - name: Dispatch build-third-party-perseverance to chainflip-web-services 🦕
+        if: startsWith(github.ref, 'refs/tags/') == true
+        uses: peter-evans/repository-dispatch@bf47d102fdb849e755b0b0023ea3e81a44b6f570
+        with:
+          repository: chainflip-io/chainflip-web-services
+          event-type: build-third-party-perseverance
+          token: ${{ secrets.CF_PUBLIC_GITHUB_BOT_TOKEN  }}
+          client-payload: '{"github_sha": "${{ github.sha }}", "github_ref": "${{ github.ref }}", "event_type": "build-third-party-perseverance"}'

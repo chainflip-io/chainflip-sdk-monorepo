@@ -43,6 +43,7 @@ This is a pnpm monorepo for Chainflip cross-chain swap infrastructure:
 packages/
 ├── sdk/        # @chainflip/sdk - Public npm package for integrators
 ├── swap/       # Private backend service (Express + Prisma + WebSocket)
+├── third-party/ # Private backend proxying third-party swap providers
 ├── shared/     # @chainflip-io/shared - Shared types, schemas, utilities
 ├── examples/   # Usage examples
 └── indexer/    # docker-compose for the squid archive (postgres + substrate-ingest)
