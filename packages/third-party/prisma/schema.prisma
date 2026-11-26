@@ -53,57 +53,72 @@ enum ThirdPartySwapStatus {
 }
 
 enum ThirdPartySwapType {
+  DEPOSIT_CHANNEL // the user sends funds to a provider deposit address
   WALLET // we return tx data and the user signs it in their wallet
-  DEPOSIT_ADDRESS // the user sends funds to a provider deposit address
 
   @@schema("third_party")
 }
 
-// a route the user chose and asked to execute (created on /swap, before any deposit)
+// one per swap started with a provider, created when we call the provider's swap endpoint.
+// route, amounts and deposit channel are overwritten if the swap is re-requested or requoted
+// before funds arrive. deleted after expiresAt if no swap was created for it
 model ThirdPartySwapRequest {
-  id                   String             @id
-  provider             ThirdPartyProvider
-  routeId              String
-  protocols            String[]
-  type                 ThirdPartySwapType
-  srcAsset             String
-  srcChain             Chain
-  srcAmount            Decimal            @db.Decimal(78, 0)
-  srcAddress           String?
-  destAsset            String
-  destChain            Chain
-  destAddress          String
-  minDestAmount        Decimal            @db.Decimal(78, 0)
-  expectedDestAmount   Decimal            @db.Decimal(78, 0)
-  refundAddress        String?
-  slippageToleranceBps Int
-  affiliateFeeBps      Int
-  depositChannelId     String?
-  depositAddress       String?
-  txDataHash           String? // hash of tx data returned for wallet swaps
-  expiresAt            DateTime           @db.Timestamptz(3)
-  createdAt            DateTime           @default(now()) @db.Timestamptz(3)
-  swap                 ThirdPartySwap?
+  id                          String             @id @default(uuid(7))
+  provider                    ThirdPartyProvider
+  originType                  ThirdPartySwapType
+  routeId                     String
+  routeProviders              String[]
+  srcChain                    Chain
+  srcAsset                    String
+  srcAddress                  String?
+  destChain                   Chain
+  destAsset                   String
+  destAddress                 String
+  refundAddress               String
+  expectedSwapInputAmount     Decimal            @db.Decimal(30, 0)
+  expectedSwapOutputAmount    Decimal            @db.Decimal(30, 0)
+  expectedMinSwapOutputAmount Decimal            @db.Decimal(30, 0)
+  slippageTolerancePercent    Decimal?
+  affiliateFeeBps             Int
+  depositChannelId            String?
+  depositAddress              String?
+  expiresAt                   DateTime           @db.Timestamptz(3)
+  createdAt                   DateTime           @default(now()) @db.Timestamptz(3)
+  swap                        ThirdPartySwap?
 
   @@unique([provider, depositChannelId])
+  @@index([depositAddress])
   @@index([routeId])
+  @@index([srcAddress])
+  @@index([destAddress])
+  @@index([refundAddress])
   @@index([expiresAt])
   @@map("ThirdPartySwapRequests")
   @@schema("third_party")
 }
 
+// a request that the provider has seen funds for
 model ThirdPartySwap {
-  id             Int                   @id @default(autoincrement())
-  swapRequest    ThirdPartySwapRequest @relation(fields: [swapRequestId], references: [id])
-  swapRequestId  String                @unique
-  status         ThirdPartySwapStatus  @default(PENDING)
-  txHash         String                @unique
-  destAmount     Decimal?              @db.Decimal(78, 0)
-  providerStatus Json?
-  completedAt    DateTime?             @db.Timestamptz(3)
-  createdAt      DateTime              @default(now()) @db.Timestamptz(3)
-  updatedAt      DateTime              @updatedAt @db.Timestamptz(3)
+  id                       BigInt                @id @default(autoincrement())
+  status                   ThirdPartySwapStatus  @default(PENDING)
+  srcChain                 Chain
+  txRef                    String // not unique: one bitcoin transaction can pay several deposit addresses
+  swapInputAmount          Decimal?              @db.Decimal(30, 0)
+  swapOutputAmount         Decimal?              @db.Decimal(30, 0)
+  refundAmount             Decimal?              @db.Decimal(30, 0)
+  effectiveSlippagePercent Decimal?
+  effectiveAffiliateFeeBps Int?
+  failureReason            String?
+  providerStatus           Json?
+  depositFinalisedAt       DateTime?             @db.Timestamptz(3)
+  completedAt              DateTime?             @db.Timestamptz(3)
+  createdAt                DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt                DateTime              @updatedAt @db.Timestamptz(3)
+  swapRequest              ThirdPartySwapRequest @relation(fields: [swapRequestId], references: [id])
+  swapRequestId            String                @unique
 
+  @@index([srcChain, txRef])
+  @@index([status, updatedAt])
   @@map("ThirdPartySwaps")
   @@schema("third_party")
 }
