@@ -1,3 +1,6 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "third_party";
+
 -- CreateEnum
 CREATE TYPE "ThirdPartyProvider" AS ENUM ('SWAPKIT');
 

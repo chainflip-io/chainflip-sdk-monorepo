@@ -46,5 +46,6 @@ RUN wget -q -O /ca-certs/rds.pem https://truststore.pki.rds.amazonaws.com/eu-cen
 WORKDIR /app/packages/third-party
 
 # using ENTRYPOINT causes signals (SIGINT) to be passed onto the node process
-# migrations: run the same image with `pnpm migrate:deploy`
+# migrations: override the entrypoint, e.g. `docker run --entrypoint pnpm <image> migrate:deploy`
+# (in k8s: `command: ["pnpm", "migrate:deploy"]`)
 ENTRYPOINT ["pnpm", "start"]
