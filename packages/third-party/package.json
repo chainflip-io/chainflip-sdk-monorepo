@@ -23,7 +23,7 @@
   },
   "license": "ISC",
   "engines": {
-    "node": "26.12.1",
+    "node": "26.13.1",
     "pnpm": ">=12"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
 # third-party service (third-party swap aggregators, starting with SwapKit).
 # Build from the repo root:
 #   docker build -f packages/third-party/Dockerfile .
-FROM node:26.12.1-trixie-slim AS builder
+FROM node:26.13.1-trixie-slim AS builder
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ RUN find . -name node_modules -type d -prune -exec rm -rf {} + && \
     pnpm install --frozen-lockfile --prod --ignore-scripts --filter third-party && \
     pnpm --filter third-party generate:models
 
-FROM node:26.12.1-trixie-slim
+FROM node:26.13.1-trixie-slim
 
 # openssl is needed by the prisma schema engine (migrations)
 # hadolint ignore=DL3008
