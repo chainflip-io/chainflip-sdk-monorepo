@@ -500,6 +500,9 @@ importers:
       pg:
         specifier: ^8.16.2
         version: 8.22.0
+      prisma:
+        specifier: ^7.10.0
+        version: 7.10.0(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       winston:
         specifier: ^3.17.0
         version: 3.17.0
@@ -516,9 +519,6 @@ importers:
       '@types/supertest':
         specifier: ^7.2.0
         version: 7.2.0
-      prisma:
-        specifier: ^7.10.0
-        version: 7.10.0(@types/react@19.2.14)(magicast@0.3.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       supertest:
         specifier: ^7.2.2
         version: 7.2.2
